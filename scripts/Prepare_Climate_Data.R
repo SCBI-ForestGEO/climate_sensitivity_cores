@@ -66,7 +66,7 @@ for(f in good.files) {
   
 }
 
-clim <- clim[, !names(clim) %in% c("frs")]
+# clim <- clim[, !names(clim) %in% c("frs")]
 
 write.csv(clim, file = "raw_data/climate/Formated_CRU_SCBI_1901_2014.csv", row.names = F)
 
