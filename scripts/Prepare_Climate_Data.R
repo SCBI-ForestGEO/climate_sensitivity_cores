@@ -15,6 +15,8 @@ library(RCurl)
 
 # Load and prepare climate data ####
 
+save.plots <- TRUE
+
 ## PRISM ####
 
 clim.raw <- read.csv("raw_data/climate/PRISM_SCBI_1930_2015_30second.csv")
@@ -68,6 +70,7 @@ clim <- clim[, !names(clim) %in% c("frs")]
 
 write.csv(clim, file = "raw_data/climate/Formated_CRU_SCBI_1901_2014.csv", row.names = F)
 
+
 ### Palmer Drought Severity Index ####
 ### https://github.com/forestgeo/Climate/tree/master/Gridded_Data_Products/NOAA%20Divisional%20Data%20(USA)/Virginia_04_Northern_Virginia
 
@@ -88,3 +91,33 @@ write.csv(clim, file = "raw_data/climate/Formated_NOAA_PDSI_Northern_Virginia_18
 
 
 
+
+
+
+
+# plot ####
+
+climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2014", "NOAA_PDSI_Northern_Virginia_1895_2017")
+
+for( c in climate.data.types) {
+  print(c)
+  
+  ## Load climate data ####
+  
+  clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
+
+  ## plot data ####
+  for(v in names(clim)[-c(1:2)]) {
+    
+    if(save.plots)  {
+      dir.create(paste0("raw_data/climate/Graphs_raw_climate_data/", c), showWarnings = F)
+      tiff(paste0("raw_data/climate/Graphs_raw_climate_data/", c, "/", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
+    }
+  
+    plot(clim[, v] ~ as.Date(paste(clim$year, clim$month, "01", sep = "-")), main = v, type = "l", xlab = "year", ylab = v, las = 1)
+    
+    if(save.plots) dev.off()
+  }
+  
+  
+}
