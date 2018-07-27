@@ -117,6 +117,26 @@ for( c in climate.data.types) {
     plot(clim[, v] ~ as.Date(paste(clim$year, clim$month, "01", sep = "-")), main = v, type = "l", xlab = "year", ylab = v, las = 1)
     
     if(save.plots) dev.off()
+    
+    if(save.plots)  {
+     tiff(paste0("raw_data/climate/Graphs_raw_climate_data/", c, "/", v, "_by_month.tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
+    }
+    
+    colors <- rainbow(12)
+    
+    for(m in unique(clim$month)) {
+      if(m %in% 1) {
+        plot(clim[clim$month %in% m, v] ~ clim$year[clim$month %in% m], ylim = range(clim[, v]), col = colors[m], main = v, type = "l", xlab = "year", ylab = v, las = 1)
+      }  else {
+        lines(clim[clim$month %in% m, v] ~ clim$year[clim$month %in% m], col = colors[m])
+      }
+    }
+    
+    legend("bottomleft", lty = 1, col = colors, legend = month.abb[unique(clim$month)], bty = "n", cex = 0.7, title = "month", ncol = 2)
+    
+    
+    if(save.plots) dev.off()
+    
   }
   
   
