@@ -33,9 +33,22 @@ for(f in filenames) {
 }
 
 
-# Define sets of climate data to use ###3
+# Define sets of climate data to use ####
 
 climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2014", "NOAA_PDSI_Northern_Virginia_1895_2017")
+
+
+# Define start and end year for analysis ####
+start.year = 1901
+end.year = 2009
+
+# Define start and end month for anlaysis ####
+start <- -4 # April of previous year
+end <- 8 # Augnust of current year
+
+start.frs <- -10 # october of previous year (for freeze days variable only - otherwise error because all 0 in other months)
+end.frs <- 5 # may of current year (for freeze days variable only)
+  
 
 # Run analysis for all types of climate data with all variables ####
 
@@ -45,6 +58,11 @@ for( c in climate.data.types) {
   ## Load climate data ####
   
   clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
+  
+  # crop first and last year of NOAA data because outliers
+  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
+    clim <- clim[!(clim$year %in% min(clim$year) | clim$year %in% max(clim$year)), ]
+  }
   
   ## Run analysis on core data ####
 
@@ -59,12 +77,12 @@ for( c in climate.data.types) {
     
     dc.corr <- NULL
     
-    for (i in names(clim)[-c(1:2)]) {
-      print(i)
-      dc.corr <- rbind(dc.corr, bootRes::dcc(core, clim[, c("year", "month", i)], method = "corr"))
+    for (v in names(clim)[-c(1:2)]) {
+      print(v)
+      dc.corr <- rbind(dc.corr, bootRes::dcc(core, clim[, c("year", "month", v)], method = "corr", start = ifelse(v %in% "frs", start.frs, start), end = ifelse(v %in% "frs", end.frs, end))) # , timespan = c(start.year, end.year)))
     }
     
-    # dc.corr <- bootRes::dcc(core, clim, method = "corr")
+    # dc.corr <- bootRes::dcc(core, clim, method = "corr", start = -4, end = 8) # , timespan = c(start.year, end.year))
     all.dc.corr <- rbind(all.dc.corr, data.frame(cbind(Species = substr(f, 1, 4), dc.corr)))
     
   }
