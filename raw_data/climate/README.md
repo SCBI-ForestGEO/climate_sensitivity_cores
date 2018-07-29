@@ -28,4 +28,4 @@ This folder contains climate data, copied from the ForestGEO Climate Data Portal
 
       SPnn - Standard Precipitation Index)
       
-      Some of the indices are described [here](https://www.ncdc.noaa.gov/temp-and-precip/drought/historical-palmers/overview).
+Some of the indices are described [here](https://www.ncdc.noaa.gov/temp-and-precip/drought/historical-palmers/overview).
