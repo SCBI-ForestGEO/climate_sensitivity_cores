@@ -27,3 +27,5 @@ This folder contains climate data, copied from the ForestGEO Climate Data Portal
       HDD - Heating Degree Days
 
       SPnn - Standard Precipitation Index)
+      
+      Some of the indices are described [here](https://www.ncdc.noaa.gov/temp-and-precip/drought/historical-palmers/overview).
