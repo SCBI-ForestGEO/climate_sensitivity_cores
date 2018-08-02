@@ -22,7 +22,7 @@ my.mdcplot <- function (x, sig, rescale = TRUE, main, ...)
   axis(side = 3, at = 1:n, labels = colnames(x), las = 2) # change here
   axis(side = 2, at = 1:m, labels = rownames(x), las = 1)
   
-  title(v, line = 3, outer = T)
+  title(main, line = 3, outer = T)
   
   X.left <- X.right <- Y.bottom <- Y.top <- x
   
@@ -88,5 +88,5 @@ my.mdcplot <- function (x, sig, rescale = TRUE, main, ...)
     }
   }
   
-  par(op)
+  # par(op)
 }
