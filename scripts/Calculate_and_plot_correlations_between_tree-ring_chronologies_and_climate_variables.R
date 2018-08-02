@@ -22,15 +22,57 @@ save.result.table <- TRUE
 
 # Load and prepare core data ####
 
-filenames <- list.files("raw_data/cores/")
+filenames <- list.dirs("data", full.names = F, recursive = F  ) # filenames <- list.files("raw_data/cores/")
+filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
+
 
 for(f in filenames) {
-  core <- read.rwl(paste0("raw_data/cores/", f))
-  core <- detrend(core, f = 0.5, method = "Spline", make.plot = TRUE ) # detrend/smooth the time series
-  core <- chron(core)
+  # get the raw data
+  core_raw <- read.rwl(paste0("raw_data/cores/", tolower(f), "_drop.rwl"))
+  
+  # get the detrended data
+  core <- read.table(paste0("data/", f,"/ARSTANfiles/", tolower(f), "_drop.rwl_tabs.txt"), sep = "\t", h = T)
+  core <- data.frame(res = core$res,  samp.depth = core$num, row.names = core$year)
+  
+  # get the Subsample Signal Strength (sss as function of the number of trees in sample, the last one appearing in the "xxx_drop.rxl_out.txt files)
+  
+  sss <- readLines(paste0("data/", f,"/ARSTANfiles/", tolower(f), "_drop.rwl_out.txt"))
+  sss <- sss[grep("sss", sss)]
+  
+  sss <- sss[grep("  sss:   ", sss)[c(rep(FALSE, 3*length(seq(grep("  sss:   ", sss)))/4), rep(TRUE, 1*length(seq(grep("  sss:   ", sss)))/4))]] # keep only last rows that have sss: in them
+  
+  sss <- sub("  sss:   ", "", sss)
+  sss <- as.numeric(unlist(strsplit(sss, " " ))) # keep only numbers and store them as a vector
+
+  sss <- data.frame("Num_of_trees" = 1:length(sss), sss)
+  
+  Year_to_Num_of_trees <- apply(core_raw, 1, function(x) sum(!is.na(x)))
+
+  for(i in 1:nrow(sss)) {
+    year_with_x_trees <- Year_to_Num_of_trees[Year_to_Num_of_trees >= sss$Num_of_trees[i]]
+    sss$Year[i] <- as.numeric(names(year_with_x_trees)[1])
+  }
+
+  
+    # core <- read.rwl(paste0("raw_data/cores/", f))
+  # core <- detrend(core, f = 0.5, nyrs = 32, method = "Spline", make.plot = TRUE) # detrend/smooth the time series
+  # core <- chron(core)
   
   assign(f, core)
+  assign(paste0(f, "_sss"), sss)
 }
+
+
+SPECIES_IN_ORDER <- toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
+
+# core.eps <- NULL
+# for(f in filenames) {
+#   print(f)
+#   core <- read.rwl(paste0("raw_data/cores/", f))
+#   core.ids <- read.ids(core, stc = c("auto"))
+#   rwi.stats.core <- rwi.stats.running(core, core.ids, prewhiten = T)
+#   core.eps <- rbind(core.eps, data.frame(Species = substr(f, 1,4), rwi.stats.core))
+# }
 
 
 # Define sets of climate data to use ####
@@ -38,13 +80,23 @@ for(f in filenames) {
 climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2014", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
 
-# Define start and end year for analysis ####
-start.year = 1901
-end.year = 2009
+# Define start and end year for analysis, common to all species and one for each species ####
+sss.threshold = 0.75
+
+start.years <- NULL # species specific
+for(f in filenames) {
+  sss <- get(paste0(f, "_sss"))
+  start.years <- c(start.years, sss[sss$sss >= sss.threshold, ]$Year[1])
+}
+
+overall.start.year <- max(start.years) # common to all species
+
+end.year = 2009  # common to all species
+
 
 # Define start and end month for anlaysis ####
 start <- -4 # April of previous year
-end <- 8 # Augnust of current year
+end <- 8 # August of current year
 
 start.frs <- -10 # october of previous year (for freeze days variable only - otherwise error because all 0 in other months)
 end.frs <- 5 # may of current year (for freeze days variable only)
@@ -64,6 +116,13 @@ for( c in climate.data.types) {
     clim <- clim[!(clim$year %in% min(clim$year) | clim$year %in% max(clim$year)), ]
   }
   
+  # Pre_chiten PDSI of NOAA data because autocorrelated by definitiaon
+  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
+    clim$PDSI_prewhiten <- ar(clim$PDSI)$resid
+    clim$PHDI_prewhiten <- ar(clim$PHDI)$resid
+    clim$PMDI_prewhiten <- ar(clim$PMDI)$resid
+  }
+  
   ## Run analysis on core data ####
 
   all.dc.corr <- NULL
@@ -75,11 +134,13 @@ for( c in climate.data.types) {
     
     core <- core[rownames(core) %in% clim$year, ] # trim to use only years for which with have clim data
     
+    start.year <- max(min(clim$year), start.years[which(filenames %in% f)])
+    
     dc.corr <- NULL
     
     for (v in names(clim)[-c(1:2)]) {
       print(v)
-      dc.corr <- rbind(dc.corr, bootRes::dcc(core, clim[, c("year", "month", v)], method = "corr", start = ifelse(v %in% "frs", start.frs, start), end = ifelse(v %in% "frs", end.frs, end))) # , timespan = c(start.year, end.year)))
+      dc.corr <- rbind(dc.corr, bootRes::dcc(core, clim[, c("year", "month", v)], method = "corr", start = ifelse(v %in% "frs", start.frs, start), end = ifelse(v %in% "frs", end.frs, end), timespan = c(start.year, end.year)))
     }
     
     # dc.corr <- bootRes::dcc(core, clim, method = "corr", start = -4, end = 8) # , timespan = c(start.year, end.year))
@@ -113,8 +174,8 @@ for( c in climate.data.types) {
     x <- x[, -1]
     x.sig <- x.sig[, -1]
     
-    x <- x[, rev(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))]
-    x.sig <- x.sig[, rev(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))]
+    x <- x[, rev(SPECIES_IN_ORDER)]
+    x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
     
     if(save.plots)  {
       dir.create(paste0("results/figures/monthly_correlations_all_speciess_and_climate_variables/", c), showWarnings = F)
