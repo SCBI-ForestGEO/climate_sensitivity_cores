@@ -1,0 +1,2 @@
+year	corrs	rbar	sdev	serr	eps 	cores
+  1980.	   528.	  0.2392	  0.3573	  0.0156	  0.9191	  36.15

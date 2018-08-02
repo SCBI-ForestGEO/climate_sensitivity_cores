@@ -1,0 +1,1240 @@
+
+                        **********************************
+                        **********************************
+                        ***                            ***
+                        ***     Program ARSTAN_v48     ***
+                        ***                            ***
+                        ***       Creation Date:       ***
+                        ***          03/17/16          ***
+                        ***                            ***
+                        ***       Programmed by:       ***
+                        ***     Dr. Edward R. Cook     ***
+                        ***       Paul J. Krusic       ***
+                        ***    Tree-Ring Laboratory    ***
+                        ***  Lamont-Doherty Earth Obs. ***
+                        ***    Palisades, N.Y. 10964   ***
+                        *** drdendro@ldeo.columbia.edu ***
+                        ***    pjk@ldeo.columbia.edu   ***
+                        ***  www.ldeo.columbia.edu/trl ***
+                        ***                            ***
+                        **********************************
+                        **********************************
+
+ |==============================================================================|
+
+ overall run title:                                                                                 
+
+ file names file processed:       SmithsonianBatch.txt                                        
+ data file processed:             caco_drop.rwl                                               
+ log file processed:              caco_drop.rwl_log.txt                                       
+
+                       opt          plt
+ tree-ring data type    1                !tucson ring-width format                         
+ missing data in gap   -9            0   !missing values estimated (no plots)              
+ data transformation    4            0   !spread/level power transform (no plots)          
+ first detrending       2     20     0   !1st-neg expon curve (k>0), no = opt 5            
+ second detrending    -67      0     0   !2nd-spline curve (pct n 50% cutoff)              
+ robust detrending      1                !non-robust detrending methods used               
+ interactive detrend    0                !no interactive detrending                        
+ index calculation      2                !residuals or differences (rt-gt)                 
+ ar modeling method     1      0     0   !non-robust autoregressive modeling               
+ pooled ar order        0            0   !minimum aic pooled ar model order fit 
+ series ar order        0                !pooled ar order fit to all series                
+ mean chronology        2   0    0   0   !robust (biweight) mean chronology                
+ stabilize variance     1                !rbar weighted stabilization method               
+ common period years     1950 2000       !first and last years of common period            
+ site-tree-core mask       SSSTTC        !site-tree-core separation mask                   
+ running rbar              40   20   0   !running rbar window/overlap (no plots)           
+ printout option        2                !summary & series statistics printed              
+ core series save       1                !series saved in tucson raw data format           
+ summary plot displays  3                !spaghetti and mean chronology plots              
+
+ stand dynamics stuf    0            0   !no stand dynamics analyses done                  
+ running mean window    0                !running mean window width                        
+ percent growth change  0                !percent growth change threshold                  
+ std error threshold    0                !standard error limit threshold                   
+
+ |======================== raw data statistical analyses =======================|
+
+ |------------------- tree-ring series read in for processing ------------------|
+
+  data header lines:
+
+ |------------ series gaps found based on any negative number found ------------|
+       *** when data are transformed, zeros are also treated as missing ***
+
+        series      ident      results of scans for gaps or missing values
+
+                           --- no gaps in data found ---
+
+ |------------------ statistics of raw tree-ring measurements ------------------|
+
+ series   ident   frst   last   year    mean   stdev   skew   kurt   sens   ac(1)
+     1   70622A   1940   2013     74   1.325   0.627  1.084  4.665  0.230   0.640
+     2   132010A  1894   2015    122   0.868   0.413  0.980  4.260  0.263   0.723
+     3   132018A  1909   2015    107   1.594   0.788  0.663  3.202  0.280   0.771
+     4   162252A  1961   2013     53   0.846   1.085  2.288  6.241  0.308   0.950
+     5   142220   1908   2009    102   1.162   0.829  2.851 12.494  0.305   0.732
+     6   151006A  1938   2016     79   0.850   0.352  0.449  2.572  0.246   0.671
+     7   160989A  1916   2016    101   0.604   0.301  1.025  4.081  0.340   0.587
+     8   142210A  1944   2017     74   0.557   0.258  0.591  3.080  0.281   0.631
+     9   20605A   1936   2014     79   0.900   0.559  0.646  2.913  0.313   0.730
+    10   52059A   1917   2012     96   0.534   0.298  1.601  5.756  0.371   0.614
+    11   152151A  1904   2013    110   1.216   0.647  0.741  3.360  0.249   0.830
+    12   50488A   1922   2010     89   1.099   0.935  2.100  7.121  0.287   0.750
+    13   80398A   1942   2008     67   1.209   0.963  0.876  2.751  0.244   0.867
+    14   3337A    1954   2014     61   0.805   0.402  1.317  4.244  0.271   0.775
+    15   101092A  1923   2006     84   0.408   0.275  2.593 11.960  0.374   0.560
+    16   40952A   1889   2017    129   1.625   0.960  1.073  4.345  0.262   0.761
+    17   030525A  1933   2008     76   1.033   0.829  1.267  4.190  0.354   0.713
+    18   152118A  1967   2012     46   0.900   0.501  0.939  4.988  0.341   0.509
+
+       number of series read in:   18   from   1889  to   2017     129 years
+
+ |---------------- summary of raw tree-ring series statistics ------------------|
+
+                                year    mean   stdev   skew   kurt   sens   ac(1)
+ arithmetic mean                  86   0.974   0.612  1.282  5.124  0.296   0.712
+ standard deviation               22   0.344   0.276  0.717  2.860  0.045   0.111
+ median (50th quantile)           81   0.900   0.593  1.049  4.252  0.284   0.727
+ interquartile range              28   0.404   0.478  0.860  2.554  0.079   0.140
+ minimum value                    46   0.408   0.258  0.449  2.572  0.230   0.509
+ lower hinge (25th quantile)      74   0.805   0.352  0.741  3.202  0.262   0.631
+ upper hinge (75th quantile)     102   1.209   0.829  1.601  5.756  0.340   0.771
+ maximum value                   129   1.625   1.085  2.851 12.494  0.374   0.950
+
+ |-------------------- all possible series rbar statistics ---------------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    153    0.143     0.268      0.022   -0.280      2.506    -0.517     0.739
+
+   minimum correlation: -0.517   series  142220     and  152118A      43 years
+   maximum correlation:  0.739   series  40952A     and  152118A      46 years
+
+       percent of all possible correlations used (n>20 years):     100.00
+       percent of all possible tree-ring years used in rbar:        55.10
+
+ |======================= raw data common period analyses ======================|
+
+ |----------------------- statistics of the common period ----------------------|
+
+ series   ident   frst   last   year    mean   stdev   skew   kurt   sens   ac(1)
+     1  70622A    1950   2000     51   1.424   0.577  1.786  6.562  0.218   0.512
+     2  132010A   1950   2000     51   0.763   0.316  0.361  2.639  0.227   0.679
+     3  132018A   1950   2000     51   1.692   0.628  1.514  5.127  0.261   0.554
+     4  142220    1950   2000     51   1.059   0.437  1.247  4.310  0.251   0.676
+     5  151006A   1950   2000     51   0.864   0.301  0.389  2.457  0.242   0.561
+     6  160989A   1950   2000     51   0.593   0.285  0.665  3.467  0.373   0.305
+     7  142210A   1950   2000     51   0.601   0.230  0.925  4.214  0.285   0.460
+     8  20605A    1950   2000     51   1.000   0.446  0.376  2.675  0.282   0.636
+     9  52059A    1950   2000     51   0.471   0.224  1.538  5.359  0.363   0.478
+    10  152151A   1950   2000     51   1.676   0.548  0.996  3.412  0.201   0.702
+    11  50488A    1950   2000     51   0.901   0.780  3.784 18.318  0.351   0.603
+    12  80398A    1950   2000     51   1.388   1.018  0.538  2.279  0.234   0.839
+    13  101092A   1950   2000     51   0.378   0.155  0.112  2.975  0.340   0.415
+    14  40952A    1950   2000     51   1.206   0.389  1.206  4.089  0.279   0.210
+    15  030525A   1950   2000     51   0.861   0.853  2.006  6.226  0.341   0.681
+
+ |------------ summary of common period tree-ring series statistics ------------|
+
+                                year    mean   stdev   skew   kurt   sens   ac(1)
+ arithmetic mean                  51   0.992   0.479  1.163  4.941  0.283   0.554
+ standard deviation              -99   0.415   0.253  0.923  3.938  0.057   0.164
+ median (50th quantile)           51   0.901   0.437  0.996  4.089  0.279   0.561
+ interquartile range               0   0.615   0.309  1.062  2.418  0.103   0.208
+ minimum value                    51   0.378   0.155  0.112  2.279  0.201   0.210
+ lower hinge (25th quantile)      51   0.682   0.293  0.464  2.825  0.238   0.469
+ upper hinge (75th quantile)      51   1.297   0.602  1.526  5.243  0.341   0.677
+ maximum value                    51   1.692   1.018  3.784 18.318  0.373   0.839
+
+ |----------- all series common period principal components analysis -----------|
+ |--------- refer to saved output files for complete tabulated results ---------|
+
+             ev #1  ev #2  ev #3  ev #4  ev #5  ev #6  ev #7  ev #8  ev #9  ev#10
+ eigenvalue: 4.644  2.354  1.799  1.532  0.933  0.848  0.648  0.541  0.390  0.316
+ eval sderr: 0.920  0.466  0.356  0.303  0.185  0.168  0.128  0.107  0.077  0.063
+ % variance: 0.310  0.157  0.120  0.102  0.062  0.057  0.043  0.036  0.026  0.021
+ cumulative: 0.310  0.467  0.586  0.689  0.751  0.807  0.851  0.887  0.913  0.934
+ brokn stck: 3.318* 2.318  1.818  1.485  1.235  1.035  0.868  0.725  0.600  0.489 
+ broken stick order selected for eigenvalue + 1se above broken stick value:   1
+
+             |---------------------- eigenvector loadings ----------------------|
+ series id   eg_#1  eg_#2  eg_#3  eg_#4  eg_#5  eg_#6  eg_#7  eg_#8  eg_#9  eg#10
+  70622A     0.326 -0.213  0.153  0.076 -0.120  0.360  0.196  0.286  0.189  0.354
+  132010A    0.142 -0.314  0.259  0.479 -0.165 -0.251  0.258 -0.121  0.086  0.046
+  132018A    0.198  0.086  0.583 -0.014  0.021 -0.114 -0.093 -0.233  0.130 -0.259
+  142220     0.378 -0.033 -0.177 -0.194  0.133  0.229  0.155 -0.097 -0.270 -0.407
+  151006A    0.156  0.410  0.151 -0.045 -0.466 -0.108  0.385 -0.298 -0.303 -0.078
+  160989A    0.249  0.387  0.103  0.024 -0.013 -0.009 -0.065  0.733 -0.078 -0.270
+  142210A   -0.150  0.129 -0.014  0.561  0.450  0.083  0.419  0.078  0.149 -0.259
+  20605A     0.128  0.223 -0.509  0.259  0.027 -0.256 -0.227 -0.224  0.153 -0.059
+  52059A     0.305 -0.056 -0.043 -0.341  0.353 -0.307  0.331  0.034  0.021  0.402
+  152151A    0.377 -0.115 -0.274 -0.079  0.186 -0.140  0.228 -0.095  0.034 -0.140
+  50488A     0.285 -0.115 -0.142  0.275 -0.084  0.589 -0.151 -0.202 -0.233  0.080
+  80398A     0.361 -0.003 -0.147  0.020 -0.356 -0.101 -0.178  0.052  0.606 -0.111
+  101092A    0.153  0.364  0.295 -0.098  0.425  0.258 -0.224 -0.312  0.292  0.123
+  40952A     0.304  0.046  0.104  0.347  0.162 -0.325 -0.404  0.076 -0.457  0.289
+  030525A   -0.064  0.547 -0.168  0.115 -0.137  0.118  0.231 -0.007  0.078  0.437
+
+ |--------- all series common period varimax factor rotation - ev>1.0) ---------|
+ |--------- refer to saved output files for complete tabulated results ---------|
+
+             vf #1  vf #2  vf #3  vf #4  vf #5  vf #6  vf #7  vf #8  vf #9  vf#10
+ % variance: 0.310
+ cumulative: 0.310
+
+             |--------------------- varimax factor loadings --------------------|
+ series id   vl_#1  vl_#2  vl_#3  vl_#4  vl_#5  vl_#6  vl_#7  vl_#8  vl_#9  vl#10
+  70622A     0.703
+  132010A    0.307
+  132018A    0.427
+  142220     0.815
+  151006A    0.337
+  160989A    0.537
+  142210A   -0.324
+  20605A     0.275
+  52059A     0.656
+  152151A    0.811
+  50488A     0.614
+  80398A     0.777
+  101092A    0.331
+  40952A     0.654
+  030525A   -0.139
+
+ |------------------ all series common period rbar statistics ------------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    105    0.186     0.252      0.025   -0.238      2.596    -0.364     0.803
+
+   minimum correlation: -0.364   series  132010A    and  030525A      51 years
+   maximum correlation:  0.803   series  142220     and  152151A      51 years
+
+ |------------------ within-tree common period rbar statistics -----------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+      1    0.326      -NaN       -NaN     -NaN       -NaN     0.326     0.326
+
+ |----------------- between-tree common period rbar statistics -----------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    104    0.185     0.253      0.025   -0.223      2.581    -0.364     0.803
+
+ |--------------------- final rbar, eps, and sss statistics --------------------|
+
+                                       number     rbar     sdev
+                    all series rbar:     105     0.186    0.252
+                  within-trees rbar:       1     0.326     -NaN
+                 between-trees rbar:     104     0.185    0.253
+
+                   effective number of cores  -  ceff:    1.217
+
+                 effective chronology signal  -  reff:    0.210
+                       signal-to-noise ratio  -   snr:    3.427
+                 expressed population signal  -   eps:    0.774
+
+   fractional common variance between the reduced sample-size chronology and the
+            fully replicated chronology (subsample signal strength - sss)
+
+                   sss as function of the number of trees in sample
+            1     2     3     4     5     6     7     8     9    10    11    12
+  sss:   0.240 0.405 0.525 0.617 0.689 0.747 0.795 0.835 0.869 0.899 0.924 0.947
+           13    14    15
+  sss:   0.966 0.984 1.000
+
+     fractional common variance between the reduced sample-size chronology and
+                  the expressed population signal or eps chronology
+
+                   eps as function of the number of trees in sample
+            1     2     3     4     5     6     7     8     9    10    11    12
+  eps:   0.186 0.314 0.407 0.477 0.533 0.578 0.615 0.646 0.673 0.696 0.715 0.733
+           13    14    15
+  eps:   0.748 0.762 0.774
+
+ |--------------------------- running rbar statistics --------------------------|
+
+    year   1930.  1950.  1970.  1990.
+    corr     10.    36.   105.   105.
+    rbar  0.183  0.089  0.159  0.125
+    sdev  0.400  0.275  0.281  0.313
+    serr  0.127  0.046  0.027  0.031
+    eps   0.686  0.585  0.765  0.718
+    nss     9.7   14.4   17.2   17.9
+
+ |==================== transformed data statistical analyses ===================|
+
+ |------------------ statistics of transformed tree-ring data ------------------|
+
+                                                            spread vs level tests
+ series   ident    mean   sdev    skew   kurt   sens  ac(1)  corr1   corr2  power
+     1  70622A    2.182  0.637  -0.507  3.444  0.142  0.740  0.521   0.132  0.000
+     2  132010A   1.310  0.490  -0.197  2.405  0.234  0.744  0.408   0.071  0.000
+     3  132018A   1.996  0.789   0.047  2.682  0.234  0.768  0.236   0.029  0.524
+     4  162252A   1.670  1.138   0.971  3.103  0.325  0.902  0.645   0.032  0.080
+     5  142220    2.687  0.741   0.584  6.148  0.157  0.680  0.298   0.017  0.345
+     6  151006A   1.037  0.348  -0.150  2.536  0.207  0.676  0.201   0.028  0.349
+     7  160989A   0.949  0.250  -0.223  4.462  0.196  0.473  0.211   0.047  0.404
+     8  142210A   0.776  0.290  -0.424  2.409  0.234  0.700  0.484   0.150  0.000
+     9  20605A    1.328  0.595  -0.392  2.219  0.234  0.787  0.437   0.058  0.179
+    10  52059A    0.833  0.339   0.434  2.805  0.331  0.601  0.354   0.070  0.122
+    11  152151A   1.748  0.644  -0.266  2.669  0.188  0.846  0.401   0.022  0.281
+    12  50488A    2.295  1.127   0.239  2.780  0.248  0.811  0.564   0.010  0.000
+    13  80398A    1.970  1.164   0.004  1.660  0.220  0.925  0.718   0.286  0.000
+    14  3337A     0.805  0.402   1.317  4.244  0.267  0.762 -0.035  -0.035  1.000
+    15  101092A   0.956  0.266   0.101  5.272  0.197  0.474  0.345   0.060  0.273
+    16  40952A    3.001  1.069  -0.512  2.944  0.169  0.826  0.530   0.067  0.000
+    17  030525A   1.934  1.027   0.126  1.848  0.282  0.826  0.668   0.294  0.000
+    18  152118A   1.471  0.621  -0.784  2.842  0.258  0.690  0.560   0.197  0.000
+
+ |------------- summary of transformed tree-ring series statistics -------------|
+
+                                                            spread vs level tests
+                  mean   sdev    skew   kurt   sens  ac(1)  corr1   corr2   power
+ arith mean      1.608  0.663   0.020  3.137  0.229  0.735  0.419   0.085   0.198
+ std deviation   0.670  0.324   0.539  1.178  0.052  0.126  0.192   0.092   0.264
+ median          1.570  0.629  -0.073  2.792  0.234  0.753  0.423   0.059   0.101
+ interquartile   1.040  0.679   0.631  1.035  0.061  0.146  0.262   0.104   0.345
+ minimum value   0.776  0.250  -0.784  1.660  0.142  0.473 -0.035  -0.035   0.000
+ lower hinge     0.956  0.348  -0.392  2.409  0.196  0.680  0.298   0.028   0.000
+ upper hinge     1.996  1.027   0.239  3.444  0.258  0.826  0.560   0.132   0.345
+ maximum value   3.001  1.164   1.317  6.148  0.331  0.925  0.718   0.294   1.000
+
+ |-------------------- all possible series rbar statistics ---------------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    153    0.183     0.298      0.024   -0.323      2.647    -0.638     0.817
+
+   minimum correlation: -0.638   series  142220     and  152118A      43 years
+   maximum correlation:  0.817   series  40952A     and  152118A      46 years
+
+       percent of all possible correlations used (n>20 years):     100.00
+       percent of all possible tree-ring years used in rbar:        55.10
+
+ |================= transformed raw data common period analyses ================|
+
+ |----------------------- statistics of the common period ----------------------|
+
+ series   ident   frst   last   year    mean   stdev   skew   kurt   sens   ac(1)
+     1  70622A    1950   2000     51   2.331   0.469  0.427  3.506  0.121   0.589
+     2  132010A   1950   2000     51   1.201   0.453 -0.440  2.291  0.210   0.767
+     3  132018A   1950   2000     51   2.140   0.567  1.019  3.934  0.202   0.506
+     4  142220    1950   2000     51   2.668   0.461  0.565  3.024  0.112   0.619
+     5  151006A   1950   2000     51   1.065   0.290 -0.039  2.284  0.195   0.569
+     6  160989A   1950   2000     51   0.938   0.258 -0.837  5.451  0.233   0.238
+     7  142210A   1950   2000     51   0.845   0.224 -0.274  3.003  0.205   0.491
+     8  20605A    1950   2000     51   1.498   0.420 -0.526  2.793  0.176   0.721
+     9  52059A    1950   2000     51   0.771   0.291  0.347  3.158  0.332   0.469
+    10  152151A   1950   2000     51   2.214   0.393  0.481  2.772  0.114   0.691
+    11  50488A    1950   2000     51   2.071   1.000  0.396  3.742  0.314   0.733
+    12  80398A    1950   2000     51   2.175   1.165 -0.185  1.574  0.182   0.915
+    13  101092A   1950   2000     51   0.947   0.217 -1.933  9.235  0.198   0.257
+    14  40952A    1950   2000     51   2.740   0.503  0.302  3.222  0.171   0.251
+    15  030525A   1950   2000     51   1.634   1.047  0.763  2.380  0.313   0.835
+
+ |------------ summary of common period tree-ring series statistics ------------|
+
+                                year    mean   stdev   skew   kurt   sens   ac(1)
+ arithmetic mean                  51   1.683   0.517  0.004  3.491  0.205   0.577
+ standard deviation              -99   0.690   0.307  0.744  1.823  0.069   0.211
+ median (50th quantile)           51   1.634   0.453  0.302  3.024  0.198   0.589
+ interquartile range               0   1.188   0.245  0.811  1.048  0.048   0.247
+ minimum value                    51   0.771   0.217 -1.933  1.574  0.112   0.238
+ lower hinge (25th quantile)      51   1.006   0.290 -0.357  2.576  0.173   0.480
+ upper hinge (75th quantile)      51   2.195   0.535  0.454  3.624  0.222   0.727
+ maximum value                    51   2.740   1.165  1.019  9.235  0.332   0.915
+
+ |----------- all series common period principal components analysis -----------|
+ |--------- refer to saved output files for complete tabulated results ---------|
+
+             ev #1  ev #2  ev #3  ev #4  ev #5  ev #6  ev #7  ev #8  ev #9  ev#10
+ eigenvalue: 4.792  2.466  1.839  1.489  1.111  0.672  0.578  0.478  0.376  0.307
+ eval sderr: 0.949  0.488  0.364  0.295  0.220  0.133  0.115  0.095  0.075  0.061
+ % variance: 0.319  0.164  0.123  0.099  0.074  0.045  0.039  0.032  0.025  0.020
+ cumulative: 0.319  0.484  0.606  0.706  0.780  0.824  0.863  0.895  0.920  0.940
+ brokn stck: 3.318* 2.318  1.818  1.485  1.235  1.035  0.868  0.725  0.600  0.489 
+ broken stick order selected for eigenvalue + 1se above broken stick value:   1
+
+             |---------------------- eigenvector loadings ----------------------|
+ series id   eg_#1  eg_#2  eg_#3  eg_#4  eg_#5  eg_#6  eg_#7  eg_#8  eg_#9  eg#10
+  70622A     0.325 -0.293  0.107  0.130 -0.081 -0.293 -0.045  0.134  0.358  0.240
+  132010A    0.181 -0.394  0.179  0.376 -0.086  0.243  0.313 -0.150  0.013  0.036
+  132018A    0.219 -0.088  0.539 -0.139 -0.009  0.021  0.095 -0.313 -0.039 -0.044
+  142220     0.357  0.058 -0.229 -0.167  0.113 -0.305  0.119 -0.122 -0.524 -0.096
+  151006A    0.180  0.318  0.263 -0.081 -0.532 -0.026  0.269 -0.197 -0.029 -0.210
+  160989A    0.279  0.338  0.184  0.001 -0.014 -0.029 -0.078  0.698 -0.090  0.132
+  142210A   -0.117  0.211  0.192  0.546  0.362 -0.164  0.354  0.004 -0.090  0.359
+  20605A     0.136  0.342 -0.403  0.239  0.097  0.306 -0.094 -0.330  0.340 -0.021
+  52059A     0.317  0.000 -0.104 -0.329  0.252 -0.075  0.393  0.137  0.582 -0.148
+  152151A    0.352 -0.006 -0.354 -0.018  0.159  0.021  0.305 -0.095 -0.284  0.124
+  50488A     0.247 -0.128 -0.120  0.455 -0.111 -0.492 -0.358 -0.049  0.049 -0.383
+  80398A     0.350 -0.006 -0.129 -0.038 -0.367  0.221 -0.274 -0.079 -0.019  0.605
+  101092A    0.172  0.207  0.348 -0.180  0.479 -0.105 -0.423 -0.350  0.052  0.136
+  40952A     0.324  0.034  0.151  0.228  0.193  0.558 -0.153  0.214 -0.136 -0.412
+  030525A   -0.033  0.557  0.032  0.179 -0.218 -0.144  0.101 -0.079  0.138 -0.034
+
+ |--------- all series common period varimax factor rotation - ev>1.0) ---------|
+ |--------- refer to saved output files for complete tabulated results ---------|
+
+             vf #1  vf #2  vf #3  vf #4  vf #5  vf #6  vf #7  vf #8  vf #9  vf#10
+ % variance: 0.319
+ cumulative: 0.319
+
+             |--------------------- varimax factor loadings --------------------|
+ series id   vl_#1  vl_#2  vl_#3  vl_#4  vl_#5  vl_#6  vl_#7  vl_#8  vl_#9  vl#10
+  70622A     0.712
+  132010A    0.397
+  132018A    0.479
+  142220     0.782
+  151006A    0.393
+  160989A    0.611
+  142210A   -0.257
+  20605A     0.298
+  52059A     0.694
+  152151A    0.771
+  50488A     0.540
+  80398A     0.766
+  101092A    0.376
+  40952A     0.709
+  030525A   -0.073
+
+ |------------------ all series common period rbar statistics ------------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    105    0.207     0.253      0.025   -0.399      2.720    -0.415     0.808
+
+   minimum correlation: -0.415   series  142210A    and  80398A       51 years
+   maximum correlation:  0.808   series  142220     and  152151A      51 years
+
+ |------------------ within-tree common period rbar statistics -----------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+      1    0.373      -NaN       -NaN     -NaN       -NaN     0.373     0.373
+
+ |----------------- between-tree common period rbar statistics -----------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    104    0.206     0.253      0.025   -0.383      2.706    -0.415     0.808
+
+ |--------------------- final rbar, eps, and sss statistics --------------------|
+
+                                       number     rbar     sdev
+                    all series rbar:     105     0.207    0.253
+                  within-trees rbar:       1     0.373     -NaN
+                 between-trees rbar:     104     0.206    0.253
+
+                   effective number of cores  -  ceff:    1.217
+
+                 effective chronology signal  -  reff:    0.232
+                       signal-to-noise ratio  -   snr:    3.921
+                 expressed population signal  -   eps:    0.797
+
+   fractional common variance between the reduced sample-size chronology and the
+            fully replicated chronology (subsample signal strength - sss)
+
+                   sss as function of the number of trees in sample
+            1     2     3     4     5     6     7     8     9    10    11    12
+  sss:   0.260 0.431 0.552 0.641 0.711 0.766 0.812 0.849 0.881 0.908 0.931 0.952
+           13    14    15
+  sss:   0.970 0.986 1.000
+
+     fractional common variance between the reduced sample-size chronology and
+                  the expressed population signal or eps chronology
+
+                   eps as function of the number of trees in sample
+            1     2     3     4     5     6     7     8     9    10    11    12
+  eps:   0.207 0.343 0.439 0.511 0.567 0.611 0.647 0.676 0.702 0.723 0.742 0.758
+           13    14    15
+  eps:   0.773 0.785 0.797
+
+ |--------------------------- running rbar statistics --------------------------|
+
+    year   1930.  1950.  1970.  1990.
+    corr     10.    36.   105.   105.
+    rbar  0.222  0.123  0.178  0.150
+    sdev  0.368  0.277  0.285  0.357
+    serr  0.116  0.046  0.028  0.035
+    eps   0.735  0.668  0.789  0.760
+    nss     9.7   14.4   17.2   17.9
+
+ |======================== raw data chronology statistics ======================|
+
+ |----------------- robust mean raw data chronology statistics -----------------|
+
+  first    last    total    mean    stdrd    skew    kurtosis    mean    serial
+   year    year    years   index     dev     coeff     coeff     sens     corr
+   1889    2017     129    1.662   0.607    0.744      4.508    0.150    0.815
+
+  mean indices vs their standard deviations       robust mean efficiency results
+      correlation    slope    intercept             # improved    # unimproved
+        0.561        0.434      0.206                     28            101
+
+ |---------------- robust mean efficiency gain and loss results ----------------|
+
+   median      interquartile      minimum       lower       upper       maximum
+    gain           range            gain        hinge       hinge         gain
+    0.62            1.03            0.19         0.36        1.39         5.68
+
+   median      interquartile      minimum       lower       upper       maximum
+    loss           range            loss        hinge       hinge         loss
+    0.90            0.12            0.00         0.86        0.98         1.00
+
+ |--------------------- segment length summary statistics ----------------------|
+
+   median      interquartile      minimum       lower       upper       maximum
+   length          range           length       hinge       hinge        length
+      82.            28.             46.          74.        102.          129.
+
+ |----------- raw data chronology auto and partial autocorrelations ------------|
+
+ lag           t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+ acf         0.809  0.676  0.564  0.523  0.485  0.419  0.367  0.268  0.160  0.103
+ pacf        0.809  0.064  0.001  0.154  0.036 -0.073  0.027 -0.160 -0.148  0.048
+ 95% c.l.    0.176  0.267  0.316  0.346  0.370  0.389  0.403  0.413  0.418  0.420
+
+ |------------------ raw data chronology autoregressive model ------------------|
+
+ ord    rsq    t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+  1   0.681  0.824
+
+ |================== detrended data curve fits and statistics ==================|
+
+ |------------------------ results of first detrending -------------------------|
+
+ |--------------- growth curve used for detrending tree-ring data --------------|
+   curve fit options:
+    -6: age dependent spline           f(i) = increasing spline smoothing
+    -5: variable span smoother         f(i) = variable span smoother
+    -4: lowess robust smoother         f(i) = pct series length
+    -3: median smoothing               f(i) = median width in years
+    -2: regional curve detrending      f(i) = one age-aligned curve
+    -1: first-differences              f(i) = y(i) - y(i-1)
+     1: neg expon curve, no = opt 4    f(i) = a*exp(-b*t(i)) + d    (d>0)
+     2: neg expon curve, no = opt 5    f(i) = a*exp(-b*t(i)) + d    (d>0)
+     3: neg expon curve, (general)     f(i) = a*exp(-b*t(i+p)) + d (any d)
+     4: linear regression (any slope)  f(i) = +/-c*t(i) + d
+     5: linear regression (neg slope)  f(i) = -c*t(i) + d   
+     6: horizontal line through mean   f(i) = mean(y(i)) = d
+     7: hugershoff growth function     f(i) = a*t(i+p)**b * exp(-c*t(i+p)) + d
+     8: general exponential (b = 1)    f(i) = a*t(i+p)**b * exp(-c*t(i+p)) + d
+    >9: cubic smoothing spline         fixed 50 pct variance cutoff
+   <-9:  cubic smoothing spline        pct n 50 pct variance cutoff
+
+   (a, b, c are coefficients, d is intercept or asymptote, p is pith offset)
+
+ series   ident     option       a           b           c           d          p
+     1   70622A        2   --> curve fit option failed and changed to:     5
+     1   70622A        5     0.000000    0.000000   -0.022005    3.006875       0
+     2   132010A       2   --> curve fit option failed and changed to:     5
+     2   132010A       5     0.000000    0.000000   -0.001466    1.399994       0
+     3   132018A       2   --> curve fit option failed and changed to:     5
+     3   132018A       5     0.000000    0.000000   -0.008758    2.468647       0
+     4   162252A       2   --> curve fit option failed and changed to:     5
+     4   162252A       5     0.000000    0.000000    0.000000    1.669676       0
+     5   142220        2   --> curve fit option failed and changed to:     5
+     5   142220        5     0.000000    0.000000    0.000000    2.686986       0
+     6   151006A       2   --> curve fit option failed and changed to:     5
+     6   151006A       5     0.000000    0.000000   -0.009989    1.436091       0
+     7   160989A       2   --> curve fit option failed and changed to:     5
+     7   160989A       5     0.000000    0.000000   -0.000525    0.976010       0
+     8   142210A       2   --> curve fit option failed and changed to:     5
+     8   142210A       5     0.000000    0.000000   -0.004471    0.943929       0
+     9   20605A        2   --> curve fit option failed and changed to:     5
+     9   20605A        5     0.000000    0.000000   -0.010187    1.735870       0
+    10   52059A        2   --> curve fit option failed and changed to:     5
+    10   52059A        5     0.000000    0.000000   -0.006257    1.136954       0
+    11   152151A       2   --> curve fit option failed and changed to:     5
+    11   152151A       5     0.000000    0.000000    0.000000    1.748315       0
+    12   50488A        2     2.993917    0.041805    0.000000    1.526428       0
+    13   80398A        2   --> curve fit option failed and changed to:     5
+    13   80398A        5     0.000000    0.000000   -0.044342    3.477394       0
+    14   3337A         2     1.617380    0.166814    0.000000    0.658982       0
+    15   101092A       2     1.022987    0.181256    0.000000    0.894907       0
+    16   40952A        2   --> curve fit option failed and changed to:     5
+    16   40952A        5     0.000000    0.000000   -0.021140    4.375311       0
+    17   030525A       2     2.468158    0.151933    0.000000    1.735957       0
+    18   152118A       2   --> curve fit option failed and changed to:     5
+    18   152118A       5     0.000000    0.000000   -0.029781    2.170692       0
+
+ |-------------------- statistics of single tree-ring series -------------------|
+
+ series   ident   frst   last   year    mean   stdev   skew   kurt   sens   ac(1)
+     1  70622A    1940   2013     74   0.996   0.226  0.565  4.880  0.156   0.500
+     2  132010A   1894   2015    122   1.000   0.372 -0.227  2.282  0.234   0.745
+     3  132018A   1909   2015    107   0.996   0.368 -0.065  2.555  0.237   0.740
+     4  162252A   1961   2013     53   1.000   0.682  0.971  3.103  0.325   0.902
+     5  142220    1908   2009    102   1.000   0.276  0.584  6.149  0.157   0.680
+     6  151006A   1938   2016     79   0.997   0.264 -0.199  2.870  0.211   0.498
+     7  160989A   1916   2016    101   1.000   0.262 -0.253  4.433  0.196   0.469
+     8  142210A   1944   2017     74   0.998   0.372 -0.052  2.331  0.239   0.676
+     9  20605A    1936   2014     79   0.993   0.429 -0.374  2.245  0.328   0.778
+    10  52059A    1917   2012     96   1.000   0.341 -0.123  3.184  0.328   0.452
+    11  152151A   1904   2013    110   1.000   0.368 -0.266  2.669  0.188   0.846
+    12  50488A    1922   2010     89   1.000   0.424  0.363  4.264  0.297   0.726
+    13  80398A    1942   2008     67   0.958   0.404  0.284  2.799  0.214   0.810
+    14  3337A     1954   2014     61   1.000   0.358  0.338  2.276  0.275   0.521
+    15  101092A   1923   2006     84   1.000   0.231 -0.966  5.476  0.205   0.243
+    16  40952A    1889   2017    129   0.990   0.263 -0.848  4.760  0.187   0.625
+    17  030525A   1933   2008     76   0.999   0.524  0.432  2.438  0.293   0.793
+    18  152118A   1967   2012     46   0.986   0.396  0.416  2.766  0.295   0.555
+
+ |---------------- summary of single tree-ring series statistics ---------------|
+
+                                year    mean   stdev   skew   kurt   sens   ac(1)
+ arithmetic mean                  86   0.995   0.364  0.032  3.416  0.242   0.642
+ standard deviation               22   0.010   0.112  0.504  1.238  0.058   0.171
+ median (50th quantile)           81   0.999   0.368 -0.059  2.834  0.235   0.678
+ interquartile range              28   0.004   0.140  0.668  1.995  0.099   0.278
+ minimum value                    46   0.958   0.226 -0.966  2.245  0.156   0.243
+ lower hinge (25th quantile)      74   0.996   0.264 -0.253  2.438  0.196   0.500
+ upper hinge (75th quantile)     102   1.000   0.404  0.416  4.433  0.295   0.778
+ maximum value                   129   1.000   0.682  0.971  6.149  0.328   0.902
+
+ |------------------------ results of second detrending ------------------------|
+
+ |--------------- growth curve used for detrending tree-ring data --------------|
+   curve fit options:
+    -6: age dependent spline           f(i) = increasing spline smoothing
+    -5: variable span smoother         f(i) = variable span smoother
+    -4: lowess robust smoother         f(i) = pct series length
+    -3: median smoothing               f(i) = median width in years
+    -2: regional curve detrending      f(i) = one age-aligned curve
+    -1: first-differences              f(i) = y(i) - y(i-1)
+     1: neg expon curve, no = opt 4    f(i) = a*exp(-b*t(i)) + d    (d>0)
+     2: neg expon curve, no = opt 5    f(i) = a*exp(-b*t(i)) + d    (d>0)
+     3: neg expon curve, (general)     f(i) = a*exp(-b*t(i+p)) + d (any d)
+     4: linear regression (any slope)  f(i) = +/-c*t(i) + d
+     5: linear regression (neg slope)  f(i) = -c*t(i) + d   
+     6: horizontal line through mean   f(i) = mean(y(i)) = d
+     7: hugershoff growth function     f(i) = a*t(i+p)**b * exp(-c*t(i+p)) + d
+     8: general exponential (b = 1)    f(i) = a*t(i+p)**b * exp(-c*t(i+p)) + d
+    >9: cubic smoothing spline         fixed 50 pct variance cutoff
+   <-9:  cubic smoothing spline        pct n 50 pct variance cutoff
+
+   (a, b, c are coefficients, d is intercept or asymptote, p is pith offset)
+
+ series   ident     option       a           b           c           d          p
+     1   70622A    -67   49         smoothing spline curve and window width
+     2   132010A   -67   81         smoothing spline curve and window width
+     3   132018A   -67   71         smoothing spline curve and window width
+     4   162252A   -67   35         smoothing spline curve and window width
+     5   142220    -67   68         smoothing spline curve and window width
+     6   151006A   -67   52         smoothing spline curve and window width
+     7   160989A   -67   67         smoothing spline curve and window width
+     8   142210A   -67   49         smoothing spline curve and window width
+     9   20605A    -67   52         smoothing spline curve and window width
+    10   52059A    -67   64         smoothing spline curve and window width
+    11   152151A   -67   73         smoothing spline curve and window width
+    12   50488A    -67   59         smoothing spline curve and window width
+    13   80398A    -67   44         smoothing spline curve and window width
+    14   3337A     -67   40         smoothing spline curve and window width
+    15   101092A   -67   56         smoothing spline curve and window width
+    16   40952A    -67   86         smoothing spline curve and window width
+    17   030525A   -67   50         smoothing spline curve and window width
+    18   152118A   -67   30         smoothing spline curve and window width
+
+ |-------------------- statistics of single tree-ring series -------------------|
+
+ series   ident   frst   last   year    mean   stdev   skew   kurt   sens   ac(1)
+     1  70622A    1940   2013     74   0.995   0.189  0.854  5.694  0.151   0.362
+     2  132010A   1894   2015    122   0.990   0.345 -0.106  2.495  0.237   0.688
+     3  132018A   1909   2015    107   0.989   0.258  0.157  2.900  0.234   0.437
+     4  162252A   1961   2013     53   0.971   0.456 -0.080  2.934  0.338   0.787
+     5  142220    1908   2009    102   0.994   0.211 -0.388  5.588  0.146   0.531
+     6  151006A   1938   2016     79   0.997   0.243 -0.229  2.995  0.209   0.410
+     7  160989A   1916   2016    101   0.997   0.231 -0.791  6.576  0.197   0.364
+     8  142210A   1944   2017     74   0.990   0.302 -0.003  2.410  0.249   0.432
+     9  20605A    1936   2014     79   0.984   0.348  0.185  3.912  0.282   0.569
+    10  52059A    1917   2012     96   0.998   0.336 -0.095  3.035  0.325   0.426
+    11  152151A   1904   2013    110   0.996   0.244  0.318  3.616  0.199   0.461
+    12  50488A    1922   2010     89   0.993   0.385  0.148  4.683  0.268   0.700
+    13  80398A    1942   2008     67   0.977   0.251  0.542  4.006  0.200   0.484
+    14  3337A     1954   2014     61   0.996   0.332  0.237  2.309  0.277   0.455
+    15  101092A   1923   2006     84   0.998   0.205 -1.639  9.111  0.203   0.103
+    16  40952A    1889   2017    129   0.994   0.230 -0.430  4.744  0.192   0.462
+    17  030525A   1933   2008     76   0.969   0.428  0.386  2.453  0.284   0.692
+    18  152118A   1967   2012     46   0.990   0.277 -0.404  4.293  0.284   0.212
+
+ |---------------- summary of single tree-ring series statistics ---------------|
+
+                                year    mean   stdev   skew   kurt   sens   ac(1)
+ arithmetic mean                  86   0.990   0.293 -0.074  4.097  0.237   0.476
+ standard deviation               22   0.009   0.078  0.553  1.775  0.055   0.171
+ median (50th quantile)           81   0.993   0.267 -0.041  3.764  0.235   0.458
+ interquartile range              28   0.007   0.113  0.625  1.843  0.083   0.159
+ minimum value                    46   0.969   0.189 -1.639  2.309  0.146   0.103
+ lower hinge (25th quantile)      74   0.989   0.231 -0.388  2.900  0.199   0.410
+ upper hinge (75th quantile)     102   0.996   0.345  0.237  4.744  0.282   0.569
+ maximum value                   129   0.998   0.456  0.854  9.111  0.338   0.787
+
+ |-------------------- all possible series rbar statistics ---------------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    153    0.117     0.166      0.013    0.047      2.910    -0.332     0.546
+
+   minimum correlation: -0.332   series  142220     and  142210A      66 years
+   maximum correlation:  0.546   series  70622A     and  50488A       71 years
+
+       percent of all possible correlations used (n>20 years):     100.00
+       percent of all possible tree-ring years used in rbar:        55.10
+
+ |==================== detrended data common period analyses ===================|
+
+ |----------------------- statistics of the common period ----------------------|
+
+ series   ident   frst   last   year    mean   stdev   skew   kurt   sens   ac(1)
+     1  70622A    1950   2000     51   1.013   0.208  0.805  5.300  0.143   0.458
+     2  132010A   1950   2000     51   0.949   0.323 -0.032  2.498  0.200   0.726
+     3  132018A   1950   2000     51   1.001   0.262  0.031  2.955  0.231   0.402
+     4  142220    1950   2000     51   0.975   0.193  0.174  2.982  0.113   0.700
+     5  151006A   1950   2000     51   0.978   0.258 -0.283  2.877  0.221   0.446
+     6  160989A   1950   2000     51   0.973   0.244 -1.369  8.011  0.237   0.139
+     7  142210A   1950   2000     51   0.989   0.294  0.016  2.840  0.257   0.365
+     8  20605A    1950   2000     51   0.969   0.262 -0.424  2.810  0.243   0.478
+     9  52059A    1950   2000     51   0.988   0.306  0.587  3.161  0.295   0.356
+    10  152151A   1950   2000     51   1.025   0.242  0.248  2.939  0.180   0.599
+    11  50488A    1950   2000     51   1.017   0.482 -0.003  3.453  0.355   0.722
+    12  80398A    1950   2000     51   0.984   0.265  0.549  3.925  0.193   0.548
+    13  101092A   1950   2000     51   1.024   0.215 -2.538 12.885  0.196   0.183
+    14  40952A    1950   2000     51   1.004   0.202 -0.143  4.109  0.196   0.250
+    15  030525A   1950   2000     51   0.891   0.458  0.793  2.726  0.295   0.736
+
+ |------------ summary of common period tree-ring series statistics ------------|
+
+                                year    mean   stdev   skew   kurt   sens   ac(1)
+ arithmetic mean                  51   0.985   0.281 -0.106  4.231  0.224   0.474
+ standard deviation              -99   0.034   0.086  0.864  2.779  0.061   0.197
+ median (50th quantile)           51   0.988   0.262  0.016  2.982  0.221   0.458
+ interquartile range               0   0.035   0.071  0.612  1.159  0.056   0.289
+ minimum value                    51   0.891   0.193 -2.538  2.498  0.113   0.139
+ lower hinge (25th quantile)      51   0.974   0.228 -0.213  2.858  0.195   0.360
+ upper hinge (75th quantile)      51   1.008   0.300  0.399  4.017  0.250   0.649
+ maximum value                    51   1.025   0.482  0.805 12.885  0.355   0.736
+
+ |----------- all series common period principal components analysis -----------|
+ |--------- refer to saved output files for complete tabulated results ---------|
+
+             ev #1  ev #2  ev #3  ev #4  ev #5  ev #6  ev #7  ev #8  ev #9  ev#10
+ eigenvalue: 3.600  2.299  2.088  1.596  1.339  0.784  0.608  0.555  0.498  0.382
+ eval sderr: 0.713  0.455  0.414  0.316  0.265  0.155  0.120  0.110  0.099  0.076
+ % variance: 0.240  0.153  0.139  0.106  0.089  0.052  0.041  0.037  0.033  0.025
+ cumulative: 0.240  0.393  0.532  0.639  0.728  0.780  0.821  0.858  0.891  0.917
+ brokn stck: 3.318  2.318  1.818  1.485  1.235  1.035  0.868  0.725  0.600  0.489 
+ broken stick order selected for eigenvalue + 1se above broken stick value:   1
+
+             |---------------------- eigenvector loadings ----------------------|
+ series id   eg_#1  eg_#2  eg_#3  eg_#4  eg_#5  eg_#6  eg_#7  eg_#8  eg_#9  eg#10
+  70622A     0.360 -0.224 -0.006  0.051 -0.278  0.162  0.485 -0.048 -0.245 -0.154
+  132010A    0.334 -0.362  0.053 -0.022 -0.200 -0.219 -0.261  0.030  0.192 -0.097
+  132018A    0.141 -0.089  0.390  0.390 -0.297 -0.129 -0.219 -0.188 -0.061  0.484
+  142220     0.184  0.423 -0.349  0.085 -0.104  0.177 -0.261 -0.096  0.034 -0.214
+  151006A    0.106  0.312  0.333 -0.195 -0.346 -0.401 -0.081 -0.202 -0.211 -0.393
+  160989A    0.207  0.443  0.213  0.028  0.073  0.078  0.352  0.324  0.399  0.101
+  142210A    0.227 -0.146  0.347 -0.022  0.369  0.177 -0.199  0.507 -0.478 -0.029
+  20605A     0.273  0.059 -0.165 -0.130  0.532 -0.161 -0.164 -0.478 -0.086  0.300
+  52059A     0.203  0.243 -0.296  0.370 -0.069 -0.327  0.300  0.160 -0.273  0.348
+  152151A    0.354  0.035 -0.368  0.133  0.041 -0.148 -0.260  0.251 -0.121 -0.284
+  50488A     0.374 -0.129 -0.048 -0.230 -0.037  0.405  0.258 -0.355 -0.110  0.016
+  80398A     0.317  0.029 -0.077 -0.392 -0.298  0.175 -0.275  0.241  0.310  0.366
+  101092A    0.080  0.192  0.212  0.536  0.035  0.492 -0.231 -0.197  0.081 -0.162
+  40952A     0.324 -0.134  0.218  0.142  0.363 -0.297  0.175 -0.073  0.461 -0.249
+  030525A    0.081  0.425  0.310 -0.334  0.100 -0.015  0.001 -0.064 -0.205  0.082
+
+ |--------- all series common period varimax factor rotation - ev>1.0) ---------|
+ |--------- refer to saved output files for complete tabulated results ---------|
+
+             vf #1  vf #2  vf #3  vf #4  vf #5  vf #6  vf #7  vf #8  vf #9  vf#10
+ % variance: 0.240
+ cumulative: 0.240
+
+             |--------------------- varimax factor loadings --------------------|
+ series id   vl_#1  vl_#2  vl_#3  vl_#4  vl_#5  vl_#6  vl_#7  vl_#8  vl_#9  vl#10
+  70622A     0.683
+  132010A    0.634
+  132018A    0.267
+  142220     0.348
+  151006A    0.200
+  160989A    0.394
+  142210A    0.431
+  20605A     0.517
+  52059A     0.385
+  152151A    0.672
+  50488A     0.710
+  80398A     0.601
+  101092A    0.151
+  40952A     0.615
+  030525A    0.155
+
+ |------------------ all series common period rbar statistics ------------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    105    0.167     0.198      0.019    0.115      2.433    -0.243     0.587
+
+   minimum correlation: -0.243   series  142220     and  142210A      51 years
+   maximum correlation:  0.587   series  70622A     and  50488A       51 years
+
+ |------------------ within-tree common period rbar statistics -----------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+      1    0.327      -NaN       -NaN     -NaN       -NaN     0.327     0.327
+
+ |----------------- between-tree common period rbar statistics -----------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    104    0.166     0.198      0.019    0.134      2.441    -0.243     0.587
+
+ |--------------------- final rbar, eps, and sss statistics --------------------|
+
+                                       number     rbar     sdev
+                    all series rbar:     105     0.167    0.198
+                  within-trees rbar:       1     0.327     -NaN
+                 between-trees rbar:     104     0.166    0.198
+
+                   effective number of cores  -  ceff:    1.217
+
+                 effective chronology signal  -  reff:    0.188
+                       signal-to-noise ratio  -   snr:    3.011
+                 expressed population signal  -   eps:    0.751
+
+   fractional common variance between the reduced sample-size chronology and the
+            fully replicated chronology (subsample signal strength - sss)
+
+                   sss as function of the number of trees in sample
+            1     2     3     4     5     6     7     8     9    10    11    12
+  sss:   0.223 0.382 0.501 0.593 0.667 0.728 0.778 0.821 0.857 0.889 0.917 0.941
+           13    14    15
+  sss:   0.963 0.983 1.000
+
+     fractional common variance between the reduced sample-size chronology and
+                  the expressed population signal or eps chronology
+
+                   eps as function of the number of trees in sample
+            1     2     3     4     5     6     7     8     9    10    11    12
+  eps:   0.167 0.286 0.376 0.445 0.501 0.546 0.584 0.616 0.644 0.667 0.688 0.707
+           13    14    15
+  eps:   0.723 0.738 0.751
+
+ |--------------------------- running rbar statistics --------------------------|
+
+    year   1930.  1950.  1970.  1990.
+    corr     10.    36.   105.   105.
+    rbar  0.274  0.174  0.209  0.095
+    sdev  0.190  0.230  0.197  0.232
+    serr  0.060  0.038  0.019  0.023
+    eps   0.786  0.752  0.819  0.654
+    nss     9.7   14.4   17.2   17.9
+
+ |======================== standard chronology statistics ======================|
+
+           *** variance stabilized with briffa rbar-weighted method ***
+
+ |----------------- robust mean standard chronology statistics -----------------|
+
+  first    last    total    mean    stdrd    skew    kurtosis    mean    serial
+   year    year    years   index     dev     coeff     coeff     sens     corr
+   1889    2017     129    0.989   0.173   -0.171      3.969    0.153    0.455
+
+  mean indices vs their standard deviations       robust mean efficiency results
+      correlation    slope    intercept             # improved    # unimproved
+        0.035        0.019      0.211                     47             82
+
+ |---------------- robust mean efficiency gain and loss results ----------------|
+
+   median      interquartile      minimum       lower       upper       maximum
+    gain           range            gain        hinge       hinge         gain
+    1.10            0.32            0.75         0.97        1.29         4.34
+
+   median      interquartile      minimum       lower       upper       maximum
+    loss           range            loss        hinge       hinge         loss
+    0.94            0.11            0.00         0.89        1.00         1.00
+
+ |----------- standard chronology auto and partial autocorrelations ------------|
+
+ lag           t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+ acf         0.451  0.193  0.014 -0.176 -0.250 -0.326 -0.138 -0.070 -0.112 -0.006
+ pacf        0.451 -0.013 -0.086 -0.188 -0.116 -0.182  0.117 -0.049 -0.167  0.009
+ 95% c.l.    0.176  0.209  0.214  0.214  0.219  0.228  0.242  0.244  0.245  0.246
+
+ |------------------ standard chronology autoregressive model ------------------|
+
+ ord    rsq    t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+  1   0.210  0.458
+
+ |-------------------- final adjusted chronology statistics --------------------|
+
+  first    last    total    mean    stdrd    skew    kurtosis    mean    serial
+   year    year    years   index     dev     coeff     coeff     sens     corr
+   1889    2017     129    0.989   0.173    0.032      3.938    0.151    0.462
+
+ |======================= pooled autoregression analysis =======================|
+
+ pooled autocorrelations:
+
+ lag     t= -1  t= -2  t= -3  t= -4  t= -5  t= -6  t= -7  t= -8  t= -9  t=-10
+         0.391  0.173  0.069 -0.037 -0.194 -0.387 -0.237 -0.182 -0.205 -0.078
+
+ yule-walker estimates of autoregression:
+
+ order   t= -1  t= -2  t= -3  t= -4  t= -5  t= -6  t= -7  t= -8  t= -9  t=-10
+    1    0.391
+    2    0.382  0.024
+    3    0.382  0.027 -0.008
+    4    0.381  0.029  0.021 -0.077
+    5    0.367  0.033  0.026 -0.006 -0.185
+    6    0.312  0.031  0.034  0.004 -0.075 -0.299
+    7    0.320  0.034  0.034  0.003 -0.076 -0.308  0.028
+    8    0.322  0.017  0.030  0.003 -0.074 -0.306  0.045 -0.052
+    9    0.315  0.024 -0.011 -0.007 -0.074 -0.302  0.048 -0.009 -0.135
+   10    0.317  0.024 -0.012 -0.003 -0.073 -0.302  0.048 -0.009 -0.139  0.015
+
+ last term in each row above equals the partial autocorrelation coefficient
+
+ akaike information criterion:
+
+      ar( 0)      ar( 1)      ar( 2)      ar( 3)      ar( 4)      ar( 5)  
+      756.52      737.11      739.03      741.03      742.26      739.78
+
+      ar( 6)      ar( 7)      ar( 8)      ar( 9)      ar(10)  
+      729.71      731.60      733.25      732.89      734.87
+
+ selected autoregression order:   1
+
+ ar order selection criterion: ipp=0  first-minimum aic selection
+
+ the aic trace should be checked to see if ar order selection criterion <ipp>
+ is adequate. e.g. if ar-orders of the first-minimum and the full-minimum aic
+ are close, an arstan run with full-minimum aic order selection might be tried
+
+ autoregression coefficients:
+
+  t= -1   t= -2   t= -3   t= -4   t= -5   t= -6   t= -7   t= -8   t= -9   t=-10   
+  0.391
+
+ r-squared due to pooled autoregression:   15.29 pct
+ variance inflation from autoregression:  118.05 pct
+
+ impulse response function weights for this ar ( 1) process out to order 50:
+
+  1.0000   0.391   0.153   0.060   0.023   0.009   0.004   0.001   0.001   0.000
+  0.0001   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000
+  0.0000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000
+  0.0000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000
+  0.0000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000
+
+ |================== individual series autoregression analyses =================|
+
+ |---------------- individual series autoregressive coefficients ---------------|
+
+     series    ident    order     rsq     t-1     t-2     t-3   .....    t-ip
+         1   70622A       1     0.144   0.373
+         2   132010A      1     0.493   0.699
+         3   132018A      1     0.198   0.437
+         4   162252A      1     0.656   0.808
+         5   142220       1     0.325   0.543
+         6   151006A      1     0.174   0.413
+         7   160989A      1     0.133   0.365
+         8   142210A      1     0.191   0.435
+         9   20605A       1     0.391   0.583
+        10   52059A       1     0.190   0.435
+        11   152151A      1     0.224   0.469
+        12   50488A       1     0.527   0.704
+        13   80398A       1     0.246   0.494
+        14   3337A        1     0.246   0.473
+        15   101092A      1     0.019   0.103
+        16   40952A       1     0.229   0.476
+        17   030525A      1     0.491   0.699
+        18   152118A      1     0.046   0.212
+
+ |------------- summary statistics for autoregressive coefficients -------------|
+
+                        order     rsq     t-1     t-2     t-3   .....    t-ip
+   arithmetic mean        1     0.273   0.485
+   standard deviation     0     0.173   0.174
+   median                 1     0.227   0.471
+   interquartile range    0     0.217   0.170
+   minimum value          1     0.019   0.103
+   lower hinge            1     0.174   0.413
+   upper hinge            1     0.391   0.583
+   maximum value          1     0.656   0.808
+
+ |------------------- statistics of prewhitened tree-ring data -----------------|
+
+ series   ident   frst   last   year    mean   stdev   skew   kurt   sens   ac(1)
+     1  70622A    1940   2013     74   1.000   0.175  1.434  7.772  0.178  -0.022
+     2  132010A   1894   2015    122   1.000   0.245  0.118  3.119  0.302  -0.062
+     3  132018A   1909   2015    107   1.000   0.232  0.052  3.102  0.278  -0.039
+     4  162252A   1961   2013     53   1.000   0.266  0.237  4.314  0.286   0.075
+     5  142220    1908   2009    102   1.000   0.176 -0.841 10.412  0.184  -0.109
+     6  151006A   1938   2016     79   1.000   0.221  0.114  3.020  0.243   0.030
+     7  160989A   1916   2016    101   1.001   0.212 -1.107  8.035  0.224   0.008
+     8  142210A   1944   2017     74   1.000   0.272  0.386  3.027  0.294  -0.016
+     9  20605A    1936   2014     79   1.000   0.281  0.588  4.635  0.289   0.144
+    10  52059A    1917   2012     96   1.000   0.301  0.000  2.326  0.353   0.004
+    11  152151A   1904   2013    110   1.000   0.215  0.551  4.614  0.240  -0.043
+    12  50488A    1922   2010     89   1.000   0.273 -0.025  5.549  0.285   0.176
+    13  80398A    1942   2008     67   1.000   0.217  0.100  4.680  0.251  -0.021
+    14  3337A     1954   2014     61   1.000   0.290  0.048  2.265  0.325   0.064
+    15  101092A   1923   2006     84   1.000   0.201 -1.762  9.449  0.210  -0.006
+    16  40952A    1889   2017    129   1.000   0.201 -0.675  6.310  0.226  -0.036
+    17  030525A   1933   2008     76   1.000   0.305  0.292  2.904  0.339  -0.049
+    18  152118A   1967   2012     46   1.000   0.271 -0.669  4.900  0.319   0.007
+
+ |------------- summary of prewhitened tree-ring series statistics -------------|
+
+                                year    mean   stdev   skew   kurt   sens   ac(1)
+ arithmetic mean                  86   1.000   0.242 -0.064  5.024  0.268   0.006
+ standard deviation               22   0.000   0.042  0.724  2.459  0.051   0.071
+ median (50th quantile)           81   1.000   0.238  0.076  4.624  0.281  -0.011
+ interquartile range              28   0.000   0.061  0.961  3.283  0.075   0.069
+ minimum value                    46   1.000   0.175 -1.762  2.265  0.178  -0.109
+ lower hinge (25th quantile)      74   1.000   0.212 -0.669  3.027  0.226  -0.039
+ upper hinge (75th quantile)     102   1.000   0.273  0.292  6.310  0.302   0.030
+ maximum value                   129   1.001   0.305  1.434 10.412  0.353   0.176
+
+ |-------------------- all possible series rbar statistics ---------------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    153    0.153     0.116      0.009    0.067      3.256    -0.161     0.502
+
+   minimum correlation: -0.161   series  52059A     and  152118A      46 years
+   maximum correlation:  0.502   series  40952A     and  152118A      46 years
+
+       percent of all possible correlations used (n>20 years):     100.00
+       percent of all possible tree-ring years used in rbar:        55.10
+
+ |=================== prewhitened data common period analyses ==================|
+
+ |----------------------- statistics of the common period ----------------------|
+
+ series   ident   frst   last   year    mean   stdev   skew   kurt   sens   ac(1)
+     1  70622A    1950   2000     51   1.011   0.185  1.722  8.554  0.159   0.104
+     2  132010A   1950   2000     51   0.992   0.221  0.192  4.211  0.281  -0.093
+     3  132018A   1950   2000     51   1.009   0.237  0.005  3.077  0.290  -0.119
+     4  142220    1950   2000     51   0.989   0.140  0.338  2.955  0.140   0.176
+     5  151006A   1950   2000     51   0.991   0.231  0.156  3.349  0.252   0.037
+     6  160989A   1950   2000     51   0.980   0.237 -1.357  8.726  0.277  -0.202
+     7  142210A   1950   2000     51   1.001   0.274  0.549  3.544  0.285   0.002
+     8  20605A    1950   2000     51   0.996   0.232  0.443  2.914  0.278  -0.164
+     9  52059A    1950   2000     51   0.988   0.285  0.363  2.319  0.347  -0.040
+    10  152151A   1950   2000     51   1.020   0.193  0.077  2.787  0.198   0.163
+    11  50488A    1950   2000     51   1.013   0.333 -0.115  4.517  0.340   0.257
+    12  80398A    1950   2000     51   1.004   0.224  0.110  5.106  0.247   0.010
+    13  101092A   1950   2000     51   1.023   0.209 -2.713 13.830  0.198   0.086
+    14  40952A    1950   2000     51   1.008   0.200 -0.518  4.563  0.250  -0.255
+    15  030525A   1950   2000     51   0.964   0.307  0.334  3.209  0.335  -0.005
+
+ |------------ summary of common period tree-ring series statistics ------------|
+
+                                year    mean   stdev   skew   kurt   sens   ac(1)
+ arithmetic mean                  51   0.999   0.234 -0.028  4.911  0.259  -0.003
+ standard deviation              -99   0.016   0.050  0.977  3.137  0.062   0.147
+ median (50th quantile)           51   1.001   0.231  0.156  3.544  0.277   0.002
+ interquartile range               0   0.020   0.051  0.406  1.819  0.065   0.202
+ minimum value                    51   0.964   0.140 -2.713  2.319  0.140  -0.255
+ lower hinge (25th quantile)      51   0.990   0.204 -0.055  3.016  0.223  -0.106
+ upper hinge (75th quantile)      51   1.010   0.255  0.351  4.835  0.288   0.095
+ maximum value                    51   1.023   0.333  1.722 13.830  0.347   0.257
+
+ |----------- all series common period principal components analysis -----------|
+ |--------- refer to saved output files for complete tabulated results ---------|
+
+             ev #1  ev #2  ev #3  ev #4  ev #5  ev #6  ev #7  ev #8  ev #9  ev#10
+ eigenvalue: 4.250  1.575  1.418  1.305  1.054  0.972  0.905  0.738  0.709  0.542
+ eval sderr: 0.842  0.312  0.281  0.258  0.209  0.193  0.179  0.146  0.140  0.107
+ % variance: 0.283  0.105  0.095  0.087  0.070  0.065  0.060  0.049  0.047  0.036
+ cumulative: 0.283  0.388  0.483  0.570  0.640  0.705  0.765  0.815  0.862  0.898
+ brokn stck: 3.318* 2.318  1.818  1.485  1.235  1.035  0.868  0.725  0.600  0.489 
+ broken stick order selected for eigenvalue + 1se above broken stick value:   1
+
+             |---------------------- eigenvector loadings ----------------------|
+ series id   eg_#1  eg_#2  eg_#3  eg_#4  eg_#5  eg_#6  eg_#7  eg_#8  eg_#9  eg#10
+  70622A     0.274 -0.069  0.293 -0.312  0.121  0.315  0.239  0.054 -0.335  0.249
+  132010A    0.328  0.107  0.230 -0.347 -0.288 -0.095 -0.103 -0.075 -0.061 -0.202
+  132018A    0.246  0.332 -0.206 -0.306 -0.413 -0.004 -0.109  0.195  0.100  0.210
+  142220     0.267 -0.401 -0.327  0.240  0.012  0.152 -0.100  0.112  0.162  0.309
+  151006A    0.175  0.313  0.052  0.411 -0.417  0.242  0.194 -0.251 -0.161  0.380
+  160989A    0.303  0.131 -0.063  0.393  0.275 -0.074  0.341 -0.154  0.237 -0.027
+  142210A    0.181  0.321  0.075 -0.145  0.532 -0.443  0.123  0.174 -0.106  0.375
+  20605A     0.286 -0.177 -0.044  0.145  0.038 -0.259 -0.589 -0.198 -0.232  0.238
+  52059A     0.239 -0.278 -0.316 -0.051 -0.087 -0.038  0.519  0.113 -0.361 -0.248
+  152151A    0.342 -0.378 -0.030 -0.027 -0.121 -0.258 -0.035  0.203  0.006 -0.112
+  50488A     0.244 -0.115  0.249 -0.057  0.346  0.575 -0.218 -0.136 -0.033 -0.124
+  80398A     0.180 -0.167  0.535  0.082 -0.151 -0.066  0.135  0.271  0.581  0.067
+  101092A    0.192  0.288 -0.464 -0.160  0.179  0.334 -0.123  0.275  0.309 -0.095
+  40952A     0.343  0.156 -0.058 -0.072  0.038 -0.164  0.018 -0.578  0.195 -0.368
+  030525A    0.169  0.309  0.175  0.471 -0.003  0.002 -0.207  0.479 -0.313 -0.421
+
+ |--------- all series common period varimax factor rotation - ev>1.0) ---------|
+ |--------- refer to saved output files for complete tabulated results ---------|
+
+             vf #1  vf #2  vf #3  vf #4  vf #5  vf #6  vf #7  vf #8  vf #9  vf#10
+ % variance: 0.283
+ cumulative: 0.283
+
+             |--------------------- varimax factor loadings --------------------|
+ series id   vl_#1  vl_#2  vl_#3  vl_#4  vl_#5  vl_#6  vl_#7  vl_#8  vl_#9  vl#10
+  70622A     0.564
+  132010A    0.676
+  132018A    0.508
+  142220     0.551
+  151006A    0.361
+  160989A    0.626
+  142210A    0.373
+  20605A     0.590
+  52059A     0.492
+  152151A    0.704
+  50488A     0.503
+  80398A     0.371
+  101092A    0.396
+  40952A     0.706
+  030525A    0.348
+
+ |------------------ all series common period rbar statistics ------------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    105    0.219     0.137      0.013    0.338      3.132    -0.153     0.569
+
+   minimum correlation: -0.153   series  80398A     and  101092A      51 years
+   maximum correlation:  0.569   series  142220     and  152151A      51 years
+
+ |------------------ within-tree common period rbar statistics -----------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+      1    0.485      -NaN       -NaN     -NaN       -NaN     0.485     0.485
+
+ |----------------- between-tree common period rbar statistics -----------------|
+
+   total    mean   standard   standard  skewess   kurtosis   minimum   maximum
+   corrs    rbar   deviation    error    coeff      coeff      corr      corr
+    104    0.217     0.135      0.013    0.338      3.216    -0.153     0.569
+
+ |--------------------- final rbar, eps, and sss statistics --------------------|
+
+                                       number     rbar     sdev
+                    all series rbar:     105     0.219    0.137
+                  within-trees rbar:       1     0.485     -NaN
+                 between-trees rbar:     104     0.217    0.135
+
+                   effective number of cores  -  ceff:    1.217
+
+                 effective chronology signal  -  reff:    0.239
+                       signal-to-noise ratio  -   snr:    4.209
+                 expressed population signal  -   eps:    0.808
+
+   fractional common variance between the reduced sample-size chronology and the
+            fully replicated chronology (subsample signal strength - sss)
+
+                   sss as function of the number of trees in sample
+            1     2     3     4     5     6     7     8     9    10    11    12
+  sss:   0.271 0.445 0.566 0.654 0.723 0.776 0.820 0.856 0.887 0.912 0.935 0.954
+           13    14    15
+  sss:   0.971 0.986 1.000
+
+     fractional common variance between the reduced sample-size chronology and
+                  the expressed population signal or eps chronology
+
+                   eps as function of the number of trees in sample
+            1     2     3     4     5     6     7     8     9    10    11    12
+  eps:   0.219 0.359 0.457 0.529 0.584 0.627 0.663 0.692 0.716 0.737 0.755 0.771
+           13    14    15
+  eps:   0.785 0.797 0.808
+
+ |--------------------------- running rbar statistics --------------------------|
+
+    year   1930.  1950.  1970.  1990.
+    corr     10.    36.   105.   105.
+    rbar  0.337  0.256  0.242  0.140
+    sdev  0.173  0.176  0.145  0.149
+    serr  0.055  0.029  0.014  0.015
+    eps   0.832  0.832  0.846  0.744
+    nss     9.7   14.4   17.2   17.9
+
+ |======================== residual chronology statistics ======================|
+
+           *** variance stabilized with briffa rbar-weighted method ***
+
+ |----------------- robust mean residual chronology statistics -----------------|
+
+  first    last    total    mean    stdrd    skew    kurtosis    mean    serial
+   year    year    years   index     dev     coeff     coeff     sens     corr
+   1889    2017     129    0.996   0.134   -0.137      3.604    0.152   -0.054
+
+  mean indices vs their standard deviations       robust mean efficiency results
+      correlation    slope    intercept             # improved    # unimproved
+        0.041        0.024      0.167                     45             84
+
+ |---------------- robust mean efficiency gain and loss results ----------------|
+
+   median      interquartile      minimum       lower       upper       maximum
+    gain           range            gain        hinge       hinge         gain
+    1.11            0.40            0.59         0.96        1.35         2.29
+
+   median      interquartile      minimum       lower       upper       maximum
+    loss           range            loss        hinge       hinge         loss
+    0.93            0.12            0.00         0.88        1.00         1.00
+
+ |----------- residual chronology auto and partial autocorrelations ------------|
+
+ lag           t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+ acf        -0.054 -0.016 -0.008 -0.161 -0.064 -0.155  0.059  0.098 -0.093 -0.073
+ pacf       -0.054 -0.018 -0.010 -0.163 -0.084 -0.178  0.028  0.069 -0.116 -0.154
+ 95% c.l.    0.176  0.177  0.177  0.177  0.181  0.182  0.186  0.186  0.188  0.190
+
+ |------------------ residual chronology autoregressive model ------------------|
+
+ ord    rsq    t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+  0   0.000
+
+ |-------------------- final adjusted chronology statistics --------------------|
+
+  first    last    total    mean    stdrd    skew    kurtosis    mean    serial
+   year    year    years   index     dev     coeff     coeff     sens     corr
+   1889    2017     129    0.996   0.134    0.022      3.609    0.151   -0.051
+
+ |---------- rewhitened chronology auto and partial autocorrelations -----------|
+
+ lag           t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+ acf         0.000 -0.017 -0.015 -0.168 -0.080 -0.156  0.051  0.107 -0.089 -0.082
+ pacf        0.000 -0.017 -0.015 -0.168 -0.083 -0.170  0.036  0.072 -0.123 -0.153
+ 95% c.l.    0.176  0.176  0.176  0.176  0.181  0.182  0.186  0.187  0.189  0.190
+
+ |----------------- rewhitened chronology autoregressive model -----------------|
+
+ ord    rsq    t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+  1   0.000  0.000
+
+ |========================= arstan chronology statistics =======================|
+
+ |----------------- robust mean arstan chronology statistics -------------------|
+
+
+  first    last    total    mean    stdrd    skew    kurtosis    mean    serial
+   year    year    years   index     dev     coeff     coeff     sens     corr
+   1889    2017      129   0.995   0.145   -0.010      3.632    0.127    0.377
+
+ |------------ arstan chronology auto and partial autocorrelations -------------|
+
+ lag           t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+ acf         0.374  0.100 -0.048 -0.207 -0.196 -0.193 -0.013  0.040 -0.084 -0.093
+ pacf        0.374 -0.047 -0.081 -0.183 -0.061 -0.106  0.099 -0.022 -0.179 -0.084
+ 95% c.l.    0.176  0.199  0.201  0.201  0.208  0.213  0.219  0.219  0.219  0.220
+
+ |------------------- arstan chronology autoregressive model -------------------|
+
+ ord    rsq    t-1    t-2    t-3    t-4    t-5    t-6    t-7    t-8    t-9   t-10
+  1   0.146  0.380
+
+ |================ as jim morrison would say, "this is the end" ================|
