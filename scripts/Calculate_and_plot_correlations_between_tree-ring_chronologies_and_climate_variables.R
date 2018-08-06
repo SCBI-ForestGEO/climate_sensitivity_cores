@@ -25,6 +25,7 @@ save.result.table <- TRUE
 filenames <- list.dirs("data", full.names = F, recursive = F  ) # filenames <- list.files("raw_data/cores/")
 filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
 
+all_sss <- NULL
 
 for(f in filenames) {
   # get the raw data
@@ -44,7 +45,7 @@ for(f in filenames) {
   sss <- sub("  sss:   ", "", sss)
   sss <- as.numeric(unlist(strsplit(sss, " " ))) # keep only numbers and store them as a vector
 
-  sss <- data.frame("Num_of_trees" = 1:length(sss), sss)
+  sss <- data.frame(Species = f, "Num_of_trees" = 1:length(sss), sss)
   
   Year_to_Num_of_trees <- apply(core_raw, 1, function(x) sum(!is.na(x)))
 
@@ -60,7 +61,14 @@ for(f in filenames) {
   
   assign(f, core)
   assign(paste0(f, "_sss"), sss)
+  
+  all_sss <- rbind(all_sss, sss)
+  
 }
+
+# save SSS for all species 
+
+write.csv(all_sss, file = "results/tables/SSS_as_a_function_of_the_number_of_trees_in_sample.csv", row.names = F)
 
 
 SPECIES_IN_ORDER <- toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
