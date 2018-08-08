@@ -47,6 +47,9 @@ x.sig[] <- FALSE
 # remove frs
 if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
 
+# order by influence on ANPP (defined as predicted changes summed across all months).
+x <- x[, order(abs(apply(x, 2, sum)))]
+
 
 if(save.plots)  {
   # dir.create(paste0("results/figures/monthly_responses_all_speciess_and_climate_variables/", c), showWarnings = F)
