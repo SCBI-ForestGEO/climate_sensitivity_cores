@@ -216,6 +216,12 @@ ANPP_response_total <- data.frame(Climate_data = sapply(strsplit(rownames(X), " 
                                   month = sapply(strsplit(rownames(X), " "), "[[", 3),
                                   X)
 
+## save ANPP_response by species, climate variable and by month ####
+write.csv(ANPP_response, file = "results/tables/monthly_responses_ANPP_to_climate_variables/ANPP_response_by_species_climate_variable_and_month.csv", row.names = F)
+
+## save ANPP_response total, climate variable and by month ####
+write.csv(ANPP_response_total, file = "results/tables/monthly_responses_ANPP_to_climate_variables/Total_ANPP_response_climate_variable_and_month.csv", row.names = F)
+
 
 # 8- plot the quilt ####
 
@@ -261,6 +267,8 @@ for( c in climate.data.types) {
 
 }
 
+
+# Extra - figure for paper ####
 # and then calculate AGB to get ANPP for a normal year and ANPP for a year with 1 unit increase in climate variable --> substract the 2 calculated ANPP and that gives the response of ANPP to 1 unict change in climate variable ####
 
 # 
