@@ -1,5 +1,5 @@
 ######################################################
-# Purpose: Calculate and plot correlations (or response functions) between tree-ring chronologies and climate variables 
+# Purpose: Calculate correlations and response (and plot correlations) between tree-ring chronologies and climate variables 
 # Developped by: Valentine Herrmann - HerrmannV@si.edu
 # R version 3.4.4 (2018-03-15)
 ######################################################
@@ -110,6 +110,38 @@ start.frs <- -10 # october of previous year (for freeze days variable only - oth
 end.frs <- 5 # may of current year (for freeze days variable only)
   
 
+
+# Plot SSS for the the decided threshold ####
+
+if(save.plots) tiff("results/figures/SSS_as_a_function_of_the_number_of_trees_in_sample.tiff", res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
+
+
+cols <- data.frame(col = rainbow(length(filenames)), row.names = filenames, stringsAsFactors = F)
+years <- NULL
+
+plot.nb <- 1
+
+for(sp in levels(all_sss$Species)){
+  x = all_sss[all_sss$Species %in% sp,]
+  year <- x$Year[x$sss > sss.threshold][1]
+  
+  if(plot.nb %in% 1) {
+    plot(sss ~ Year, data = x, type = "l", col = cols[sp,], xlim = range(all_sss$Year), lwd = 2, main = paste("SSS threshold =", sss.threshold))
+    abline(v = year, lty = 3, col = cols[sp,])
+    abline(h = 0.75, lty = 2)
+  } else {
+    lines(sss ~ Year, data = x, col = cols[sp,], lwd = 2)
+    abline(v = x$Year[x$sss > sss.threshold][1], lty = 3, col = cols[sp,])
+  }
+  years <- c(years, year)
+  plot.nb <- plot.nb +1
+}
+
+legend("topleft", col = cols$col, lty = 1, bty = "n", legend = paste(levels(all_sss$Species), years, sep = " - "), lwd = 2)
+
+
+if(save.plots) dev.off()
+
 # Run analysis for all types of climate data with all variables ####
 
 for( c in climate.data.types) {
@@ -134,6 +166,7 @@ for( c in climate.data.types) {
   ## Run analysis on core data ####
 
   all.dc.corr <- NULL
+  all.dc.resp <- NULL
   
   for(f in filenames) {
     print(f)
@@ -145,22 +178,34 @@ for( c in climate.data.types) {
     start.year <- max(min(clim$year), start.years[which(filenames %in% f)])
     
     dc.corr <- NULL
+    dc.resp <- NULL
     
     for (v in names(clim)[-c(1:2)]) {
       print(v)
       dc.corr <- rbind(dc.corr, bootRes::dcc(core, clim[, c("year", "month", v)], method = "corr", start = ifelse(v %in% "frs", start.frs, start), end = ifelse(v %in% "frs", end.frs, end), timespan = c(start.year, end.year)))
+      
+      dc.resp <- rbind(dc.resp, bootRes::dcc(core, clim[, c("year", "month", v)], method = "response", start = ifelse(v %in% "frs", start.frs, start), end = ifelse(v %in% "frs", end.frs, end), timespan = c(start.year, end.year)))
     }
     
     # dc.corr <- bootRes::dcc(core, clim, method = "corr", start = -4, end = 8) # , timespan = c(start.year, end.year))
     all.dc.corr <- rbind(all.dc.corr, data.frame(cbind(Species = substr(f, 1, 4), dc.corr)))
+    all.dc.resp <- rbind(all.dc.resp, data.frame(cbind(Species = substr(f, 1, 4), dc.resp)))
     
   }
 
-  all.dc.corr$Variable <- sapply(strsplit(row.names(all.dc.corr), "\\."), function(x) x[1])
+  all.dc.corr$variable <- sapply(strsplit(row.names(all.dc.corr), "\\."), function(x) x[1])
   all.dc.corr$month <- sapply(strsplit(row.names(all.dc.corr), "\\."), function(x) paste(x[2], x[3], sep ="."))
   all.dc.corr$month <- gsub("[0-9]", "",   all.dc.corr$month)
+  
+  
+  all.dc.resp$variable <- sapply(strsplit(row.names(all.dc.resp), "\\."), function(x) x[1])
+  all.dc.resp$month <- sapply(strsplit(row.names(all.dc.resp), "\\."), function(x) paste(x[2], x[3], sep ="."))
+  all.dc.resp$month <- gsub("[0-9]", "",   all.dc.resp$month)
 
-  if(save.result.table) write.csv(all.dc.corr, file = paste0("results/tables/monthly_correlations_all_speciess_and_climate_variables/Correlation_with_", c, "_climate_data.csv"), row.names = F)
+  if(save.result.table) {
+    write.csv(all.dc.corr, file = paste0("results/tables/monthly_correlations_all_speciess_and_climate_variables/Correlation_with_", c, "_climate_data.csv"), row.names = F)
+    write.csv(all.dc.resp, file = paste0("results/tables/monthly_responses_all_speciess_and_climate_variables/Response_to_", c, "_climate_data.csv"), row.names = F)
+  }
   
   
   ## Plot results ####
@@ -168,7 +213,7 @@ for( c in climate.data.types) {
   for(v in names(clim)[-c(1,2)]) {
     print(v)
     
-    X <- all.dc.corr[all.dc.corr$Variable %in% v, ]
+    X <- all.dc.corr[all.dc.corr$variable %in% v, ]
     
     x <- data.frame(reshape(X[, c("month", "Species", "coef")], idvar = "month", timevar = "Species", direction = "wide"))
     rownames(x) <- ifelse(grepl("curr",  rownames(x)), toupper(rownames(x)), tolower( rownames(x)))
