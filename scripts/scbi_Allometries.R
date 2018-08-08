@@ -16,102 +16,102 @@ shrub.DBH.sp <- c("beth", "chvi", "coam", "crpr", "elum", "eual", "ilve", "libe"
 shrub.BD.sp <- c("havi", "loma", "romu","rual", "rupe", "ruph", "viac", "vipr", "vire") # with basal diameter in AGB allometric equation
 
 
-# Calculate Biomass for shrubs with DBH allometry equation ####
-
-## subset
-
-x.shrub.DBH <- x[x$sp %in% shrub.DBH.sp,]
-
-## calculate basal area contribution of each stem within a tree
-BA <- (pi/4) * x.shrub.DBH$dbh^2 # basal area (at 1.3 m) in mm
-tree.sum.BA <- tapply(BA, x.shrub.DBH$tag, sum, na.rm = T) #sum of basal areas per tree
-tree.sum.BA <- tree.sum.BA[match(x.shrub.DBH$tag, names(tree.sum.BA))] # same but same length as BA
-BA.contribution <- BA / tree.sum.BA #contribution of each stem to sum of basal area of tree
-
-## identify main stem
-tree.main.stem.DBH <- do.call(rbind, lapply(split(x.shrub.DBH, x.shrub.DBH$tag), function(x) return(data.frame(sp = unique(x$sp), dbh = ifelse(any(!is.na(x$dbh)), max(x$dbh, na.rm = T), NA))))) #DBH of main stem of tree
-
-## calculate AGB on main stem
-
-tree.main.stem.DBH$agb <- NA
-
-tree.main.stem.DBH$agb <- ifelse(tree.main.stem.DBH$sp == "beth", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
-
-tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "chvi", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
-
-tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "coam", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
-
-tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "crpr", exp(-2.2118 + 2.4133 * log(tree.main.stem.DBH$dbh * 0.1)), tree.main.stem.DBH$agb )
-
-tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "elum", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
-
-tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "eual", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
-
-tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "ilve", exp(-2.2118 + 2.4133 * log(tree.main.stem.DBH$dbh * 0.1)), tree.main.stem.DBH$agb )
-
-tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "libe", exp(-2.2118 + 2.4133 * log(tree.main.stem.DBH$dbh * 0.1)), tree.main.stem.DBH$agb )
-
-tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "saca", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
-
-
-## Redistribute the biomass of main stem to other stem, using the basal contribution
-tree.main.stem.AGB <- tree.main.stem.DBH$agb[match(x.shrub.DBH$tag, rownames(tree.main.stem.DBH))] #get a vector as long as x.shrub.DBH with AGB of main stem repeated for each stem of tree
-
-x.shrub.DBH$agb = tree.main.stem.AGB * BA.contribution
-
-
-
-
-
-
-
-# Calculate Biomass for shrubs with Basal Diameter allometry equation ####
-
-## subset
-
-x.shrub.BD <- x[x$sp %in% shrub.BD.sp,]
-
-## calculate basal area contribution of each stem within a tree
-BA <- (pi/4) * x.shrub.BD$dbh^2 # basal area (at 1.3 m) in mm
-tree.sum.BA.un <- tapply(BA, x.shrub.BD$tag, sum, na.rm = T) #sum of basal areas per tree
-tree.sum.BA.rep <- tree.sum.BA.un[match(x.shrub.BD$tag, names(tree.sum.BA.un))] # same but same length as BA
-BA.contribution <- BA / tree.sum.BA.rep #contribution of each stem to sum of basal area of tree
-
-
-## calulate diameter at base of shrub, assuming area preserving
-tree.BD <- data.frame(tag = names(tree.sum.BA.un), BD = sqrt(tree.sum.BA.un/pi) * 2)
-tree.BD <- merge(tree.BD, x.shrub.BD[, c("tag", "sp")], by = "tag")
-
-## calculate AGB using basal diamter
-
-tree.BD$agb <- NA
-
-tree.BD$agb <- ifelse(tree.BD$sp == "havi", (38.111 * (tree.BD$BD * 0.1)^2.9) / 1000, tree.BD$agb) #basal diameter
-
-tree.BD$agb <- ifelse(tree.BD$sp == "loma", (51.996 * (tree.BD$BD * 0.1)^2.77) / 1000, tree.BD$agb) #basal diameter
-
-tree.BD$agb <- ifelse(tree.BD$sp == "romu", (37.637 * (tree.BD$BD * 0.1)^2.779) / 1000, tree.BD$agb) #basal diameter
-
-tree.BD$agb <- ifelse(tree.BD$sp == "rual", (43.992 * (tree.BD$BD * 0.1)^2.86) / 1000, tree.BD$agb) #basal diameter
-
-tree.BD$agb <- ifelse(tree.BD$sp == "rupe", (43.992 * (tree.BD$BD * 0.1)^2.86) / 1000, tree.BD$agb) #basal diameter
-
-tree.BD$agb <- ifelse(tree.BD$sp == "ruph", (43.992 * (tree.BD$BD * 0.1)^2.86) / 1000, tree.BD$agb) #basal diameter
-
-tree.BD$agb <- ifelse(tree.BD$sp == "viac", (29.615 * (tree.BD$BD * 0.1)^3.243) / 1000, tree.BD$agb) #basal diameter
-
-tree.BD$agb <- ifelse(tree.BD$sp == "vipr", (29.615 * (tree.BD$BD * 0.1)^3.243) / 1000, tree.BD$agb) #basal diameter
-
-tree.BD$agb <- ifelse(tree.BD$sp == "vire", (29.615 * (tree.BD$BD * 0.1)^3.243) / 1000, tree.BD$agb) #basal diameter
-
-
-
-## Redistribute the biomass of main stem to other stem, using the basal contribution
-tree.BD <- tree.BD[match(names(BA.contribution), tree.BD$tag),] # PUT BACK IN RIGHT ORDER
-
-x.shrub.BD$agb = tree.BD$agb * BA.contribution
-
-
+# # Calculate Biomass for shrubs with DBH allometry equation ####
+# 
+# ## subset
+# 
+# x.shrub.DBH <- x[x$sp %in% shrub.DBH.sp,]
+# 
+# ## calculate basal area contribution of each stem within a tree
+# BA <- (pi/4) * x.shrub.DBH$dbh^2 # basal area (at 1.3 m) in mm
+# tree.sum.BA <- tapply(BA, x.shrub.DBH$tag, sum, na.rm = T) #sum of basal areas per tree
+# tree.sum.BA <- tree.sum.BA[match(x.shrub.DBH$tag, names(tree.sum.BA))] # same but same length as BA
+# BA.contribution <- BA / tree.sum.BA #contribution of each stem to sum of basal area of tree
+# 
+# ## identify main stem
+# tree.main.stem.DBH <- do.call(rbind, lapply(split(x.shrub.DBH, x.shrub.DBH$tag), function(x) return(data.frame(sp = unique(x$sp), dbh = ifelse(any(!is.na(x$dbh)), max(x$dbh, na.rm = T), NA))))) #DBH of main stem of tree
+# 
+# ## calculate AGB on main stem
+# 
+# tree.main.stem.DBH$agb <- NA
+# 
+# tree.main.stem.DBH$agb <- ifelse(tree.main.stem.DBH$sp == "beth", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
+# 
+# tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "chvi", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
+# 
+# tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "coam", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
+# 
+# tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "crpr", exp(-2.2118 + 2.4133 * log(tree.main.stem.DBH$dbh * 0.1)), tree.main.stem.DBH$agb )
+# 
+# tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "elum", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
+# 
+# tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "eual", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
+# 
+# tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "ilve", exp(-2.2118 + 2.4133 * log(tree.main.stem.DBH$dbh * 0.1)), tree.main.stem.DBH$agb )
+# 
+# tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "libe", exp(-2.2118 + 2.4133 * log(tree.main.stem.DBH$dbh * 0.1)), tree.main.stem.DBH$agb )
+# 
+# tree.main.stem.DBH$agb  <- ifelse(tree.main.stem.DBH$sp == "saca", exp(-2.48 + 2.4835 * log(tree.main.stem.DBH$dbh * 0.1)) * 0.36, tree.main.stem.DBH$agb )
+# 
+# 
+# ## Redistribute the biomass of main stem to other stem, using the basal contribution
+# tree.main.stem.AGB <- tree.main.stem.DBH$agb[match(x.shrub.DBH$tag, rownames(tree.main.stem.DBH))] #get a vector as long as x.shrub.DBH with AGB of main stem repeated for each stem of tree
+# 
+# x.shrub.DBH$agb = tree.main.stem.AGB * BA.contribution
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# # Calculate Biomass for shrubs with Basal Diameter allometry equation ####
+# 
+# ## subset
+# 
+# x.shrub.BD <- x[x$sp %in% shrub.BD.sp,]
+# 
+# ## calculate basal area contribution of each stem within a tree
+# BA <- (pi/4) * x.shrub.BD$dbh^2 # basal area (at 1.3 m) in mm
+# tree.sum.BA.un <- tapply(BA, x.shrub.BD$tag, sum, na.rm = T) #sum of basal areas per tree
+# tree.sum.BA.rep <- tree.sum.BA.un[match(x.shrub.BD$tag, names(tree.sum.BA.un))] # same but same length as BA
+# BA.contribution <- BA / tree.sum.BA.rep #contribution of each stem to sum of basal area of tree
+# 
+# 
+# ## calulate diameter at base of shrub, assuming area preserving
+# tree.BD <- data.frame(tag = names(tree.sum.BA.un), BD = sqrt(tree.sum.BA.un/pi) * 2)
+# tree.BD <- merge(tree.BD, x.shrub.BD[, c("tag", "sp")], by = "tag")
+# 
+# ## calculate AGB using basal diamter
+# 
+# tree.BD$agb <- NA
+# 
+# tree.BD$agb <- ifelse(tree.BD$sp == "havi", (38.111 * (tree.BD$BD * 0.1)^2.9) / 1000, tree.BD$agb) #basal diameter
+# 
+# tree.BD$agb <- ifelse(tree.BD$sp == "loma", (51.996 * (tree.BD$BD * 0.1)^2.77) / 1000, tree.BD$agb) #basal diameter
+# 
+# tree.BD$agb <- ifelse(tree.BD$sp == "romu", (37.637 * (tree.BD$BD * 0.1)^2.779) / 1000, tree.BD$agb) #basal diameter
+# 
+# tree.BD$agb <- ifelse(tree.BD$sp == "rual", (43.992 * (tree.BD$BD * 0.1)^2.86) / 1000, tree.BD$agb) #basal diameter
+# 
+# tree.BD$agb <- ifelse(tree.BD$sp == "rupe", (43.992 * (tree.BD$BD * 0.1)^2.86) / 1000, tree.BD$agb) #basal diameter
+# 
+# tree.BD$agb <- ifelse(tree.BD$sp == "ruph", (43.992 * (tree.BD$BD * 0.1)^2.86) / 1000, tree.BD$agb) #basal diameter
+# 
+# tree.BD$agb <- ifelse(tree.BD$sp == "viac", (29.615 * (tree.BD$BD * 0.1)^3.243) / 1000, tree.BD$agb) #basal diameter
+# 
+# tree.BD$agb <- ifelse(tree.BD$sp == "vipr", (29.615 * (tree.BD$BD * 0.1)^3.243) / 1000, tree.BD$agb) #basal diameter
+# 
+# tree.BD$agb <- ifelse(tree.BD$sp == "vire", (29.615 * (tree.BD$BD * 0.1)^3.243) / 1000, tree.BD$agb) #basal diameter
+# 
+# 
+# 
+# ## Redistribute the biomass of main stem to other stem, using the basal contribution
+# tree.BD <- tree.BD[match(names(BA.contribution), tree.BD$tag),] # PUT BACK IN RIGHT ORDER
+# 
+# x.shrub.BD$agb = tree.BD$agb * BA.contribution
+# 
+# 
 
 # calculate AGB of trees ####
 
@@ -242,7 +242,7 @@ x.trees$agb <- ifelse(x.trees$sp == "unk", exp(-2.48 + 2.4835 * log(x.trees$dbh 
 
 
 # put back the subsets together ####
-x.all <- rbind(x.trees, x.shrub.DBH, x.shrub.BD)
+x.all <- rbind(x.trees) #, x.shrub.DBH, x.shrub.BD)
 x.all <- x.all[order(x.all$order),]
 x.all$order <- NULL
 
