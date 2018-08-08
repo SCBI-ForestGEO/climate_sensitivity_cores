@@ -38,19 +38,19 @@ for( c in climate.data.types) {
   
   ### Take the sum of all correlations (absolute) ####
   
-  summary_of_correlations_all <- rbind(tapply(all.dc.corr$coef, all.dc.corr$Variable, function(x) sum(abs(x))))
+  summary_of_correlations_all <- rbind(tapply(all.dc.corr$coef, all.dc.corr$variable, function(x) sum(abs(x))))
   rownames(summary_of_correlations_all) <- "All"
   
-  summary_of_correlations_by_sepcies <- tapply(all.dc.corr$coef, list(all.dc.corr$Species, all.dc.corr$Variable) , function(x) sum(abs(x)), simplify = T)
+  summary_of_correlations_by_sepcies <- tapply(all.dc.corr$coef, list(all.dc.corr$Species, all.dc.corr$variable) , function(x) sum(abs(x)), simplify = T)
   
   summary_of_correlations <- data.frame(Summary_type = "Sum of all absolute correlations", Species = c(rownames(summary_of_correlations_all), rownames(summary_of_correlations_by_sepcies)), rbind(summary_of_correlations_all, summary_of_correlations_by_sepcies))
   
   ### Count the number of significant correlations ####
   
-  summary_of_significance_all <- rbind(tapply(all.dc.corr$significant, all.dc.corr$Variable, function(x) sum(x)))
+  summary_of_significance_all <- rbind(tapply(all.dc.corr$significant, all.dc.corr$variable, function(x) sum(x)))
   rownames(summary_of_significance_all) <- "All"
   
-  summary_of_significance_by_sepcies <- tapply(all.dc.corr$significant, list(all.dc.corr$Species, all.dc.corr$Variable) , function(x) sum(x), simplify = T)
+  summary_of_significance_by_sepcies <- tapply(all.dc.corr$significant, list(all.dc.corr$Species, all.dc.corr$variable) , function(x) sum(x), simplify = T)
   
   summary_of_significance <- data.frame(Summary_type = "Count of Significant correlations", Species = c(rownames(summary_of_significance_all), rownames(summary_of_significance_by_sepcies)), rbind(summary_of_significance_all, summary_of_significance_by_sepcies))
   
@@ -59,10 +59,10 @@ for( c in climate.data.types) {
   
   idx <- all.dc.corr$significant
   
-  summary_of_significant_correlations_all <- rbind(tapply(all.dc.corr$coef[idx], all.dc.corr$Variable[idx], function(x) sum(abs(x))))
+  summary_of_significant_correlations_all <- rbind(tapply(all.dc.corr$coef[idx], all.dc.corr$variable[idx], function(x) sum(abs(x))))
   rownames(summary_of_significant_correlations_all) <- "All"
   
-  summary_of_significant_correlations_by_sepcies <- tapply(all.dc.corr$coef[idx], list(all.dc.corr$Species[idx], all.dc.corr$Variable[idx]) , function(x) sum(abs(x)), simplify = T)
+  summary_of_significant_correlations_by_sepcies <- tapply(all.dc.corr$coef[idx], list(all.dc.corr$Species[idx], all.dc.corr$variable[idx]) , function(x) sum(abs(x)), simplify = T)
   
   summary_of_significant_correlations <- data.frame(Summary_type = "Sum of absolute significant correlations", Species = c(rownames(summary_of_significant_correlations_all), rownames(summary_of_significant_correlations_by_sepcies)), rbind(summary_of_significant_correlations_all, summary_of_significant_correlations_by_sepcies))
   
