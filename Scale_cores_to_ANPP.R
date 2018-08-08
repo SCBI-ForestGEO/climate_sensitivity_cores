@@ -14,8 +14,9 @@ setwd(".")
 library(dplR)
 library(bootRes)
 
-save.plots <- TRUE
+save.plots <- FALSE
 save.result.table <- FALSE
+
 
 # Load core data ####
 
@@ -32,8 +33,12 @@ for(f in filenames) {
 load("data/scbi.stem1.rdata")
 head(scbi.stem1)
 
+# Define sets of climate data to use ####
+climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2014", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
-# Look at relationship between growth in 2008 and DBH in 2008, for each species
+
+
+# Get the linear relationship between growth in 2008 and DBH in 2008, for each species ####
 
 
 ## build up the data frame that link radius increment in 2008 and dbh in 2008
@@ -67,8 +72,8 @@ for(f in filenames) {
 
 }
 
-## look at relationship by species (+ plot) + predict on all other trees ####
-scbi.stem1$dbh_2009 <- NA
+## Get the linear models definitions to be able to predict later
+DBH_to_r_inc_lms <- list()
 
 for(f in filenames) {
   print(f)
@@ -85,30 +90,206 @@ for(f in filenames) {
   
   if(save.plots)  dev.off()
   
-  ### predict on all other trees
-  idx <- substr(scbi.stem1$sp, 1, 4) %in% substr(f, 1, 4)
-  scbi.stem1$dbh_2009[idx] <- scbi.stem1$dbh[idx] + c(2 * predict(object = lm1, newdata = data.frame(dbh_2008 = scbi.stem1$dbh[idx])))
+  ### save the model
+  DBH_to_r_inc_lms[[substr(f, 1, 4)]] <- lm1 
+  
 }
 
-# calculate AGB in 2008 and 2009 ####
 
-## 2008
-x <- scbi.stem1
-source("scripts/scbi_Allometries.R")
-scbi.stem1$agb_2008 <- x$agb * .47 # convert to Mg of C
+# Calculate ANPP response for each species, each climate variable and each month ####
+## For this:
+# 1- Predict DBH in 2009 for all trees in full census 2008 of the species that were cored using the models defined in previous step
+# 2- Do the same as 1) but for a year where there would be 1 unit increase in the climate varible (using the models defined in previous step + the response calulated inscript Calculate_and_plot_responses_between_tree-ring_chronologies_and_climate_variables.R
+# 3- Change DBH into AGB using SCBI allometries
+# 4- Calculate ANPP for 2008 on a regular year (using values in 1)
+# 5- Calculate ANPP for 2008 on a year with 1 unit increase in climate variable (using values in 2)
+# 6- get the difference betwen 5 and 4 to get the ANPP response to climate variable
+# 7- sum 6 per climate varia ble and month of the year
+# 8- Multiply response by standard deviation of the climate variable
+# 9- plot the quilt
 
-## 2009
-x <- scbi.stem1
-x$dbh <- x$dbh_2009
-source("scripts/scbi_Allometries.R")
-scbi.stem1$agb_2009 <- x$agb * .47 # convert to Mg of C
+ANPP_response <- NULL
+
+for(c in climate.data.types) {
+  print(c)
+  
+  Results_response_climate <- read.csv(paste0("results/tables/monthly_responses_all_speciess_and_climate_variables/Response_to_", c, "_climate_data.csv"), stringsAsFactors = F)
+  
+  pb <- txtProgressBar(style = 3, min = 1, max = nrow(Results_response_climate))
+  
+  for(i in 1:nrow(Results_response_climate)) {
+    
+    setTxtProgressBar(pb,i)
+
+    v <- Results_response_climate$variable[i]
+    m <- Results_response_climate$month[i]
+    sp <- tolower(Results_response_climate$Species[i])
+    
+    coef <- Results_response_climate$coef[i]
+    
+    lm1 <- DBH_to_r_inc_lms[[sp]]
+    
+    
+    # get the index of trees of the right species that were alive in 2008
+    idx <- substr(scbi.stem1$sp, 1, 4) %in% sp & scbi.stem1$DFstatus %in% "alive"
+
+    # steps 1,2,3 - get the AGB for 2008, 2009 and 2009 if there were one unit of increase in climate variable ####
+    
+    sp_complete <- ifelse(sp %in% "caov", "caovl", sp)
+    
+    ## AGB 2008
+    x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx])
+    source("scripts/scbi_Allometries.R")
+    agb_2008 <- x$agb * .47
+    
+    ## AGB 2009 (using DBH in 2009 predicted using linear model)
+    x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx] + c(2 * predict(object = lm1, newdata = data.frame(dbh_2008 = scbi.stem1$dbh[idx]))))
+    source("scripts/scbi_Allometries.R")
+    agb_2009 <- x$agb * .47
+    
+    ## AGB 2009 with one unit of increase in climate variable  (using DBH in 2009 predicted using  linear model + response coeficient)
+    x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx] + c(2 * (predict(object = lm1, newdata = data.frame(dbh_2008 = scbi.stem1$dbh[idx])) + coef)))
+    source("scripts/scbi_Allometries.R")
+    agb_2009_plus <- x$agb * .47
+    
+    # 4- get ANPP_2008 on a normal year ####
+    ANPP_2008 <- sum(agb_2009 - agb_2008) / 25.6
+    
+    # 5- get ANPP_2008 on a year with one unit of increase in climate variable ####
+    ANPP_2008_plus <- sum(agb_2009_plus - agb_2008) / 25.6
+    
+    # 6 - get the difference between ANPP_2008 of a normal year and a year with one unit of increase in climate variable ####
+    
+    ANPP_diff <- ANPP_2008_plus - ANPP_2008
+    
+  
+    # save ANPP response to 1 unit increase in climate variable into table
+    
+    ANPP_response <- rbind(ANPP_response,
+                           data.frame(Species = sp, 
+                                      Climate_data = c, 
+                                      variable = v, 
+                                      month = m, 
+                                      ANPP_response = ANPP_diff))
+  }
+  
+  close(pb)
+}
+
+head(ANPP_response)
+
+# 7- Sum ANPP response per climate variable and per month ####
+ANPP_response[is.na(ANPP_response$ANPP_response), ]
+
+X <- data.frame(ANPP_response = tapply(ANPP_response$ANPP_response, list(paste(ANPP_response$Climate_data, ANPP_response$variable, ANPP_response$month)), sum))
+
+ANPP_response_total <- data.frame(Climate_data = sapply(strsplit(rownames(X), " "), "[[", 1),
+                                  variable = sapply(strsplit(rownames(X), " "), "[[", 2),
+                                  month = sapply(strsplit(rownames(X), " "), "[[", 3),
+                                  X)
+
+# 8- Multiply response by standard deviation of the climate variable ####
+
+ANPP_response_total$SD_variable <- NA
+
+for( c in climate.data.types) {
+  print(c)
+  
+  ## Load climate data
+  
+  clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
+  
+  # crop first and last year of NOAA data because outliers
+  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
+    clim <- clim[!(clim$year %in% min(clim$year) | clim$year %in% max(clim$year)), ]
+  }
+  
+  # Pre_chiten PDSI of NOAA data because autocorrelated by definitiaon
+  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
+    clim$PDSI_prewhiten <- ar(clim$PDSI)$resid
+    clim$PHDI_prewhiten <- ar(clim$PHDI)$resid
+    clim$PMDI_prewhiten <- ar(clim$PMDI)$resid
+  }
+  
+  # get Standard deviation of climate variable and multiply it to ANPP repsone 
+
+  for (v in names(clim)[-c(1:2)]) {
+    print(v)
+    
+    SD <- sd(clim[, v], na.rm = T)
+    
+    idx <- ANPP_response_total$Climate_data %in% c &  ANPP_response_total$variable %in% v
+    ANPP_response_total$ANPP_response[idx] <-  c(ANPP_response_total$ANPP_response  * SD) [idx]
+    ANPP_response_total$SD_variable[idx] <- SD
+  }
+}
+  
+# 9- plot the quilt ####
+
+for( c in climate.data.types) {
+  print(c)
+  X <- ANPP_response_total[ANPP_response_total$Climate_data %in% c, ]
+
+  x <- data.frame(reshape(X[, c("month", "variable", "ANPP_response")], idvar = "month", timevar = "variable", direction = "wide"))
+ rownames(x) <- ifelse(grepl("curr",  x$month), toupper(x$month), tolower( x$month))
+ rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
+  
+ colnames(x) <- gsub("ANPP_response.", "", colnames(x))
+ 
+ x <- x[c(tolower(month.abb)[4:12],toupper(month.abb)[1:8]),]# order the months correctly
+
+ 
+ x <- x[, -1]
+ x.sig <- x
+ x.sig[] <- FALSE
+ 
+ # remove frs
+ if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
+
+ sd.x <- tapply(X$SD_variable, droplevels(X$variable), function(x) x[1])
+ sd.x <- sd.x[colnames(x)] # put in right order
+
+ 
 
 
+ if(save.plots)  {
+  # dir.create(paste0("results/figures/monthly_responses_all_speciess_and_climate_variables/", c), showWarnings = F)
+  tiff(paste0("results/figures/monthly_responses_all_speciess_and_climate_variables/response_to_", c, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
+}
 
-# Calculate ANPP ####
-idx <- scbi.stem1$DFstatus %in% "alive"
-AGB_diff <- scbi.stem1$agb_2009 - scbi.stem1$agb_2008
-AGB_diff_Alive <- AGB_diff[idx]
+par(mar=c(5.0, 0, 1.0, 5.0))
+ my.mdcplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
+ axis(2, at = c(1:ncol(x))- ncol(x)/40, paste0("SD=", round(sd.x,2)), las = 1, tick = 0, line = -0.5,  cex.axis = 0.8)
 
-sum_AGB_diff_by_species <- tapply(AGB_diff_Alive, scbi.stem1$sp[idx], sum, na.rm = T)
-ANPP_stem_by_species <- c(sum_AGB_diff_by_species / 25.6) [ sum_AGB_diff_by_species > 0] # per hectare
+ if(save.plots) dev.off()
+ par(opa)
+
+}
+
+# and then calculate AGB to get ANPP for a normal year and ANPP for a year with 1 unit increase in climate variable --> substract the 2 calculated ANPP and that gives the response of ANPP to 1 unict change in climate variable ####
+
+# 
+# # calculate AGB in 2008, 2009 and in 2009 when one unit of increse in 1 climate variable ####
+# 
+# ## 2008
+# x <- scbi.stem1
+# source("scripts/scbi_Allometries.R")
+# scbi.stem1$agb_2008 <- x$agb * .47 # convert to Mg of C
+# 
+# ## 2009
+# x <- scbi.stem1
+# x$dbh <- x$dbh_2009
+# source("scripts/scbi_Allometries.R")
+# scbi.stem1$agb_2009 <- x$agb * .47 # convert to Mg of C
+# 
+# 
+# 
+# # Calculate ANPP ####
+# Alive <- scbi.stem1$DFstatus %in% "alive"
+# AGB_diff <- scbi.stem1$agb_2009 - scbi.stem1$agb_2008
+# 
+# sum_AGB_diff_alive_by_species <- tapply(AGB_diff[Alive], scbi.stem1$sp[Alive], sum, na.rm = T)
+# ANPP_stem_by_species <- c(sum_AGB_diff_alive_by_species / 25.6) [ sum_AGB_diff_alive_by_species > 0] # in Mg of C per hectare (per year)
+# 
+# round(cbind(ANPP_stem_by_species, Pct_contrib = prop.table(ANPP_stem_by_species)*100)[order(prop.table(ANPP_stem_by_species), decreasing = T), ], 4)
+# 
