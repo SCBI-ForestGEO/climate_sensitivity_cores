@@ -14,9 +14,10 @@ setwd(".")
 library(dplR)
 library(bootRes)
 
-save.plots <- FALSE
-save.result.table <- FALSE
+save.plots <- TRUE
+save.result.table <- TRUE
 
+source("scripts/my.mdcplot.R")
 
 # Load core data ####
 
@@ -80,7 +81,7 @@ for(f in filenames) {
   df <- DF[DF$Species %in% substr(f, 1, 4),]
   
   ### look at relationship by species (+ plot)
-  if(save.plots)  tiff(paste0("results/figures/Scaling_cores_to_ANPP/", substr(f, 1, 4), ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
+  if(save.plots)  tiff(paste0("results/figures/Scaling_DBH_to_radius_increment/", substr(f, 1, 4), ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
   
   plot(df$r_inc_2008 ~ df$dbh_2008, main = substr(f, 1, 4), xlab = "dbh in 2008 (mm)", ylab = "radius increment in 2008 (mm)", xlim = c(0, 1500), ylim = c(0, 7))
   lm1 <- lm(r_inc_2008  ~ dbh_2008, data =df)
@@ -98,24 +99,48 @@ for(f in filenames) {
 
 # Calculate ANPP response for each species, each climate variable and each month ####
 ## For this:
-# 1- Predict DBH in 2009 for all trees in full census 2008 of the species that were cored using the models defined in previous step
-# 2- Do the same as 1) but for a year where there would be 1 unit increase in the climate varible (using the models defined in previous step + the response calulated inscript Calculate_and_plot_responses_between_tree-ring_chronologies_and_climate_variables.R
+# 1- Predict DBH in 2009 for all trees >10cm in full census 2008 of the species that were cored using the models defined in previous step
+# 2- Do the same as 1) but for a year where there would be 1 unit increase in the climate varible (using the models defined in previous step + the response (calulated in script Calculate_and_plot_responses_between_tree-ring_chronologies_and_climate_variables.R)
 # 3- Change DBH into AGB using SCBI allometries
 # 4- Calculate ANPP for 2008 on a regular year (using values in 1)
 # 5- Calculate ANPP for 2008 on a year with 1 unit increase in climate variable (using values in 2)
 # 6- get the difference betwen 5 and 4 to get the ANPP response to climate variable
-# 7- sum 6 per climate varia ble and month of the year
-# 8- Multiply response by standard deviation of the climate variable
-# 9- plot the quilt
+# 7- sum 6 per climate variable and month of the year
+# 8- plot the quilt
 
 ANPP_response <- NULL
 
 for(c in climate.data.types) {
   print(c)
   
+  ## Load climate data + calculate SD of each variable
+  
+  clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
+  
+  ### crop first and last year of NOAA data because outliers
+  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
+    clim <- clim[!(clim$year %in% min(clim$year) | clim$year %in% max(clim$year)), ]
+  }
+  
+  ### Pre_chiten PDSI of NOAA data because autocorrelated by definitiaon
+  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
+    clim$PDSI_prewhiten <- ar(clim$PDSI)$resid
+    clim$PHDI_prewhiten <- ar(clim$PHDI)$resid
+    clim$PMDI_prewhiten <- ar(clim$PMDI)$resid
+  }
+  
+  ### get SD
+  SDs <- apply(clim, 2, sd, na.rm = T)
+  assign(paste("SDs", c, sep = "_"), SDs)
+  
+  ## load the response coefficients of chronologies to climate variables (output of script Calculate_and_plot_responses_between_tree-ring_chronologies_and_climate_variables.R)
+  
   Results_response_climate <- read.csv(paste0("results/tables/monthly_responses_all_speciess_and_climate_variables/Response_to_", c, "_climate_data.csv"), stringsAsFactors = F)
   
+  
+  ## do steps 1 through 6 ####
   pb <- txtProgressBar(style = 3, min = 1, max = nrow(Results_response_climate))
+
   
   for(i in 1:nrow(Results_response_climate)) {
     
@@ -126,12 +151,13 @@ for(c in climate.data.types) {
     sp <- tolower(Results_response_climate$Species[i])
     
     coef <- Results_response_climate$coef[i]
+    # sd.v <- SDs[[v]]
     
     lm1 <- DBH_to_r_inc_lms[[sp]]
     
     
     # get the index of trees of the right species that were alive in 2008
-    idx <- substr(scbi.stem1$sp, 1, 4) %in% sp & scbi.stem1$DFstatus %in% "alive"
+    idx <- substr(scbi.stem1$sp, 1, 4) %in% sp & scbi.stem1$DFstatus %in% "alive" & scbi.stem1$dbh >= 100  & !is.na(scbi.stem1$dbh)
 
     # steps 1,2,3 - get the AGB for 2008, 2009 and 2009 if there were one unit of increase in climate variable ####
     
@@ -148,9 +174,11 @@ for(c in climate.data.types) {
     agb_2009 <- x$agb * .47
     
     ## AGB 2009 with one unit of increase in climate variable  (using DBH in 2009 predicted using  linear model + response coeficient)
-    x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx] + c(2 * (predict(object = lm1, newdata = data.frame(dbh_2008 = scbi.stem1$dbh[idx])) + coef)))
+     x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx] + c(2 * (predict(object = lm1, newdata = data.frame(dbh_2008 = scbi.stem1$dbh[idx])) + coef))) # * sd.v)))
     source("scripts/scbi_Allometries.R")
     agb_2009_plus <- x$agb * .47
+    
+    if(any(is.na(agb_2009_plus))) stop("Problem of trees becoming < 0 mm")
     
     # 4- get ANPP_2008 on a normal year ####
     ANPP_2008 <- sum(agb_2009 - agb_2008) / 25.6
@@ -188,46 +216,14 @@ ANPP_response_total <- data.frame(Climate_data = sapply(strsplit(rownames(X), " 
                                   month = sapply(strsplit(rownames(X), " "), "[[", 3),
                                   X)
 
-# 8- Multiply response by standard deviation of the climate variable ####
 
-ANPP_response_total$SD_variable <- NA
-
-for( c in climate.data.types) {
-  print(c)
-  
-  ## Load climate data
-  
-  clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
-  
-  # crop first and last year of NOAA data because outliers
-  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
-    clim <- clim[!(clim$year %in% min(clim$year) | clim$year %in% max(clim$year)), ]
-  }
-  
-  # Pre_chiten PDSI of NOAA data because autocorrelated by definitiaon
-  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
-    clim$PDSI_prewhiten <- ar(clim$PDSI)$resid
-    clim$PHDI_prewhiten <- ar(clim$PHDI)$resid
-    clim$PMDI_prewhiten <- ar(clim$PMDI)$resid
-  }
-  
-  # get Standard deviation of climate variable and multiply it to ANPP repsone 
-
-  for (v in names(clim)[-c(1:2)]) {
-    print(v)
-    
-    SD <- sd(clim[, v], na.rm = T)
-    
-    idx <- ANPP_response_total$Climate_data %in% c &  ANPP_response_total$variable %in% v
-    ANPP_response_total$ANPP_response[idx] <-  c(ANPP_response_total$ANPP_response  * SD) [idx]
-    ANPP_response_total$SD_variable[idx] <- SD
-  }
-}
-  
-# 9- plot the quilt ####
+# 8- plot the quilt ####
 
 for( c in climate.data.types) {
   print(c)
+  
+  SDs <- get(paste("SDs", c, sep = "_"))
+  
   X <- ANPP_response_total[ANPP_response_total$Climate_data %in% c, ]
 
   x <- data.frame(reshape(X[, c("month", "variable", "ANPP_response")], idvar = "month", timevar = "variable", direction = "wide"))
@@ -246,23 +242,22 @@ for( c in climate.data.types) {
  # remove frs
  if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
 
- sd.x <- tapply(X$SD_variable, droplevels(X$variable), function(x) x[1])
- sd.x <- sd.x[colnames(x)] # put in right order
+ # get the SD in the right order
+ SDs <- SDs[colnames(x)] # put in right order
 
  
 
 
  if(save.plots)  {
   # dir.create(paste0("results/figures/monthly_responses_all_speciess_and_climate_variables/", c), showWarnings = F)
-  tiff(paste0("results/figures/monthly_responses_all_speciess_and_climate_variables/response_to_", c, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
+  tiff(paste0("results/figures/monthly_responses_ANPP_to_climate_variables/response_to_", c, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
 }
 
-par(mar=c(5.0, 0, 1.0, 5.0))
- my.mdcplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
- axis(2, at = c(1:ncol(x))- ncol(x)/40, paste0("SD=", round(sd.x,2)), las = 1, tick = 0, line = -0.5,  cex.axis = 0.8)
+  my.mdcplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
+ axis(2, at = c(1:ncol(x))- ncol(x)/40, paste0("SD=", round(SDs,2)), las = 1, tick = 0, line = -0.5,  cex.axis = 0.8)
 
  if(save.plots) dev.off()
- par(opa)
+
 
 }
 
