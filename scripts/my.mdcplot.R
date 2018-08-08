@@ -16,7 +16,7 @@ my.mdcplot <- function (x, sig, rescale = TRUE, main, ...)
   }
   
   op <- par(no.readonly = TRUE)
-  par(oma = c(1, 3, 5, 3), mai = c(1, 0.5, 0.2, 1)) #par(oma = c(0, 3, 5, 0), mai = c(0.5, 0.8, 0.2, 2))
+  par(oma = c(1, 5, 5, 3), mai = c(1, 0.5, 0.2, 1)) #par(oma = c(0, 3, 5, 0), mai = c(0.5, 0.8, 0.2, 2))
   plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
        yaxt = "n", ylab = "", xlab = "")
   axis(side = 3, at = 1:n, labels = colnames(x), las = 2) # change here
