@@ -94,9 +94,14 @@ my.dccplot <- function (x, sig, rescale = TRUE, main, ...)
 }
 
 
+
+
 # for moving correlations ####
-my.mdccplot <- function (x, sig = NULL, rescale = TRUE, main, ...) 
+my.mdccplot <- function (x, sig = NULL, clim.ma = NULL, clim.sd = NULL, rescale = TRUE, main, ...) 
 {
+  
+  
+  ## prepare parameters
   if (!is.data.frame(x)) {
     x <- x$coef
   }
@@ -112,15 +117,43 @@ my.mdccplot <- function (x, sig = NULL, rescale = TRUE, main, ...)
     neg.max <- abs(min(x))
   }
   
-  op <- par(no.readonly = TRUE)
-  par(oma = c(1, 0, 5, 3), mai = c(1, 0.5, 0.2, 1)) #par(oma = c(0, 3, 5, 0), mai = c(0.5, 0.8, 0.2, 2))
-  plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
-       yaxt = "n", ylab = "", xlab = "")
-  
   y.axis.labs <- rep(NA, n)
   first.round.year <- which(substr(colnames(x), 4,4) %in% "0")[1]
   last.round.year <- rev(which(substr(colnames(x), 4,4) %in% "0"))[1]
   y.axis.labs[seq(first.round.year, last.round.year, 10)] <- colnames(x)[seq(first.round.year, last.round.year, 10)]
+  ## plot
+  if(is.null(clim)) {
+    op <- par(oma = c(1, 3, 5, 3), mai = c(1, 0.5, 0.2, 1)) #par(oma = c(0, 3, 5, 0), mai = c(0.5, 0.8, 0.2, 2))
+  } else { 
+    op <- par(mfrow = c(2, 1), oma = c(6, 5, 5, 6), mai = c(1, 0.5, 0.2, 1), mar = c(0,0,0,0))
+  }
+  
+  ### plot moving average and sd of climate variable ####
+  if(!is.null(clim.ma)) {
+    
+    
+    ## mov avg
+    plot( clim.ma , type = "l", ylab = "", las = 1, xaxt = "n", xlab = "")
+    axis(side = 1, at = c(1:length(clim.ma))[!is.na(y.axis.labs)], labels = F, tcl = 1, las = 2)
+    axis(side = 1, at = 1:length(clim.ma), labels = y.axis.labs, las = 2, tcl = 0.5)
+    mtext(side = 2, text = "moving average", line = 3.5)
+    
+    ##mov sd
+    if(!is.null(clim.sd)) {
+      par(new = T)
+      plot(clim.sd, type = "l", ylab = "", yaxt = "n", col = "red", xaxt = "n")
+      axis(4, col.ticks = "red", las = 1, col.axis = "red")
+      mtext(4, text = "moving sd", line = 3, col = "red")
+    }
+    
+  }
+  
+  
+  
+  ## plot "quilt" ####
+ 
+  plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
+       yaxt = "n", ylab = "", xlab = "")
   
   axis(side = 1, at = c(1:n)[!is.na(y.axis.labs)], labels = F, tcl = -1, las = 2)
   axis(side = 1, at = 1:n, labels = y.axis.labs, las = 2)
@@ -160,7 +193,7 @@ my.mdccplot <- function (x, sig = NULL, rescale = TRUE, main, ...)
   par(xpd = NA)
   leg.unit <- (m/15)
   start.unit <- leg.unit/4 + leg.unit
-  right.pos <- n + n/5
+  right.pos <- n + n/10
   leg.width <- n/20
   values <- seq(-1, 1, length = 11)
   
@@ -194,5 +227,7 @@ my.mdccplot <- function (x, sig = NULL, rescale = TRUE, main, ...)
     }
   }
   
-  # par(op)
+
+  
+  par(op)
 }

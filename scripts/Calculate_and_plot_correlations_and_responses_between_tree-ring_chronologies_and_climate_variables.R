@@ -12,10 +12,10 @@ setwd(".")
 
 # Load libraries ####
 library(dplR)
-# library(treeclim)
-library(bootRes)
+# library(bootRes)
+library(caTools)
 
-source("scripts/Plotting_Function_for_Moving_Response_and_Correlation_Functions.R")
+source("scripts/Plotting_Function_for_dcc_and_mdcc_Functions.R")
 
 # Define parameters and variables ####
 
@@ -218,17 +218,36 @@ for(c in climate.data.types) {
   
   clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
   
-  # crop first and last year of NOAA data because outliers
+  ### crop first and last year of NOAA data because outliers
   if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
     clim <- clim[!(clim$year %in% min(clim$year) | clim$year %in% max(clim$year)), ]
   }
   
-  # Pre_chiten PDSI of NOAA data because autocorrelated by definitiaon
+  ### Pre_chiten PDSI of NOAA data because autocorrelated by definitiaon
   if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
     clim$PDSI_prewhiten <- ar(clim$PDSI)$resid
     clim$PHDI_prewhiten <- ar(clim$PHDI)$resid
     clim$PMDI_prewhiten <- ar(clim$PMDI)$resid
   }
+  
+  ### get a moving average and sd of climate varibales, by month
+  
+  clim.moving.avg <- NULL
+  clim.moving.sd <- NULL
+  
+   for(mth.i in (unique(clim$month))) {
+    mth <- tolower(month.abb[mth.i])
+    x.clim <- clim[clim$month %in% mth.i, ]
+    x.clim.ma <- apply(x.clim, 2, runmean, k = 25, endrule = "NA", align = "center")
+    x.clim.msd <- apply(x.clim, 2, runsd, k = 25, endrule = "NA", align = "center")
+    
+    rownames(x.clim.ma) <- paste(x.clim$year-12, x.clim$year + 12, sep = "-")
+    rownames(x.clim.msd) <- paste(x.clim$year-12, x.clim$year + 12, sep = "-")
+    
+    clim.moving.avg[[mth]] <- x.clim.ma
+    clim.moving.sd[[mth]] <- x.clim.msd
+  }
+  
   
   ## Run analysis on core data ####
 
@@ -310,7 +329,7 @@ for(c in climate.data.types) {
         
         if(save.plots)  {
           dir.create(paste0("results/figures/monthly_correlations_all_speciess_and_climate_variables/", c), showWarnings = F)
-          tiff(paste0("results/figures/monthly_", method.to.run, "_all_species_and_climate_variables/", c, "/", v, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
+          tiff(paste0("results/figures/monthly_", method.to.run, "_all_species_and_climate_variables/", c, "/", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
         }
         
         my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = v)
@@ -341,10 +360,15 @@ for(c in climate.data.types) {
         
           if(save.plots)  {
             dir.create(paste0("results/figures/monthly_moving_correlation_all_species_and_climate_variables/by_species_and_by_month/", c), showWarnings = F)
-            tiff(paste0("results/figures/monthly_moving_correlation_all_species_and_climate_variables/by_species_and_by_month/", c, "/", f, "_", v, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
+            tiff(paste0("results/figures/monthly_moving_correlation_all_species_and_climate_variables/by_species_and_by_month/", c, "/", f, "_", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
           }
           
+          # op <- par(oma = c(1, 3, 5, 3), mai = c(1, 0.5, 0.2, 1)) #par(oma = c(0, 3, 5, 0), mai = c(0.5, 0.8, 0.2, 2))
+          op <- par(mfrow = c(2, 1), oma = c(5, 5, 5, 5), mai = c(1, 0.5, 0.2, 1), mar = c(0,0,0,0))
+          
           my.mdccplot(x = X, main = paste(f, v, sep = " - "))
+          
+          par(op)
           
           if(save.plots) dev.off()
         } #   for(v in names(clim)[-c(1,2)])
@@ -367,10 +391,10 @@ for(c in climate.data.types) {
         
         if(save.plots) {
           dir.create(paste0("results/figures/monthly_moving_correlation_all_species_and_climate_variables/by_curr_season_month_all_sp_together/", c), showWarnings = F)
-          tiff(paste0("results/figures/monthly_moving_correlation_all_species_and_climate_variables/by_curr_season_month_all_sp_together/", c, "/", v, "_", mth, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
+          tiff(paste0("results/figures/monthly_moving_correlation_all_species_and_climate_variables/by_curr_season_month_all_sp_together/", c, "/", v, "_", mth, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
         }
         
-        my.mdccplot(X, main = paste(v, mth, sep = " - "))
+        my.mdccplot(X, main = paste(v, mth, sep = " - "), clim.ma = clim.moving.avg[[mth]][, v][colnames(X)], clim.sd = clim.moving.sd[[mth]][, v][colnames(X)])
         
         if(save.plots) dev.off()
         } #  for(m in c( c("apr", "may", "jun", "jul")))
