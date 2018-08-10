@@ -17,7 +17,7 @@ library(bootRes)
 save.plots <- TRUE
 save.result.table <- TRUE
 
-source("scripts/my.mdcplot.R")
+source("scripts/Plotting_Function_for_Moving_Response_and_Correlation_Functions.R")
 
 # Load core data ####
 
@@ -135,7 +135,7 @@ for(c in climate.data.types) {
   
   ## load the response coefficients of chronologies to climate variables (output of script Calculate_and_plot_responses_between_tree-ring_chronologies_and_climate_variables.R)
   
-  Results_response_climate <- read.csv(paste0("results/tables/monthly_responses_all_speciess_and_climate_variables/Response_to_", c, "_climate_data.csv"), stringsAsFactors = F)
+  Results_response_climate <- read.csv(paste0("results/tables/monthly_response_all_species_and_climate_variables//Response_to_", c, "_climate_data.csv"), stringsAsFactors = F)
   
   
   ## do steps 1 through 6 ####
@@ -259,7 +259,7 @@ for( c in climate.data.types) {
   tiff(paste0("results/figures/monthly_responses_ANPP_to_climate_variables/response_to_", c, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
 }
 
-  my.mdcplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
+  my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
  axis(2, at = c(1:ncol(x))- ncol(x)/40, paste0("SD=", round(SDs,2)), las = 1, tick = 0, line = -0.5,  cex.axis = 0.8)
 
  if(save.plots) dev.off()

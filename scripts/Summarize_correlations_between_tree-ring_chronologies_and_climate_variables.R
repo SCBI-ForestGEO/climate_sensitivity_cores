@@ -32,7 +32,7 @@ for( c in climate.data.types) {
  
   ## Load tables of results ####
 
-  all.dc.corr <- read.csv(paste0("results/tables/monthly_correlations_all_speciess_and_climate_variables/Correlation_with_", c, "_climate_data.csv"))
+  all.dc.corr <- read.csv(paste0("results/tables/monthly_correlation_all_species_and_climate_variables/correlation_with_", c, "_climate_data.csv"))
   
   ## Summarize by Variable and by species  ####
   
@@ -72,7 +72,7 @@ for( c in climate.data.types) {
   
   
   write.csv(rbind(summary_of_correlations, summary_of_significance, summary_of_significant_correlations),
-        file = paste0("results/tables/monthly_correlations_all_speciess_and_climate_variables/SUMMARY_Correlation_with_", c, "_climate_data.csv"), row.names = F)
+        file = paste0("results/tables/monthly_correlation_all_species_and_climate_variables//SUMMARY_Correlation_with_", c, "_climate_data.csv"), row.names = F)
   
     
   }
