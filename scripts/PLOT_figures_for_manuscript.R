@@ -22,7 +22,7 @@ save.result.table <- TRUE
 
 # Load data ####
 
-ANPP_response_total <- read.csv("results/tables/monthly_responses_ANPP_to_climate_variables/Total_ANPP_response_climate_variable_and_month.csv")
+ANPP_response_total <- read.csv("results/Going_back_at_earliest_common_year/tables/monthly_responses_ANPP_to_climate_variables/Total_ANPP_response_climate_variable_and_month.csv")
 
 
 
@@ -52,8 +52,8 @@ x <- x[, order(abs(apply(x, 2, sum)))]
 
 
 if(save.plots)  {
-  # dir.create(paste0("results/figures/monthly_responses_all_speciess_and_climate_variables/", c), showWarnings = F)
-  tiff(paste0("results/figures/for_manuscript/ANPP_response.tif"), res = 300, width = 169, height = 140, units = "mm", pointsize = 10)
+  # dir.create(paste0("results/Going_back_at_earliest_common_year/figures/monthly_responses_all_speciess_and_climate_variables/", c), showWarnings = F)
+  tiff(paste0("results/Going_back_at_earliest_common_year/figures/for_manuscript/ANPP_response.tif"), res = 300, width = 169, height = 140, units = "mm", pointsize = 10)
 }
 
 my.mdcplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
