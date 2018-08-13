@@ -12,7 +12,7 @@ setwd(".")
 
 # Load libraries ####
 
-source("scripts/my.mdcplot.R")
+source("scripts/0-Plotting_Function_for_dcc_and_mdcc_Functions.R")
 
 # set parameters ####
 save.plots <- TRUE
@@ -56,7 +56,7 @@ if(save.plots)  {
   tiff(paste0("results/Going_back_at_earliest_common_year/figures/for_manuscript/ANPP_response.tif"), res = 300, width = 169, height = 140, units = "mm", pointsize = 10)
 }
 
-my.mdcplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
+my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
 
 if(save.plots) dev.off()
 
