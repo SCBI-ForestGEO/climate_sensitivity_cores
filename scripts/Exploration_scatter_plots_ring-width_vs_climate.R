@@ -68,7 +68,7 @@ for(c in climate.data.types) {
         
         if(save.plots) tiff(paste0("results/Exploration_scatter_plots_ring-width_vs_climate/", paste(f, v, mth, sep = "_"), ".tiff"), res = 100, width = 169, height = 169, units = "mm", pointsize = 12)
 
-        plot(x.all.years, y.all.years, main = paste(f, v, mth, sep = "-"))
+        plot(x.all.years, y.all.years, main = paste(f, v, mth, sep = "-"), xlab = "ring-width index", ylab = v)
         points(x.later.years, y.later.years, col = "grey")
     
         abline(lm(y.all.years ~ x.all.years))
