@@ -19,45 +19,58 @@ save.plots <- TRUE
 save.result.table <- TRUE
 
 
-
-# Load data ####
-
-ANPP_response_total <- read.csv("results/Going_back_at_earliest_common_year/tables/monthly_responses_ANPP_to_climate_variables/Total_ANPP_response_climate_variable_and_month.csv")
+## Define how to run it regarding the starting year ####
+type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "Going_back_to_1980") # Going_back_at_earliest_common_year")
 
 
+# plot ####
 
-# ANPP response to CRU data and PDSI_pre-whitened ####
-
-X <- droplevels(ANPP_response_total[(ANPP_response_total$Climate_data %in% "CRU_SCBI_1901_2014" & ! ANPP_response_total$variable %in% "pet_sum")| (ANPP_response_total$Climate_data %in% "NOAA_PDSI_Northern_Virginia_1895_2017" & ANPP_response_total$variable %in% "PDSI_prewhiten"), ])
-
-
-x <- data.frame(reshape(X[, c("month", "variable", "ANPP_response")], idvar = "month", timevar = "variable", direction = "wide"))
-rownames(x) <- ifelse(grepl("curr",  x$month), toupper(x$month), tolower( x$month))
-rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
-
-colnames(x) <- gsub("ANPP_response.", "", colnames(x))
-
-x <- x[c(tolower(month.abb)[4:12],toupper(month.abb)[1:8]),]# order the months correctly
+for(type.start in type.of.start.date) {
+  
+  print(type.start)
+  
+  
+  # Load data ####
+  
+  ANPP_response_total <- read.csv(paste0("results/", type.start, "/tables/monthly_responses_ANPP_to_climate_variables/Total_ANPP_response_climate_variable_and_month.csv"))
 
 
-x <- x[, -1]
-x.sig <- x
-x.sig[] <- FALSE
 
-# remove frs
-if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
-
-# order by influence on ANPP (defined as predicted changes summed across all months).
-x <- x[, order(abs(apply(x, 2, sum)))]
-
-
-if(save.plots)  {
-  # dir.create(paste0("results/Going_back_at_earliest_common_year/figures/monthly_responses_all_speciess_and_climate_variables/", c), showWarnings = F)
-  tiff(paste0("results/Going_back_at_earliest_common_year/figures/for_manuscript/ANPP_response.tif"), res = 300, width = 169, height = 140, units = "mm", pointsize = 10)
-}
-
-my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
-
-if(save.plots) dev.off()
-
-
+  # ANPP response to CRU data and PDSI_pre-whitened ####
+  
+  X <- droplevels(ANPP_response_total[(ANPP_response_total$Climate_data %in% "CRU_SCBI_1901_2016" & ! ANPP_response_total$variable %in% "pet_sum")| (ANPP_response_total$Climate_data %in% "NOAA_PDSI_Northern_Virginia_1895_2017" & ANPP_response_total$variable %in% "PDSI_prewhiten"), ])
+  
+  
+  x <- data.frame(reshape(X[, c("month", "variable", "ANPP_response")], idvar = "month", timevar = "variable", direction = "wide"))
+  rownames(x) <- ifelse(grepl("curr",  x$month), toupper(x$month), tolower( x$month))
+  rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
+  
+  colnames(x) <- gsub("ANPP_response.", "", colnames(x))
+  
+  x <- x[c(tolower(month.abb)[4:12],toupper(month.abb)[1:8]),]# order the months correctly
+  
+  
+  x <- x[, -1]
+  x.sig <- x
+  x.sig[] <- FALSE
+  
+  # remove frs
+  if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
+  
+  # order by influence on ANPP (defined as predicted changes summed across all months).
+  x <- x[, order(abs(apply(x, 2, sum)))]
+  
+  
+  if(save.plots)  {
+    dir.create(paste0("results/", type.start, "/figures/for_manuscript"), showWarnings = F)
+    tiff(paste0("results/", type.start, "/figures/for_manuscript/ANPP_response.tif"), res = 300, width = 169, height = 140, units = "mm", pointsize = 10)
+  }
+  
+  my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
+  
+  if(save.plots) dev.off()
+  
+  
+  
+  
+} # for(type.start in type.of.start.date)

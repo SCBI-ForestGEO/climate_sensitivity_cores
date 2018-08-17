@@ -19,6 +19,11 @@ save.result.table <- TRUE
 
 source("scripts/0-Plotting_Function_for_dcc_and_mdcc_Functions.R")
 
+
+## Define how to run it regarding the starting year ####
+type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "Going_back_to_1980") # Going_back_at_earliest_common_year")
+
+
 # Load core data ####
 
 filenames <- list.files("raw_data/cores/") # filenames <- list.files("raw_data/cores/")
@@ -35,7 +40,7 @@ load("data/scbi.stem1.rdata")
 head(scbi.stem1)
 
 # Define sets of climate data to use ####
-climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2014", "NOAA_PDSI_Northern_Virginia_1895_2017")
+climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
 
 
@@ -73,6 +78,12 @@ for(f in filenames) {
 
 }
 
+
+
+for(type.start in type.of.start.date) {
+  
+  print(type.start)
+  
 ## Get the linear models definitions to be able to predict later
 DBH_to_r_inc_lms <- list()
 
@@ -81,7 +92,10 @@ for(f in filenames) {
   df <- DF[DF$Species %in% substr(f, 1, 4),]
   
   ### look at relationship by species (+ plot)
-  if(save.plots)  tiff(paste0("results/Going_back_at_earliest_common_year/figures/Scaling_DBH_to_radius_increment/", substr(f, 1, 4), ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
+  if(save.plots)  {
+    dir.create(paste0("results/", type.start, "/figures/Scaling_DBH_to_radius_increment"), showWarnings = F)
+    tiff(paste0("results/", type.start, "/figures/Scaling_DBH_to_radius_increment/", substr(f, 1, 4), ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
+  }
   
   plot(df$r_inc_2008 ~ df$dbh_2008, main = substr(f, 1, 4), xlab = "dbh in 2008 (mm)", ylab = "radius increment in 2008 (mm)", xlim = c(0, 1500), ylim = c(0, 7))
   lm1 <- lm(r_inc_2008  ~ dbh_2008, data =df)
@@ -135,7 +149,7 @@ for(c in climate.data.types) {
   
   ## load the response coefficients of chronologies to climate variables (output of script Calculate_and_plot_responses_between_tree-ring_chronologies_and_climate_variables.R)
   
-  Results_response_climate <- read.csv(paste0("results/Going_back_at_earliest_common_year/tables/monthly_response/Response_to_", c, "_climate_data.csv"), stringsAsFactors = F)
+  Results_response_climate <- read.csv(paste0("results/", type.start, "/tables/monthly_response/Response_to_", c, "_climate_data.csv"), stringsAsFactors = F)
   
   
   ## do steps 1 through 6 ####
@@ -216,11 +230,15 @@ ANPP_response_total <- data.frame(Climate_data = sapply(strsplit(rownames(X), " 
                                   month = sapply(strsplit(rownames(X), " "), "[[", 3),
                                   X)
 
-## save ANPP_response by species, climate variable and by month ####
-write.csv(ANPP_response, file = "results/Going_back_at_earliest_common_year/tables/monthly_responses_ANPP_to_climate_variables/ANPP_response_by_species_climate_variable_and_month.csv", row.names = F)
+## save ####
 
-## save ANPP_response total, climate variable and by month ####
-write.csv(ANPP_response_total, file = "results/Going_back_at_earliest_common_year/tables/monthly_responses_ANPP_to_climate_variables/Total_ANPP_response_climate_variable_and_month.csv", row.names = F)
+dir.create(paste0("results/", type.start, "/tables/monthly_responses_ANPP_to_climate_variables"), showWarnings = F)
+
+###  save ANPP_response by species, climate variable and by month ####
+write.csv(ANPP_response, file = paste0("results/", type.start, "/tables/monthly_responses_ANPP_to_climate_variables/ANPP_response_by_species_climate_variable_and_month.csv"), row.names = F)
+
+### save ANPP_response total, climate variable and by month ####
+write.csv(ANPP_response_total, file = paste0("results/", type.start, "/tables/monthly_responses_ANPP_to_climate_variables/Total_ANPP_response_climate_variable_and_month.csv"), row.names = F)
 
 
 # 8- plot the quilt ####
@@ -255,8 +273,8 @@ for( c in climate.data.types) {
 
 
  if(save.plots)  {
-  # dir.create(paste0("results/figures/monthly_responses_all_speciess_and_climate_variables/", c), showWarnings = F)
-  tiff(paste0("results/Going_back_at_earliest_common_year/figures/monthly_responses_ANPP_to_climate_variables/response_to_", c, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
+  dir.create(paste0("results/", type.start, "/figures/monthly_responses_ANPP_to_climate_variables"), showWarnings = F)
+  tiff(paste0("results/", type.start, "/figures/monthly_responses_ANPP_to_climate_variables/response_to_", c, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
 }
 
   my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
@@ -268,31 +286,5 @@ for( c in climate.data.types) {
 }
 
 
-# Extra - figure for paper ####
-# and then calculate AGB to get ANPP for a normal year and ANPP for a year with 1 unit increase in climate variable --> substract the 2 calculated ANPP and that gives the response of ANPP to 1 unict change in climate variable ####
 
-# 
-# # calculate AGB in 2008, 2009 and in 2009 when one unit of increse in 1 climate variable ####
-# 
-# ## 2008
-# x <- scbi.stem1
-# source("scripts/scbi_Allometries.R")
-# scbi.stem1$agb_2008 <- x$agb * .47 # convert to Mg of C
-# 
-# ## 2009
-# x <- scbi.stem1
-# x$dbh <- x$dbh_2009
-# source("scripts/scbi_Allometries.R")
-# scbi.stem1$agb_2009 <- x$agb * .47 # convert to Mg of C
-# 
-# 
-# 
-# # Calculate ANPP ####
-# Alive <- scbi.stem1$DFstatus %in% "alive"
-# AGB_diff <- scbi.stem1$agb_2009 - scbi.stem1$agb_2008
-# 
-# sum_AGB_diff_alive_by_species <- tapply(AGB_diff[Alive], scbi.stem1$sp[Alive], sum, na.rm = T)
-# ANPP_stem_by_species <- c(sum_AGB_diff_alive_by_species / 25.6) [ sum_AGB_diff_alive_by_species > 0] # in Mg of C per hectare (per year)
-# 
-# round(cbind(ANPP_stem_by_species, Pct_contrib = prop.table(ANPP_stem_by_species)*100)[order(prop.table(ANPP_stem_by_species), decreasing = T), ], 4)
-# 
+} # for(type.start in type.of.start.date)

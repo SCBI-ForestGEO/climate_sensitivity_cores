@@ -66,7 +66,9 @@ for(f in good.files) {
   
 }
 
-# clim <- clim[, !names(clim) %in% c("frs")]
+# add PET-PPT asd a climate variable (see issue# 23, https://github.com/EcoClimLab/climate_sensitivity_cores/issues/23)
+clim$deficit <- clim$pet - clim$pre
+
 
 write.csv(clim, file = "raw_data/climate/Formated_CRU_SCBI_1901_2014.csv", row.names = F)
 

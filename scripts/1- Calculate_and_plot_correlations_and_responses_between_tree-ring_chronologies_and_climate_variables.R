@@ -19,27 +19,27 @@ source("scripts/0-Plotting_Function_for_dcc_and_mdcc_Functions.R")
 
 # Define parameters and variables ####
 
-## saving or not saving outputs ?
+## saving or not saving outputs ? ####
 save.plots <- TRUE
 save.result.table <- TRUE
 
-## Define order of the species in the  plots
+## Define order of the species in the  plots ####
 SPECIES_IN_ORDER <- toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
 
 ## Define sets of climate data to use ####
 
-climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2014", "NOAA_PDSI_Northern_Virginia_1895_2017")
+climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
 ## Define sets of methods to run ####
 
-methods.to.run <- c("correlation", "response", "moving_correlation")
+methods.to.run <- c("correlation", "response") # c("correlation", "response", "moving_correlation")
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_at_earliest_common_year")
+type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "Going_back_to_1980") # Going_back_at_earliest_common_year")
 
-## Define sss threshold
+
+## Define sss threshold ####
 sss.threshold = 0.75
-
 ## Define start and end month for anlaysis ####
 start <- -4 # April of previous year
 end <- 8 # August of current year
@@ -71,19 +71,19 @@ for(f in filenames) {
   
   sss <- sub("  sss:   ", "", sss)
   sss <- as.numeric(unlist(strsplit(sss, " " ))) # keep only numbers and store them as a vector
-
+  
   sss <- data.frame(Species = f, "Num_of_trees" = 1:length(sss), sss)
   
   Year_to_Num_of_trees <- apply(core_raw, 1, function(x) sum(!is.na(x)))
   Year_to_Num_of_trees <- data.frame(Species = f, Year = as.numeric(names(Year_to_Num_of_trees)), Num_of_trees= Year_to_Num_of_trees)
-
+  
   match(Year_to_Num_of_trees$Num_of_trees, sss$Num_of_trees)
   
   Year_to_Num_of_trees$sss <- NA
   for(i in 1:nrow(Year_to_Num_of_trees)) {
     
     Year_to_Num_of_trees$sss[i] <- rev(sss[sss$Num_of_trees <= Year_to_Num_of_trees$Num_of_trees[i],]$sss)[1]
-   
+    
   }
   
   sss <- Year_to_Num_of_trees
@@ -92,9 +92,9 @@ for(f in filenames) {
   #   year_with_x_trees <- Year_to_Num_of_trees[Year_to_Num_of_trees >= sss$Num_of_trees[i]]
   #   sss$Year[i] <- as.numeric(names(year_with_x_trees)[1])
   # }
-
   
-    # core <- read.rwl(paste0("raw_data/cores/", f))
+  
+  # core <- read.rwl(paste0("raw_data/cores/", f))
   # core <- detrend(core, f = 0.5, nyrs = 32, method = "Spline", make.plot = TRUE) # detrend/smooth the time series
   # core <- chron(core)
   
@@ -117,8 +117,6 @@ for(f in filenames) {
   sss <- get(paste0(f, "_sss"))
   start.years <- c(start.years, sss[sss$sss >= sss.threshold, ]$Year[1])
 }
-
-overall.start.year <- max(start.years) # common to all species
 
 end.year = 2009  # common to all species
 
@@ -221,7 +219,7 @@ for(c in climate.data.types) {
     clim$PMDI_prewhiten <- ar(clim$PMDI)$resid
   }
   
-  ### remove climate variables we don't are about
+  ### remove climate variables we don't care about
   if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
     clim  <- clim[, !(colnames(clim) %in% c("SP02", "SP03", "SP06", "SP09", "SP12", "SP24"))]
   }
@@ -234,7 +232,7 @@ for(c in climate.data.types) {
   clim.moving.avg <- NULL
   clim.moving.sd <- NULL
   
-   for(mth.i in (unique(clim$month))) {
+  for(mth.i in (unique(clim$month))) {
     mth <- tolower(month.abb[mth.i])
     x.clim <- clim[clim$month %in% mth.i, ]
     x.clim.ma <- apply(x.clim, 2, runmean, k = 25, endrule = "NA", align = "center")
@@ -249,14 +247,27 @@ for(c in climate.data.types) {
   
   
   ## Run analysis on core data ####
-
+  
   for(type.start in type.of.start.date) {
     
     print(type.start)
-   
+    
+    dir.create(paste0("results/", type.start), showWarnings = F)
+    dir.create(paste0("results/", type.start, "/figures"), showWarnings = F)
+    dir.create(paste0("results/", type.start, "/tables"), showWarnings = F)
+    
+    if(type.start %in% "Going_back_to_1920") overall.start.year <- 1920
+    if(type.start %in% "Going_back_to_1980") overall.start.year <- 1980 
+    if(type.start %in% "Going_back_at_earliest_common_year") overall.start.year <- max(start.years) # common to all species
+    
+    
+    
     for(method.to.run in methods.to.run) {
       
       print(method.to.run)
+      
+      dir.create(paste0("results/", type.start, "/tables/monthly_", method.to.run ), showWarnings = F)
+      
       
       all.dcc.output <- NULL
       
@@ -266,7 +277,7 @@ for(c in climate.data.types) {
         
         core <- get(f)
         
-        core <- core[rownames(core) %in% clim$year, ] # trim to use only years for which with have clim data
+        core <- core[rownames(core) %in% clim$year, ] # trim to use only years for which with have clim data 
         
         start.year <- max(min(clim$year), ifelse(type.start %in% "Going_back_as_far_as_possible", start.years[which(filenames %in% f)], overall.start.year))
         
@@ -280,7 +291,7 @@ for(c in climate.data.types) {
           }
           
           if(method.to.run %in% "moving_correlation" & type.start %in% "Going_back_as_far_as_possible") {
-            all.dcc.output[[f]][[v]] <- bootRes::mdcc(core, clim[, c("year", "month", v)], method = "corr", start = ifelse(v %in% "frs", start.frs, start), end = ifelse(v %in% "frs", end.frs, end), timespan = c(start.year, end.year), win.size = 25, win.offset = 1, startlast = T,  boot = FALSE, ci = 0.05)
+            all.dcc.output[[f]][[v]] <- bootRes::mdcc(core, clim[, c("year", "month", v)], method = "corr", start = ifelse(v %in% "frs", start.frs, start), end = ifelse(v %in% "frs", end.frs, end), timespan = c(start.year, end.year), win.size = 25, win.offset = 1, startlast = T,  boot = TRUE, ci = 0.05)
           }
           
         }# for (v in names(clim)[-c(1:2)])
@@ -297,13 +308,11 @@ for(c in climate.data.types) {
         all.dcc.output$month <- sapply(strsplit(row.names(all.dcc.output), "\\."), function(x) paste(x[2], x[3], sep ="."))
         all.dcc.output$month <- gsub("[0-9]", "",   all.dcc.output$month)
         
-        if(save.result.table) {
-          write.csv(all.dcc.output, file = paste0("results/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), c, "_climate_data.csv"), row.names = F)
-        }
+        if(save.result.table) write.csv(all.dcc.output, file = paste0("results/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), c, "_climate_data.csv"), row.names = F)
       }
       
       if(method.to.run %in% c("moving_correlation") & type.start %in% "Going_back_as_far_as_possible") {
-        save(all.dcc.output, file = paste0("results/", type.start, "/tables/monthly_moving_correlation/moving_correlation_with_", c, "_climate_data.Rdata"))
+        if(save.result.table) save(all.dcc.output, file = paste0("results/", type.start, "/tables/monthly_moving_correlation/moving_correlation_with_", c, "_climate_data.Rdata"))
       }
       
       ## Plot results ####
@@ -330,7 +339,8 @@ for(c in climate.data.types) {
           x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
           
           if(save.plots)  {
-            dir.create(paste0("results/", type.start, "/figures/monthly_correlations_all_speciess_and_climate_variables/", c), showWarnings = F)
+            dir.create(paste0("results/", type.start, "/figures/monthly_", method.to.run), showWarnings = F)
+            dir.create(paste0("results/", type.start, "/figures/monthly_", method.to.run, "/", c), showWarnings = F)
             tiff(paste0("results/", type.start, "/figures/monthly_", method.to.run, "/", c, "/", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
           }
           
@@ -357,20 +367,19 @@ for(c in climate.data.types) {
               return(x)
             })
             
-            # x.sig <- reshape(X[, c("month", "Species", "significant")], idvar = "month", timevar = "Species", direction = "wide")
-            
-            
             if(save.plots)  {
+              dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation"), showWarnings = F)
+              dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_species_and_by_month"), showWarnings = F)
               dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_species_and_by_month/", c), showWarnings = F)
               tiff(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_species_and_by_month/", c, "/", f, "_", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
             }
             
             # op <- par(oma = c(1, 3, 5, 3), mai = c(1, 0.5, 0.2, 1)) #par(oma = c(0, 3, 5, 0), mai = c(0.5, 0.8, 0.2, 2))
-            op <- par(mfrow = c(2, 1), oma = c(5, 5, 5, 5), mai = c(1, 0.5, 0.2, 1), mar = c(0,0,0,0))
+            # op <- par(mfrow = c(2, 1), oma = c(5, 5, 5, 5), mai = c(1, 0.5, 0.2, 1), mar = c(0,0,0,0))
             
             my.mdccplot(x = X, main = paste(f, v, sep = " - "))
             
-            par(op)
+            # par(op)
             
             if(save.plots) dev.off()
           } #   for(v in names(clim)[-c(1,2)])
@@ -383,20 +392,31 @@ for(c in climate.data.types) {
           print(v)
           for(mth in switch(v,frs = c("apr", "may"), c("apr", "may", "jun", "jul"))) {
             print(mth)
+            
             X <- lapply(lapply(all.dcc.output, "[[", v), function(x){
               x <- x[["coef"]][paste0(v, ".curr.", mth),]
               x <- x[,c(grep(overall.start.year+1, substr(names(x), 1, 4)):ncol(x))]
               return(x)
             })
-            
             X <- do.call(rbind, X)
             
+            Sig <- lapply(lapply(all.dcc.output, "[[", v), function(x){
+              x <- x[["significant"]][paste0(v, ".curr.", mth),]
+              x <- x[,c(grep(overall.start.year+1, substr(names(x), 1, 4)):ncol(x))]
+              return(x)
+            })
+            
+            Sig <- do.call(rbind, Sig)
+            
+            X <- list(coef = X, significant = Sig)
+            
             if(save.plots) {
+              dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together"), showWarnings = F)
               dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together/", c), showWarnings = F)
               tiff(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together/", c, "/", v, "_", mth, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
             }
             
-            my.mdccplot(X, main = paste(v, mth, sep = " - "), clim.ma = clim.moving.avg[[mth]][, v][colnames(X)], clim.sd = clim.moving.sd[[mth]][, v][colnames(X)])
+            my.mdccplot(X, main = paste(v, mth, sep = " - "), clim.ma = clim.moving.avg[[mth]][, v][colnames(X$coef)], clim.sd = clim.moving.sd[[mth]][, v][colnames(X$coef)])
             
             if(save.plots) dev.off()
           } #  for(m in c( c("apr", "may", "jun", "jul")))

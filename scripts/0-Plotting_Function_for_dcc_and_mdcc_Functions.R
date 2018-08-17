@@ -103,7 +103,9 @@ my.mdccplot <- function (x, sig = NULL, clim.ma = NULL, clim.sd = NULL, rescale 
   
   ## prepare parameters
   if (!is.data.frame(x)) {
+    sig <- x$significant
     x <- x$coef
+    
   }
   
   blues <- colorRamp(c("#FFFFFF", "#395cd4"))
@@ -121,8 +123,9 @@ my.mdccplot <- function (x, sig = NULL, clim.ma = NULL, clim.sd = NULL, rescale 
   first.round.year <- which(substr(colnames(x), 4,4) %in% "0")[1]
   last.round.year <- rev(which(substr(colnames(x), 4,4) %in% "0"))[1]
   y.axis.labs[seq(first.round.year, last.round.year, 10)] <- colnames(x)[seq(first.round.year, last.round.year, 10)]
+  
   ## plot
-  if(is.null(clim)) {
+  if(is.null(clim.ma)) {
     op <- par(oma = c(1, 3, 5, 3), mai = c(1, 0.5, 0.2, 1)) #par(oma = c(0, 3, 5, 0), mai = c(0.5, 0.8, 0.2, 2))
   } else { 
     op <- par(mfrow = c(2, 1), oma = c(6, 5, 5, 6), mai = c(1, 0.5, 0.2, 1), mar = c(0,0,0,0))
@@ -177,7 +180,7 @@ my.mdccplot <- function (x, sig = NULL, clim.ma = NULL, clim.sd = NULL, rescale 
   y.top <- unlist(c(Y.top))
   
   xs <- unlist(lapply(c(x), rev))
-  # xs.sig <- unlist(lapply(c(sig)))
+ 
   
   color <- xs
   color[xs <= 0] <- rgb(reds(abs(xs[xs <= 0])/ neg.max), maxColorValue = 255)
@@ -185,7 +188,11 @@ my.mdccplot <- function (x, sig = NULL, clim.ma = NULL, clim.sd = NULL, rescale 
   
   rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
   
-  # points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig,  "white", "transparent"), col = ifelse(xs.sig, "black", "transparent"), pch = 21) 
+  if(!is.null(sig)) {
+     xs.sig <- unlist(lapply(c(sig), rev))
+  points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig,  "white", "transparent"), col = ifelse(xs.sig, "black", "transparent"), pch = 21) 
+  }
+ 
   
   
   
