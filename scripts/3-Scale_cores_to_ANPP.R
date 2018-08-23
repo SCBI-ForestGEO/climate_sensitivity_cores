@@ -17,7 +17,7 @@ library(bootRes)
 save.plots <- TRUE
 save.result.table <- TRUE
 
-source("scripts/0-Plotting_Function_for_dcc_and_mdcc_Functions.R")
+source("scripts/0-My_dplR_functions.R")
 
 
 ## Define how to run it regarding the starting year ####
@@ -213,10 +213,10 @@ for(c in climate.data.types) {
                                       variable = v, 
                                       month = m, 
                                       ANPP_response = ANPP_diff))
-  }
+  } #  for(i in 1:nrow(Results_response_climate))
   
   close(pb)
-}
+} # for(c in climate.data.types
 
 head(ANPP_response)
 
@@ -260,8 +260,8 @@ for( c in climate.data.types) {
 
  
  x <- x[, -1]
- x.sig <- x
- x.sig[] <- FALSE
+ x.sig <- x.sig2 <- x
+ x.sig[] <- x.sig2[] <- FALSE
  
  # remove frs
  if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
@@ -277,7 +277,7 @@ for( c in climate.data.types) {
   tiff(paste0("results/", type.start, "/figures/monthly_responses_ANPP_to_climate_variables/response_to_", c, ".tif"), res = 300, width = 169, height = 169, units = "mm", pointsize = 10)
 }
 
-  my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
+  my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), sig2 = as.data.frame(t(x.sig2)), main = "", method = "response")
  axis(2, at = c(1:ncol(x))- ncol(x)/40, paste0("SD=", round(SDs,2)), las = 1, tick = 0, line = -0.5,  cex.axis = 0.8)
 
  if(save.plots) dev.off()

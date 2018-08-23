@@ -12,10 +12,10 @@ setwd(".")
 
 # Load libraries ####
 library(dplR)
-# library(bootRes)
+library(bootRes)
 library(caTools)
 
-source("scripts/0-Plotting_Function_for_dcc_and_mdcc_Functions.R")
+source("scripts/0-My_dplR_functions.R")
 
 # Define parameters and variables ####
 
@@ -112,10 +112,10 @@ write.csv(all_sss, file = "results/SSS_as_a_function_of_the_number_of_trees_in_s
 
 ## Define start and end year for analysis, common to all species and one for each species ####
 
-start.years <- NULL # species specific
+start.years.sss <- NULL # species specific
 for(f in filenames) {
   sss <- get(paste0(f, "_sss"))
-  start.years <- c(start.years, sss[sss$sss >= sss.threshold, ]$Year[1])
+  start.years.sss <- c(start.years.sss, sss[sss$sss >= sss.threshold, ]$Year[1])
 }
 
 end.year = 2009  # common to all species
@@ -256,9 +256,12 @@ for(c in climate.data.types) {
     dir.create(paste0("results/", type.start, "/figures"), showWarnings = F)
     dir.create(paste0("results/", type.start, "/tables"), showWarnings = F)
     
-    if(type.start %in% "Going_back_to_1920") overall.start.year <- 1920
-    if(type.start %in% "Going_back_to_1980") overall.start.year <- 1980 
-    if(type.start %in% "Going_back_at_earliest_common_year") overall.start.year <- max(start.years) # common to all species
+    
+    if(type.start %in% "Going_back_as_far_as_possible") start.years <- start.years.sss
+    if(type.start %in% "Going_back_to_1920") start.years <- ifelse(start.years.sss > 1920, start.years.sss, 1920)
+    if(type.start %in% "Going_back_to_1980") start.years <- ifelse(start.years.sss > 1980, start.years.sss, 1980)
+    if(type.start %in% "Going_back_at_earliest_common_year") start.years <- ifelse(start.years.sss > max(start.years.sss), max(start.years.sss), max(start.years.sss))
+     # common to all species
     
     
     
@@ -279,7 +282,7 @@ for(c in climate.data.types) {
         
         core <- core[rownames(core) %in% clim$year, ] # trim to use only years for which with have clim data 
         
-        start.year <- max(min(clim$year), ifelse(type.start %in% "Going_back_as_far_as_possible", start.years[which(filenames %in% f)], overall.start.year))
+        start.year <- max(min(clim$year), start.years[which(filenames %in% f)])
         
         dcc.output <- NULL
         
@@ -287,7 +290,7 @@ for(c in climate.data.types) {
           print(v)
           
           if(method.to.run %in% c("correlation", "response")) {
-            dcc.output <- rbind(dcc.output, bootRes::dcc(core, clim[, c("year", "month", v)], method = method.to.run, start = ifelse(v %in% "frs", start.frs, start), end = ifelse(v %in% "frs", end.frs, end), timespan = c(start.year, end.year)))
+            dcc.output <- rbind(dcc.output, my.dcc(core, clim[, c("year", "month", v)], method = method.to.run, start = ifelse(v %in% "frs", start.frs, start), end = ifelse(v %in% "frs", end.frs, end), timespan = c(start.year, end.year), ci = 0.05, ci2 = 0.002))
           }
           
           if(method.to.run %in% "moving_correlation" & type.start %in% "Going_back_as_far_as_possible") {
@@ -328,15 +331,19 @@ for(c in climate.data.types) {
           rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
           
           x.sig <- reshape(X[, c("month", "Species", "significant")], idvar = "month", timevar = "Species", direction = "wide")
+          x.sig2 <- reshape(X[, c("month", "Species", "significant2")], idvar = "month", timevar = "Species", direction = "wide")
           
           colnames(x) <- gsub("coef.", "", colnames(x))
-          colnames(x.sig) <- gsub("significant.", "", colnames(x))
+          colnames(x.sig) <- gsub("significant.", "", colnames(x.sig))
+          colnames(x.sig2) <- gsub("significant2.", "", colnames(x.sig2))
           
           x <- x[, -1]
           x.sig <- x.sig[, -1]
+          x.sig2 <- x.sig2[, -1]
           
           x <- x[, rev(SPECIES_IN_ORDER)]
           x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
+          x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
           
           if(save.plots)  {
             dir.create(paste0("results/", type.start, "/figures/monthly_", method.to.run), showWarnings = F)
@@ -344,7 +351,7 @@ for(c in climate.data.types) {
             tiff(paste0("results/", type.start, "/figures/monthly_", method.to.run, "/", c, "/", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
           }
           
-          my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = v)
+          my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), sig2 = as.data.frame(t(x.sig2)),  main = v, method = method.to.run)
           
           if(save.plots) dev.off()
         } #   for(v in names(clim)[-c(1,2)])
@@ -395,14 +402,14 @@ for(c in climate.data.types) {
             
             X <- lapply(lapply(all.dcc.output, "[[", v), function(x){
               x <- x[["coef"]][paste0(v, ".curr.", mth),]
-              x <- x[,c(grep(overall.start.year+1, substr(names(x), 1, 4)):ncol(x))]
+              x <- x[,c(grep(overall.start.year + 1, substr(names(x), 1, 4)):ncol(x))] # this won't work, need to adapt if we get back to this analysis
               return(x)
             })
             X <- do.call(rbind, X)
             
             Sig <- lapply(lapply(all.dcc.output, "[[", v), function(x){
               x <- x[["significant"]][paste0(v, ".curr.", mth),]
-              x <- x[,c(grep(overall.start.year+1, substr(names(x), 1, 4)):ncol(x))]
+              x <- x[,c(grep(overall.start.year + 1, substr(names(x), 1, 4)):ncol(x))]  # this won't work, need to adapt if we get back to this analysis
               return(x)
             })
             

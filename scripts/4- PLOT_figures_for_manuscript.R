@@ -12,7 +12,7 @@ setwd(".")
 
 # Load libraries ####
 
-source("scripts/0-Plotting_Function_for_dcc_and_mdcc_Functions.R")
+source("scripts/0-My_dplR_functions.R")
 
 # set parameters ####
 save.plots <- TRUE
@@ -51,8 +51,8 @@ for(type.start in type.of.start.date) {
   
   
   x <- x[, -1]
-  x.sig <- x
-  x.sig[] <- FALSE
+  x.sig <- x.sig2 <- x
+  x.sig[] <- x.sig2[] <- FALSE
   
   # remove frs
   if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
@@ -66,7 +66,7 @@ for(type.start in type.of.start.date) {
     tiff(paste0("results/", type.start, "/figures/for_manuscript/ANPP_response.tif"), res = 300, width = 169, height = 140, units = "mm", pointsize = 10)
   }
   
-  my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), main = "")
+  my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), sig2 = as.data.frame(t(x.sig2)), main = "", method = "response")
   
   if(save.plots) dev.off()
   
