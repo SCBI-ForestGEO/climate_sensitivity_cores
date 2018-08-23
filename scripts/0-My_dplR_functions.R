@@ -327,8 +327,10 @@ my.dccplot <- function (x, sig, sig2, rescale = TRUE, main, method = c('correlat
     x <- x$coef
   }
   
-  blues <- colorRamp(c("#FFFFFF", "#395cd4"))
-  reds <- colorRamp(c("#FFFFFF", "#dd291c"))
+  # blues <- colorRamp(c("#FFFFFF", "#395cd4"))
+  # reds <- colorRamp(c("#FFFFFF", "#dd291c"))
+  blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
+  reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
   
   m <- dim(x)[1]
   n <- dim(x)[2]
@@ -436,8 +438,10 @@ my.mdccplot <- function (x, sig = NULL, clim.ma = NULL, clim.sd = NULL, rescale 
     
   }
   
-  blues <- colorRamp(c("#FFFFFF", "#395cd4"))
-  reds <- colorRamp(c("#FFFFFF", "#dd291c"))
+  # blues <- colorRamp(c("#FFFFFF", "#395cd4"))
+  # reds <- colorRamp(c("#FFFFFF", "#dd291c"))
+  blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
+  reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
   
   m <- dim(x)[1]
   n <- dim(x)[2]
