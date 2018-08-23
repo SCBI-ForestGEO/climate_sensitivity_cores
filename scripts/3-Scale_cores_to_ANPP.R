@@ -52,10 +52,12 @@ DF <- NULL
 unknown_trees <- NULL
 for(f in filenames) {
   print(f)
+  
   core <- get(f)
   
   for (t in names(core)) {
     
+    print(t)
     # get radius increment (take the average of 2007-2009)
     r_inc_2008 <- mean(core[c("2007", "2008", "2009"), t], na.rm = T) # core["2008", t] # 
 
@@ -64,7 +66,8 @@ for(f in filenames) {
     tag <- sub("^0", "", tag ) # remove first zero if any
     
     if(tag %in% scbi.stem1$tag) {
-      dbh_2008 <- scbi.stem1[scbi.stem1$tag %in% tag, ]$dbh
+      dbh_2008 <- scbi.stem1[scbi.stem1$tag %in% tag & scbi.stem1$StemTag %in% 1, ]$dbh[1] # adding [1] because issue with tag 40873...
+      if(length(dbh_2008)>1) readline(print(dbh_2008))
     } else {
       unknown_trees <- rbind(unknown_trees, data.frame(Species = substr(f, 1, 4), tag = t))
     }    
