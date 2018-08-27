@@ -9,9 +9,11 @@ my.dcc <- function (chrono, clim, method = "response", start = -6, end = 9,
       which(month.ids == start) > which(month.ids == end)) {
     stop(errormsg1)
   }
+  
   clim <- climdispatch(clim)
   chrono.years <- as.numeric(row.names(chrono))
   clim.years <- sort(unique(clim[, 1]))
+  
   if (chrono.years[1] <= clim.years[1]) {
     overlap <- na.omit(clim.years[match(chrono.years, clim.years)])
   } else {
@@ -75,9 +77,10 @@ my.dcc <- function (chrono, clim, method = "response", start = -6, end = 9,
   clim.trunc <- clim[b, ]
   p <- pmat(clim.trunc, start, end, vnames)
   METHOD <- match.arg(method, c("response", "correlation"))
+  
   if (METHOD == "response") {
     if (boot) {
-      dc <- my.brf(chrono.trunc, p, sb = sb, vnames = vnames)
+      dc <- my.brf(chrono.trunc, p, sb = sb, vnames = vnames, ci2 = ci2)
     } else {
       dc <- nbrf(chrono.trunc, p, vnames = vnames)
     }
@@ -85,13 +88,25 @@ my.dcc <- function (chrono, clim, method = "response", start = -6, end = 9,
   if (METHOD == "correlation") {
     if (boot) {
       dc <- my.bcf(chrono.trunc, p, sb = sb, vnames = vnames, 
-                ci = ci)
+                ci = ci, ci2 = ci2)
     } else {
       dc <- nbcf(chrono.trunc, p, vnames = vnames)
     }
   }
   cat("time span considered:", start.year, "-", end.year, 
       "\n")
+  
+  # convert correlation to Linear Slope ####
+  ## see https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fele.12650&file=ele12650-sup-0003-Methods.pdf
+  
+  sd.clim <- apply(p, 2, sd)
+  sd.chrono <- sd(chrono.trunc)
+  
+  dc$chg_rad_inc_1SD_clim <- dc$coef * (sd.chrono / sd.clim) * sd.clim # multiplying again by sd.clim to get the change in radius increment under 1SD increase in climate varibale
+  
+  
+  # return
+  
   dc
 }
 
@@ -197,6 +212,8 @@ my.brf <- function (g, p, sb, vnames, ci = 0.05, ci2 = 0.002)
       }
     }
   }
+  
+  
   out <- data.frame(coef = brf.coef, significant = is.sig, significant2 = is.sig2, 
                     ci.lower = ci.lower, ci.upper = ci.upper)
   rownames(out) <- colnames(p)

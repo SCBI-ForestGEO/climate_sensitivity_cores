@@ -32,7 +32,7 @@ climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "
 
 ## Define sets of methods to run ####
 
-methods.to.run <- c("correlation", "response") # c("correlation", "response", "moving_correlation")
+methods.to.run <- c("correlation") # c("correlation", "response", "moving_correlation")
 
 ## Define how to run it regarding the starting year ####
 type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "Going_back_to_1980") # Going_back_at_earliest_common_year")

@@ -129,46 +129,46 @@ ANPP_response <- NULL
 
 for(c in climate.data.types) {
   print(c)
+  # 
+  # ## Load climate data + calculate SD of each variable
+  # 
+  # clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
+  # 
+  # ### crop first and last year of NOAA data because outliers
+  # if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
+  #   clim <- clim[!(clim$year %in% min(clim$year) | clim$year %in% max(clim$year)), ]
+  # }
+  # 
+  # ### Pre_chiten PDSI of NOAA data because autocorrelated by definitiaon
+  # if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
+  #   clim$PDSI_prewhiten <- ar(clim$PDSI)$resid
+  #   clim$PHDI_prewhiten <- ar(clim$PHDI)$resid
+  #   clim$PMDI_prewhiten <- ar(clim$PMDI)$resid
+  # }
+  # 
+  # ### get SD
+  # SDs <- apply(clim, 2, sd, na.rm = T)
+  # assign(paste("SDs", c, sep = "_"), SDs)
   
-  ## Load climate data + calculate SD of each variable
+  ## load the slopes calculated from correlations coefficients of chronologies to climate variables (output of script 1- Calculate_and_plot_correlations_and_responses_between_tree-ring_chronologies_and_climate_variables.R)
   
-  clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
-  
-  ### crop first and last year of NOAA data because outliers
-  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
-    clim <- clim[!(clim$year %in% min(clim$year) | clim$year %in% max(clim$year)), ]
-  }
-  
-  ### Pre_chiten PDSI of NOAA data because autocorrelated by definitiaon
-  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
-    clim$PDSI_prewhiten <- ar(clim$PDSI)$resid
-    clim$PHDI_prewhiten <- ar(clim$PHDI)$resid
-    clim$PMDI_prewhiten <- ar(clim$PMDI)$resid
-  }
-  
-  ### get SD
-  SDs <- apply(clim, 2, sd, na.rm = T)
-  assign(paste("SDs", c, sep = "_"), SDs)
-  
-  ## load the response coefficients of chronologies to climate variables (output of script Calculate_and_plot_responses_between_tree-ring_chronologies_and_climate_variables.R)
-  
-  Results_response_climate <- read.csv(paste0("results/", type.start, "/tables/monthly_response/Response_to_", c, "_climate_data.csv"), stringsAsFactors = F)
+  Results_correlation_climate <- read.csv(paste0("results/", type.start, "/tables/monthly_correlation/correlation_with_", c, "_climate_data.csv"), stringsAsFactors = F)
   
   
   ## do steps 1 through 6 ####
-  pb <- txtProgressBar(style = 3, min = 1, max = nrow(Results_response_climate))
+  pb <- txtProgressBar(style = 3, min = 1, max = nrow(Results_correlation_climate))
 
   
-  for(i in 1:nrow(Results_response_climate)) {
+  for(i in 1:nrow(Results_correlation_climate)) {
     
     setTxtProgressBar(pb,i)
 
-    v <- Results_response_climate$variable[i]
-    m <- Results_response_climate$month[i]
-    sp <- tolower(Results_response_climate$Species[i])
+    v <- Results_correlation_climate$variable[i]
+    m <- Results_correlation_climate$month[i]
+    sp <- tolower(Results_correlation_climate$Species[i])
     
-    coef <- Results_response_climate$coef[i]
-    # sd.v <- SDs[[v]]
+    rad_plus <- Results_correlation_climate$chg_rad_inc_1SD_clim[i] # coef <- Results_correlation_climate$coef[i]
+    # sd.v <- SDs[[v]] 
     
     lm1 <- DBH_to_r_inc_lms[[sp]]
     
@@ -191,7 +191,7 @@ for(c in climate.data.types) {
     agb_2009 <- x$agb * .47
     
     ## AGB 2009 with one unit of increase in climate variable  (using DBH in 2009 predicted using  linear model + response coeficient)
-     x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx] + c(2 * (predict(object = lm1, newdata = data.frame(dbh_2008 = scbi.stem1$dbh[idx])) + coef))) # * sd.v)))
+     x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx] + c(2 * (predict(object = lm1, newdata = data.frame(dbh_2008 = scbi.stem1$dbh[idx])) + rad_plus * 2))) # rad_plus is the absolute change in radius increment for 1SD increase in climate variable
     source("scripts/0-scbi_Allometries.R")
     agb_2009_plus <- x$agb * .47
     
@@ -216,7 +216,7 @@ for(c in climate.data.types) {
                                       variable = v, 
                                       month = m, 
                                       ANPP_response = ANPP_diff))
-  } #  for(i in 1:nrow(Results_response_climate))
+  } #  for(i in 1:nrow(Results_correlation_climate))
   
   close(pb)
 } # for(c in climate.data.types
@@ -249,7 +249,7 @@ write.csv(ANPP_response_total, file = paste0("results/", type.start, "/tables/mo
 for( c in climate.data.types) {
   print(c)
   
-  SDs <- get(paste("SDs", c, sep = "_"))
+  # SDs <- get(paste("SDs", c, sep = "_"))
   
   X <- ANPP_response_total[ANPP_response_total$Climate_data %in% c, ]
 
@@ -270,7 +270,7 @@ for( c in climate.data.types) {
  if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
 
  # get the SD in the right order
- SDs <- SDs[colnames(x)] # put in right order
+ # SDs <- SDs[colnames(x)] # put in right order
 
  
 
@@ -281,7 +281,7 @@ for( c in climate.data.types) {
 }
 
   my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), sig2 = as.data.frame(t(x.sig2)), main = "", method = "response")
- axis(2, at = c(1:ncol(x))- ncol(x)/40, paste0("SD=", round(SDs,2)), las = 1, tick = 0, line = -0.5,  cex.axis = 0.8)
+ # axis(2, at = c(1:ncol(x))- ncol(x)/40, paste0("SD=", round(SDs,2)), las = 1, tick = 0, line = -0.5,  cex.axis = 0.8)
 
  if(save.plots) dev.off()
 
