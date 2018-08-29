@@ -31,7 +31,7 @@ head(clim)
 write.csv(clim, file = "raw_data/climate/Formated_PRISM_SCBI_1930_2015_30second.csv", row.names = F)
 
 ## CRU data ####
-### https://github.com/forestgeo/Climate/tree/master/Gridded_Data_Products/Historical%20Climate%20Data
+### https://github.com/forestgeo/Climate/tree/master/Gridded_Data_Products/Historical%20Climate%20Data/CRU_v4_01
 
 url <- "https://github.com/forestgeo/Climate/tree/master/Gridded_Data_Products/Historical%20Climate%20Data/CRU_v4_01"
 x <- readLines(url)
@@ -70,7 +70,7 @@ for(f in good.files) {
 clim$deficit <- clim$pet_sum - clim$pre
 
 
-write.csv(clim, file = "raw_data/climate/Formated_CRU_SCBI_1901_2014.csv", row.names = F)
+write.csv(clim, file = "raw_data/climate/Formated_CRU_SCBI_1901_2016.csv", row.names = F)
 
 
 ### Palmer Drought Severity Index ####
@@ -99,7 +99,7 @@ write.csv(clim, file = "raw_data/climate/Formated_NOAA_PDSI_Northern_Virginia_18
 
 # plot ####
 
-climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2014", "NOAA_PDSI_Northern_Virginia_1895_2017")
+climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
 for( c in climate.data.types) {
   print(c)
