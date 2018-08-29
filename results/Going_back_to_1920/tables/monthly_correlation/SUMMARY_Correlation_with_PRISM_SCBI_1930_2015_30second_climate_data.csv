@@ -1,46 +1,46 @@
 "Summary_type","Species","PPT","Tmax","Tmean","Tmin"
-"Sum of all absolute correlations","All",25.2490609395415,26.5410505529433,22.789312316511,17.6455440290337
-"Sum of all absolute correlations","CACO",2.16257930270389,1.9543074359776,1.51159604761557,1.15987912015138
-"Sum of all absolute correlations","CAGL",1.43657447856576,1.78743794823668,1.66408188229297,1.38967050164871
-"Sum of all absolute correlations","CAOV",1.46504664191693,1.75634537573066,1.65953802989435,1.40710495803464
-"Sum of all absolute correlations","CATO",1.32180597278907,1.56837457367791,1.60182414138928,1.49356069215285
-"Sum of all absolute correlations","FAGR",1.92739009188617,2.61903167602023,2.20345275714936,1.56532476198204
-"Sum of all absolute correlations","FRAM",1.52444306444276,1.38130357147249,1.39831761131203,1.21689807062281
-"Sum of all absolute correlations","FRNI",2.20212050048471,1.71429299417591,1.65419960567273,1.52783734095991
-"Sum of all absolute correlations","JUNI",1.70181894134549,1.60351721175641,1.34361492724034,1.02078207892522
-"Sum of all absolute correlations","LITU",2.14089850639875,2.13514868196846,1.54820994411064,0.949171239954395
-"Sum of all absolute correlations","PIST",1.78526984312308,1.70464879350462,1.50613298276078,1.29268222567586
-"Sum of all absolute correlations","QUAL",1.95410441801229,2.01593818035749,1.61565870036871,1.24086644716336
-"Sum of all absolute correlations","QUPR",1.88100682051884,1.80790421774345,1.41328760877379,0.886405153192162
-"Sum of all absolute correlations","QURU",1.90539908389427,2.34557373450931,2.03443481000598,1.40611870381189
-"Sum of all absolute correlations","QUVE",1.84060327345947,2.14722615781209,1.63496326792451,1.08924273475847
-"Count of Significant correlations","All",35,28,20,13
-"Count of Significant correlations","CACO",5,2,1,1
+"Sum of all absolute correlations","All",25.2678035321796,26.4827980512267,22.9319808239791,17.7230980968753
+"Sum of all absolute correlations","CACO",2.17617612643667,1.90375087707666,1.56182450072527,1.19346241470358
+"Sum of all absolute correlations","CAGL",1.42089126787394,1.78826083593846,1.67369106352524,1.36528584339137
+"Sum of all absolute correlations","CAOV",1.4179175461416,1.76905005291968,1.6797961956465,1.43692775495386
+"Sum of all absolute correlations","CATO",1.33356244069509,1.52848404146417,1.56559275946358,1.48152911135893
+"Sum of all absolute correlations","FAGR",1.90929201803246,2.60532969723657,2.2533390439812,1.60197427762021
+"Sum of all absolute correlations","FRAM",1.55214265453402,1.3874743578079,1.37057097087203,1.25175604181533
+"Sum of all absolute correlations","FRNI",2.17052868767886,1.75875363838801,1.68387830821062,1.5231416679534
+"Sum of all absolute correlations","JUNI",1.68201030879865,1.59743667106379,1.36758044867278,1.04535285128916
+"Sum of all absolute correlations","LITU",2.12522340859672,2.1268048383125,1.50729091424489,0.943923232754195
+"Sum of all absolute correlations","PIST",1.82674240892006,1.68116684779529,1.5015952667004,1.31418426951159
+"Sum of all absolute correlations","QUAL",1.95354237422648,2.05062354861071,1.60648641874497,1.19556123039848
+"Sum of all absolute correlations","QUPR",1.92878853314062,1.77913619585726,1.43745374864022,0.846501342289392
+"Sum of all absolute correlations","QURU",1.92753815965523,2.35394631289922,2.08271329580543,1.44608659801018
+"Sum of all absolute correlations","QUVE",1.84344759744922,2.15258013585649,1.64016788874597,1.07741146082561
+"Count of Significant correlations","All",35,26,21,10
+"Count of Significant correlations","CACO",4,2,1,1
 "Count of Significant correlations","CAGL",1,1,1,1
-"Count of Significant correlations","CAOV",2,1,1,2
+"Count of Significant correlations","CAOV",1,0,2,1
 "Count of Significant correlations","CATO",1,2,1,1
-"Count of Significant correlations","FAGR",3,6,4,1
-"Count of Significant correlations","FRAM",1,1,1,1
+"Count of Significant correlations","FAGR",3,5,4,1
+"Count of Significant correlations","FRAM",2,1,1,1
 "Count of Significant correlations","FRNI",4,1,1,0
-"Count of Significant correlations","JUNI",2,1,1,0
-"Count of Significant correlations","LITU",4,4,2,1
-"Count of Significant correlations","PIST",3,0,1,2
-"Count of Significant correlations","QUAL",1,0,1,1
-"Count of Significant correlations","QUPR",2,3,1,1
+"Count of Significant correlations","JUNI",2,2,1,0
+"Count of Significant correlations","LITU",4,3,2,0
+"Count of Significant correlations","PIST",3,0,1,1
+"Count of Significant correlations","QUAL",2,0,1,1
+"Count of Significant correlations","QUPR",2,3,2,1
 "Count of Significant correlations","QURU",4,3,1,1
-"Count of Significant correlations","QUVE",2,3,3,0
-"Sum of absolute significant correlations","All",9.63307774835757,7.13107413750982,4.99881541293538,3.02308064048664
-"Sum of absolute significant correlations","CACO",1.30167864153039,0.519449540080153,0.282733305523948,0.220302883147072
-"Sum of absolute significant correlations","CAGL",0.280303465557419,0.239952871260805,0.253542251692213,0.237913662950899
-"Sum of absolute significant correlations","CAOV",0.518767543512238,0.238642055749566,0.258160310796796,0.485684102263773
-"Sum of absolute significant correlations","CATO",0.232701926062817,0.472777310522967,0.265992174932451,0.227856173565171
-"Sum of absolute significant correlations","FAGR",0.927231488930199,1.596800201932,1.00506868854214,0.217623358841718
-"Sum of absolute significant correlations","FRAM",0.256448747027223,0.290392655906503,0.266178498908283,0.231770812913959
-"Sum of absolute significant correlations","FRNI",1.05837369454709,0.292293866040979,0.218844478377182,NA
-"Sum of absolute significant correlations","JUNI",0.560237601912509,0.251385448270221,0.247792059645105,NA
-"Sum of absolute significant correlations","LITU",1.12949719302921,0.929840661493909,0.451459690966378,0.194019056412131
-"Sum of absolute significant correlations","PIST",0.745267493477649,NA,0.306763589504639,0.478961543800486
-"Sum of absolute significant correlations","QUAL",0.379878175754246,NA,0.253589246859884,0.261261308532365
-"Sum of absolute significant correlations","QUPR",0.577922156979385,0.755379543957999,0.223084400641294,0.20740987878728
-"Sum of absolute significant correlations","QURU",1.10514778841827,0.73643129719921,0.282364188777787,0.260277859271786
-"Sum of absolute significant correlations","QUVE",0.55962183161893,0.807728685095501,0.68324252776728,NA
+"Count of Significant correlations","QUVE",2,3,2,0
+"Sum of absolute significant correlations","All",9.56788549500848,6.72774407913023,5.29025839260985,2.44579048384161
+"Sum of absolute significant correlations","CACO",1.08701869804545,0.527888603969822,0.288003332046528,0.226156872103533
+"Sum of absolute significant correlations","CAGL",0.276329727579104,0.234920282954818,0.254332011959639,0.236025067608917
+"Sum of absolute significant correlations","CAOV",0.254692211379498,NA,0.48401025919394,0.284370401916239
+"Sum of absolute significant correlations","CATO",0.218788076178338,0.466198375016883,0.260372692104006,0.224322408996204
+"Sum of absolute significant correlations","FAGR",0.923667722287731,1.38773053029885,1.02165391553965,0.22730488256582
+"Sum of absolute significant correlations","FRAM",0.47860802015684,0.294975807950498,0.270464818547199,0.232143699414387
+"Sum of absolute significant correlations","FRNI",1.05529314434744,0.292055344372304,0.22032751731669,NA
+"Sum of absolute significant correlations","JUNI",0.552457987115441,0.48022227735226,0.257232366647186,NA
+"Sum of absolute significant correlations","LITU",1.13195984424036,0.720900869040835,0.451970166969592,NA
+"Sum of absolute significant correlations","PIST",0.749882762977062,NA,0.315459911966621,0.290482224825512
+"Sum of absolute significant correlations","QUAL",0.585169089084058,NA,0.250697959724553,0.259709971079692
+"Sum of absolute significant correlations","QUPR",0.57791407257783,0.742500509121182,0.430516543643002,0.20301073644671
+"Sum of absolute significant correlations","QURU",1.10547839966973,0.752071124236156,0.28862753923322,0.262264218884598
+"Sum of absolute significant correlations","QUVE",0.570625739369601,0.828280354816613,0.496589357718027,NA
