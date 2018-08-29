@@ -33,12 +33,12 @@ write.csv(clim, file = "raw_data/climate/Formated_PRISM_SCBI_1930_2015_30second.
 ## CRU data ####
 ### https://github.com/forestgeo/Climate/tree/master/Gridded_Data_Products/Historical%20Climate%20Data
 
-url <- "https://github.com/forestgeo/Climate/tree/master/Gridded_Data_Products/Historical%20Climate%20Data"
+url <- "https://github.com/forestgeo/Climate/tree/master/Gridded_Data_Products/Historical%20Climate%20Data/CRU_v4_01"
 x <- readLines(url)
-grep("drt", x)
-x[677]
+grep("dtr", x)
+x[569]
 
-goodlines = '\\.1901\\.2014\\.csv'
+goodlines = '\\.1901\\.2016'
 try = grep(goodlines,x,value=TRUE)
 try <- gsub('"', "", try)
 try.regexec <- regexec('title=(.*) id=', try, perl = T)
@@ -49,7 +49,7 @@ good.files <- sapply(try.regmatches, function(x) x[2])
 for(f in good.files) {
   print(f)
   
-  clim.raw <- read.csv(text=getURL(paste0("https://raw.githubusercontent.com/forestgeo/Climate/master/Gridded_Data_Products/Historical%20Climate%20Data/", f)), header=T)
+  clim.raw <- read.csv(text=getURL(paste0("https://raw.githubusercontent.com/forestgeo/Climate/master/Gridded_Data_Products/Historical%20Climate%20Data/CRU_v4_01/", f)), header=T)
   
   clim.raw <- clim.raw[clim.raw$sites.sitename %in% "Smithsonian_Conservation_Biology_Institute_(SCBI)", -1]
   
@@ -67,7 +67,7 @@ for(f in good.files) {
 }
 
 # add PET-PPT asd a climate variable (see issue# 23, https://github.com/EcoClimLab/climate_sensitivity_cores/issues/23)
-clim$deficit <- clim$pet - clim$pre
+clim$deficit <- clim$pet_sum - clim$pre
 
 
 write.csv(clim, file = "raw_data/climate/Formated_CRU_SCBI_1901_2014.csv", row.names = F)
