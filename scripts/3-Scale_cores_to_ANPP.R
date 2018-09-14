@@ -34,6 +34,13 @@ for(f in filenames) {
   assign(f, core)
 }
 
+# for(f in filenames) {
+#   print(f)
+#   core <- get(f)
+#   print(sum(duplicated(gsub("[^0-9]", "", names(core)))))
+# }
+# 
+# tail(core[, duplicated(gsub("[^0-9]", "", names(core))) | duplicated(gsub("[^0-9]", "", names(core)), fromLast=TRUE)], 100)
 
 # Load 2008 census data ####
 load("data/scbi.stem1.rdata")
