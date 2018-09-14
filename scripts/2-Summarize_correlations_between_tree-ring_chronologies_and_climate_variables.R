@@ -37,51 +37,63 @@ for( c in climate.data.types) {
     
     print(type.start)
     
-    ## Load tables of results ####
-  
-    all.dc.corr <- read.csv(paste0("results/", type.start, "/tables/monthly_correlation/correlation_with_", c, "_climate_data.csv"))
+    All_species_combined_both_season_subsets <- NULL
     
-    ## Summarize by Variable and by species  ####
-    
-    ### Take the sum of all correlations (absolute) ####
-    
-    summary_of_correlations_all <- rbind(tapply(all.dc.corr$coef, all.dc.corr$variable, function(x) sum(abs(x))))
-    rownames(summary_of_correlations_all) <- "All"
-    
-    summary_of_correlations_by_sepcies <- tapply(all.dc.corr$coef, list(all.dc.corr$Species, all.dc.corr$variable) , function(x) sum(abs(x)), simplify = T)
-    
-    summary_of_correlations <- data.frame(Summary_type = "Sum of all absolute correlations", Species = c(rownames(summary_of_correlations_all), rownames(summary_of_correlations_by_sepcies)), rbind(summary_of_correlations_all, summary_of_correlations_by_sepcies))
-    
-    ### Count the number of significant correlations ####
-    
-    summary_of_significance_all <- rbind(tapply(all.dc.corr$significant, all.dc.corr$variable, function(x) sum(x)))
-    rownames(summary_of_significance_all) <- "All"
-    
-    summary_of_significance_by_sepcies <- tapply(all.dc.corr$significant, list(all.dc.corr$Species, all.dc.corr$variable) , function(x) sum(x), simplify = T)
-    
-    summary_of_significance <- data.frame(Summary_type = "Count of Significant correlations", Species = c(rownames(summary_of_significance_all), rownames(summary_of_significance_by_sepcies)), rbind(summary_of_significance_all, summary_of_significance_by_sepcies))
-    
-    
-    ### Take the sum of all correlations (absolute) that are significant
-    
-    idx <- all.dc.corr$significant
-    
-    summary_of_significant_correlations_all <- rbind(tapply(all.dc.corr$coef[idx], all.dc.corr$variable[idx], function(x) sum(abs(x))))
-    rownames(summary_of_significant_correlations_all) <- "All"
-    
-    summary_of_significant_correlations_by_sepcies <- tapply(all.dc.corr$coef[idx], list(all.dc.corr$Species[idx], all.dc.corr$variable[idx]) , function(x) sum(abs(x)), simplify = T)
-    
-    summary_of_significant_correlations <- data.frame(Summary_type = "Sum of absolute significant correlations", Species = c(rownames(summary_of_significant_correlations_all), rownames(summary_of_significant_correlations_by_sepcies)), rbind(summary_of_significant_correlations_all, summary_of_significant_correlations_by_sepcies))
-    
+    for(season in c("all_seasons", "curr_growing_season_only")) {
+      ## Load tables of results ####
       
-    
-    # Save ####
-    
-    
-    write.csv(rbind(summary_of_correlations, summary_of_significance, summary_of_significant_correlations),
-          file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_Correlation_with_", c, "_climate_data.csv"), row.names = F)
-    
+      all.dc.corr <- read.csv(paste0("results/", type.start, "/tables/monthly_correlation/correlation_with_", c, "_climate_data.csv"))
       
+      if(season %in% "curr_growing_season_only") all.dc.corr <- all.dc.corr[all.dc.corr$month %in% paste0("curr.", c("may", "jun", "jul", "aug")),]
+      
+      ## Summarize by Variable and by species  ####
+      
+      ### Take the sum of all correlations (absolute) ####
+      
+      summary_of_correlations_all <- rbind(tapply(all.dc.corr$coef, all.dc.corr$variable, function(x) sum(abs(x))))
+      rownames(summary_of_correlations_all) <- "All"
+      
+      summary_of_correlations_by_species <- tapply(all.dc.corr$coef, list(all.dc.corr$Species, all.dc.corr$variable) , function(x) sum(abs(x)), simplify = T)
+      
+      summary_of_correlations <- data.frame(Summary_type = "Sum of all absolute correlations", Species = c(rownames(summary_of_correlations_all), rownames(summary_of_correlations_by_species)), rbind(summary_of_correlations_all, summary_of_correlations_by_species))
+      
+      ### Count the number of significant correlations ####
+      
+      summary_of_significance_all <- rbind(tapply(all.dc.corr$significant, all.dc.corr$variable, function(x) sum(x)))
+      rownames(summary_of_significance_all) <- "All"
+      
+      summary_of_significance_by_species <- tapply(all.dc.corr$significant, list(all.dc.corr$Species, all.dc.corr$variable) , function(x) sum(x), simplify = T)
+      
+      summary_of_significance <- data.frame(Summary_type = "Count of Significant correlations", Species = c(rownames(summary_of_significance_all), rownames(summary_of_significance_by_species)), rbind(summary_of_significance_all, summary_of_significance_by_species))
+      
+      
+      ### Take the sum of all correlations (absolute) that are significant
+      
+      idx <- all.dc.corr$significant
+      
+      summary_of_significant_correlations_all <- rbind(tapply(all.dc.corr$coef[idx], all.dc.corr$variable[idx], function(x) sum(abs(x))))
+      rownames(summary_of_significant_correlations_all) <- "All"
+      
+      summary_of_significant_correlations_by_species <- tapply(all.dc.corr$coef[idx], list(all.dc.corr$Species[idx], all.dc.corr$variable[idx]) , function(x) sum(abs(x)), simplify = T)
+      
+      summary_of_significant_correlations <- data.frame(Summary_type = "Sum of absolute significant correlations", Species = c(rownames(summary_of_significant_correlations_all), rownames(summary_of_significant_correlations_by_species)), rbind(summary_of_significant_correlations_all, summary_of_significant_correlations_by_species))
+      
+      
+      
+      # Save ####
+      summary_to_save <- rbind(summary_of_correlations, summary_of_significance, summary_of_significant_correlations)
+    
+      write.csv(summary_to_save, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_Correlation_with_", c, "_", season, ".csv"), row.names = F)
+      
+      All_species_combined_both_season_subsets <- rbind(All_species_combined_both_season_subsets, data.frame(season, summary_to_save[grepl("All", rownames(summary_to_save)), ]))
+      
+       } #   for(season in c("all_seasons", "curr_growing_season_only")) 
+    
+    write.csv(All_species_combined_both_season_subsets, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_Correlation_with_", c, "_both_seasons_species_combined.csv"), row.names = F)
+    
+    
+    
+   
   } # for(type.start in type.of.start.date)
 } # for( c in climate.data.types)
 
