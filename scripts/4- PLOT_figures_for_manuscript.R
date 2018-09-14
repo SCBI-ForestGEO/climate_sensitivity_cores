@@ -418,7 +418,7 @@ for(type.start in type.of.start.date) {
   
   
   # add letter ####
-  text(x = -1, y = 18, paste0(letters[plot.nb], ")"), font = 2)
+  text(x = -1, y = 13, paste0(letters[plot.nb], ")"), font = 2)
   
   
 } # for(type.start in type.of.start.date)
