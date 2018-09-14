@@ -328,7 +328,12 @@ for(type.start in type.of.start.date) {
   # order by influence on ANPP (defined as predicted changes summed across all months) in analysis going back as far as possible
   
   if(type.start %in% "Going_back_as_far_as_possible") {
-    VARIABLES.IN.ORDER <- names(x)[order(abs(apply(x[c("MAY", "JUN", "JUL", "AUG"),], 2, sum)), decreasing = T)]
+    
+    ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
+    DEFICIT_VARIABLES.IN.ORDER <- "deficit"
+    MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "vap", "wet", "PDSI_prewhiten")], 2, sum), decreasing = F))
+    
+    VARIABLES.IN.ORDER <- c(ENERGY_VARIABLES.IN.ORDER, DEFICIT_VARIABLES.IN.ORDER, MOISTURE_VARIABLES.IN.ORDER)
   }
   
   x <- x[, VARIABLES.IN.ORDER]
