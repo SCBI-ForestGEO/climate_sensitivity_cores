@@ -277,3 +277,198 @@ text(x = 5, y = 26, labels = "Significance", font = 2)
 
 # dev.off ####
 if(save.plots) dev.off()
+
+
+# Figure 2 ####
+
+## Define how to run it regarding the starting year ####
+type.of.start.date <- c("Going_back_as_far_as_possible","Going_back_to_1980") # Going_back_at_earliest_common_year")
+
+
+## plot ####
+
+if(save.plots)  {
+  tiff(paste0("results/figures_for_manuscript/Figure_2.tif"), res = 300, width = 169, height = 100, units = "mm", pointsize = 10)
+}
+
+
+nf <- layout(mat = matrix(c(1,2,3), ncol = 3, byrow = T), widths = c(1,1,0.4))
+# layout.show(nf)
+
+plot.nb = 0
+for(type.start in type.of.start.date) {
+  
+  print(type.start)
+  
+  plot.nb = plot.nb + 1
+  # Load data ####
+  
+  ANPP_response_total <- read.csv(paste0("results/", type.start, "/tables/monthly_responses_ANPP_to_climate_variables/Total_ANPP_response_climate_variable_and_month.csv"))
+  
+  X <- droplevels(ANPP_response_total[(ANPP_response_total$Climate_data %in% "CRU_SCBI_1901_2016" & ! ANPP_response_total$variable %in% "pet_sum")| (ANPP_response_total$Climate_data %in% "NOAA_PDSI_Northern_Virginia_1895_2017" & ANPP_response_total$variable %in% "PDSI_prewhiten"), ])
+  
+  
+  x <- data.frame(reshape(X[, c("month", "variable", "ANPP_response")], idvar = "month", timevar = "variable", direction = "wide"))
+  rownames(x) <- ifelse(grepl("curr",  x$month), toupper(x$month), tolower( x$month))
+  rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
+  
+  colnames(x) <- gsub("ANPP_response.", "", colnames(x))
+
+  
+  x <- x[c(tolower(month.abb)[4:12],toupper(month.abb)[1:8]),]# order the months correctly
+  
+  
+  x <- x[, -1]
+  x.sig <- x.sig2 <- x
+  x.sig[] <- x.sig2[] <- FALSE
+  
+  # remove frs
+  if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
+  
+  # order by influence on ANPP (defined as predicted changes summed across all months) in analysis going back as far as possible
+  
+  if(type.start %in% "Going_back_as_far_as_possible") {
+    VARIABLES.IN.ORDER <- names(x)[order(abs(apply(x[c("MAY", "JUN", "JUL", "AUG"),], 2, sum)), decreasing = T)]
+  }
+  
+  x <- x[, VARIABLES.IN.ORDER]
+  colnames(x) <- toupper(colnames(x))
+  colnames(x) <- gsub("PDSI_PREWHITEN" , "PDSI", colnames(x))
+ 
+  
+  # plot (adapted my.dccplot function) ####
+  x = as.data.frame(t(x))
+  sig = as.data.frame(t(x.sig))
+  sig2 = as.data.frame(t(x.sig2))
+  main = ifelse(grepl("1980", type.start), "1980-2009", "[1901-1938]-2009")
+  rescale = T
+  
+  if (!is.data.frame(x)) {
+    x <- x$coef
+  }
+  
+  blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
+  reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
+  
+  m <- dim(x)[1]
+  n <- dim(x)[2]
+  
+  pos.max <- 0.12 #max(x)
+  neg.max <- 0.12 #abs(min(x))
+  
+  # op <- par(no.readonly = TRUE)
+  
+  if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 0, 0))
+  if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 6, 0))
+  # if(!plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 4, 0))
+  plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
+       yaxt = "n", ylab = "", xlab = "")
+  
+  # x-axis ####
+  axis(side = 3, at = 1:n, labels = colnames(x), las = 2) # change here
+  
+  
+  
+  # y-axis ####
+  if(plot.nb %in% c(1,3,5)) {
+    axis(side = 2, at = 1:m, labels = ifelse(grepl("PDSI", rownames(x)), expression(PDSI^1), rownames(x)) , las = 1)
+  } else {
+    axis(side = 2, at = 1:m, labels = FALSE, las = 1)
+  } 
+  # title ####
+  if(plot.nb %in% c(1,2)) title(main, line = 5, outer = F)
+  
+  
+  # plot quilt ####
+  X.left <- X.right <- Y.bottom <- Y.top <- x
+  
+  X.left[] <- rep((1:n - 0.5), each = m)
+  X.right[] <- rep((1:n + 0.5), each = m)
+  Y.bottom[] <- rep(1:m - 0.5, n)
+  Y.top[] <- rep(1:m + 0.5, n)
+  
+  
+  x.left <- unlist(c(X.left))
+  x.right <- unlist(c(X.right))
+  y.bottom <- unlist(c(Y.bottom))
+  y.top <- unlist(c(Y.top))
+  
+  xs <- unlist(c(x))
+  xs.sig <- unlist(c(sig))
+  xs.sig2 <- unlist(c(sig2))
+  
+  color <- xs
+  color[xs <= 0] <- rgb(reds(abs(xs[xs <= 0])/ neg.max), maxColorValue = 255)
+  color[xs > 0] <- rgb(blues(xs[xs > 0]/ pos.max), maxColorValue = 255)
+  
+  rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
+  
+ # current vs previous year bars ####
+  
+  par(xpd= NA)
+  if(plot.nb %in% c(1,2)) {
+    lines(x = 1:9, y = rep(13.25, 9), col = "grey", lwd = 2)
+    lines(x = 10:17, y = rep(13.25, 8), lwd = 2)
+    text(x = 5, y = 13.25, labels = "previous year", col = "grey", pos = 3)
+    text(x = 14, y = 13.25, labels = "current year", pos = 3)
+  } else {
+    lines(x = 1:9, y = rep(13.25, 9), col = "grey", lwd = 2)
+    lines(x = 10:17, y = rep(13.25, 8), lwd = 2)
+  }
+  
+  
+  # add letter ####
+  text(x = -1, y = 18, paste0(letters[plot.nb], ")"), font = 2)
+  
+  
+} # for(type.start in type.of.start.date)
+
+# legend ####
+par(mar = c(0,0,0,0))
+plot.new( )
+plot.window( xlim=c(0,10), ylim=c(0,50) )
+
+leg.unit <- 3
+start.unit <- 5
+right.pos <- 1
+leg.width <- 2
+values <- seq(-1, 1, length = 11)
+
+neg.rescaled.values <- round(seq(-neg.max, 0, length = 6), 
+                             2)
+pos.rescaled.values <- rev(round(seq(pos.max, 0, length = 6), 
+                                 2)[-6])
+rescaled.values <- c(neg.rescaled.values, pos.rescaled.values)
+
+for (i in 1:11) {
+  if (values[i] <= 0) {
+    polygon(c(right.pos, right.pos + leg.width, right.pos + 
+                leg.width, right.pos), c(start.unit + ((i - 1) * 
+                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
+                                         start.unit + (i * leg.unit), start.unit + (i * 
+                                                                                      leg.unit)), col = rgb(reds(abs(values[i])), 
+                                                                                                            maxColorValue = 255), lty = 0)
+    text(right.pos + leg.width , start.unit + (i * 
+                                                 leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+                                                                                values[i]), pos = 4)
+  }
+  else {
+    polygon(c(right.pos, right.pos + leg.width, right.pos + 
+                leg.width, right.pos), c(start.unit + ((i - 1) * 
+                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
+                                         start.unit + (i * leg.unit), start.unit + (i * 
+                                                                                      leg.unit)), col = rgb(blues(values[i]), maxColorValue = 255), 
+            lty = 0)
+    text(right.pos + leg.width, start.unit + (i * 
+                                                leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+                                                                               values[i]), pos = 4)
+  }
+} #  for (i in 1:11) 
+
+text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "Response", font = 2)
+
+# dev.off ####
+if(save.plots) dev.off()
+
+
+ 
