@@ -1,7 +1,0 @@
-"season","Summary_type","Species","PPT","Tmax","Tmean","Tmin"
-"all_seasons","Sum of all absolute correlations","All",25.1336009352981,26.51438032571,22.8441610917137,17.6733225764869
-"all_seasons","Count of Significant correlations","All",36,26,19,12
-"all_seasons","Sum of absolute significant correlations","All",9.75276696801606,6.6786271034414,4.81887195978503,2.75727464918653
-"curr_growing_season_only","Sum of all absolute correlations","All",9.17695466464409,8.18533513081424,7.43434977755158,5.75815979857936
-"curr_growing_season_only","Count of Significant correlations","All",19,14,14,11
-"curr_growing_season_only","Sum of absolute significant correlations","All",5.29820214816413,3.70513302734296,3.66686789887446,2.52604470456866

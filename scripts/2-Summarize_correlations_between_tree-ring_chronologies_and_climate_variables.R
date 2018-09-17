@@ -29,13 +29,18 @@ type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "
 
 # Summarize tables of results for each climate data ####
 
-for( c in climate.data.types) {
-  print(c)
- 
+
+for(type.start in type.of.start.date) {
   
-  for(type.start in type.of.start.date) {
-    
-    print(type.start)
+  print(type.start)
+  
+  
+  All_species_combined_both_season_subsets_all_climates <- NULL
+  
+  
+  for( c in climate.data.types) {
+    print(c)
+
     
     All_species_combined_both_season_subsets <- NULL
     
@@ -83,19 +88,24 @@ for( c in climate.data.types) {
       # Save ####
       summary_to_save <- rbind(summary_of_correlations, summary_of_significance, summary_of_significant_correlations)
     
-      write.csv(summary_to_save, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_Correlation_with_", c, "_", season, ".csv"), row.names = F)
+      # if(save.result.table) write.csv(summary_to_save, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_Correlation_with_", c, "_", season, ".csv"), row.names = F)
       
       All_species_combined_both_season_subsets <- rbind(All_species_combined_both_season_subsets, data.frame(season, summary_to_save[grepl("All", rownames(summary_to_save)), ]))
       
        } #   for(season in c("all_seasons", "curr_growing_season_only")) 
     
-    write.csv(All_species_combined_both_season_subsets, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_Correlation_with_", c, "_both_seasons_species_combined.csv"), row.names = F)
+    # if(save.result.table) write.csv(All_species_combined_both_season_subsets, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_Correlation_with_", c, "_both_seasons_species_combined.csv"), row.names = F)
     
-    
-    
+    if( c %in% climate.data.types[1]) All_species_combined_both_season_subsets_all_climates <- All_species_combined_both_season_subsets
+    if( !c %in% climate.data.types[1]) All_species_combined_both_season_subsets_all_climates <- cbind(All_species_combined_both_season_subsets_all_climates, All_species_combined_both_season_subsets[, -c(1:3)])
    
-  } # for(type.start in type.of.start.date)
-} # for( c in climate.data.types)
+  } # for( c in climate.data.types)
+  
 
   
+  if(save.result.table) write.csv(All_species_combined_both_season_subsets_all_climates, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_Correlation_with_all_climates_both_seasons_species_combined.csv"), row.names = F)
+  
+  
+
+}  # for(type.start in type.of.start.date)
 
