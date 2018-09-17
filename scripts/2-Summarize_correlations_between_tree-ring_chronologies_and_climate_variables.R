@@ -109,3 +109,74 @@ for(type.start in type.of.start.date) {
 
 }  # for(type.start in type.of.start.date)
 
+
+
+# compute statistics on the consistency of climate responses across species ####
+
+
+climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
+
+
+
+for(type.start in type.of.start.date) {
+  
+  print(type.start)
+  # consistency_of_climate_responses <- NULL
+  n_positive_corr <- NULL
+  mean_corr <- NULL
+  min_corr <- NULL
+  max_corr <- NULL
+  
+  for( c in climate.data.types) {
+    print(c)
+    
+
+    
+    ## Load tables of results ####
+    
+    all.dc.corr <- read.csv(paste0("results/", type.start, "/tables/monthly_correlation/correlation_with_", c, "_climate_data.csv"))
+    
+    ### keep only variable we want
+    if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") all.dc.corr <- droplevels(all.dc.corr[all.dc.corr$variable %in% "PDSI_prewhiten", ])
+    if(c %in% "CRU_SCBI_1901_2016") all.dc.corr <- droplevels(all.dc.corr[!all.dc.corr$variable %in% c("pet_sum", "frs"), ])
+    
+    ## Summarize by Variable and by month ####
+    
+    ### n species with Pearson correlation ≥0. ####
+    
+    n_positive_corr <- rbind(n_positive_corr, tapply(all.dc.corr$coef, list(all.dc.corr$variable, all.dc.corr$month), function(x) sum(x>=0, na.rm = T)))
+    # rownames(n_positive_corr) <- "n_positive_correlation"
+    
+    
+    mean_corr <- rbind(mean_corr, tapply(all.dc.corr$coef,  list(all.dc.corr$variable, all.dc.corr$month), function(x) mean(x, na.rm = T)))
+    # rownames(mean_corr) <- "mean_correlation"
+    
+    min_corr <- rbind(min_corr, tapply(all.dc.corr$coef, list(all.dc.corr$variable, all.dc.corr$month), function(x) min(x, na.rm = T)))
+    # rownames(min_corr) <- "min_correlation"
+    
+    max_corr <- rbind(max_corr, tapply(all.dc.corr$coef,  list(all.dc.corr$variable, all.dc.corr$month), function(x) max(x, na.rm = T)))
+    # rownames(max_corr) <- "max_correlation"
+    
+    # if(!is.null(consistency_of_climate_responses)) consistency_of_climate_responses <- cbind(consistency_of_climate_responses, rbind(n_positive_corr, mean_corr, min_corr, max_corr))
+    # if(is.null(consistency_of_climate_responses)) consistency_of_climate_responses <- rbind(n_positive_corr, mean_corr, min_corr, max_corr)
+    # 
+    
+    
+  } # for( c in climate.data.types)
+  
+  n_positive_corr <- data.frame(variable = row.names(n_positive_corr), n_positive_corr)
+  mean_corr <- data.frame(variable = row.names(mean_corr), mean_corr)
+  min_corr <- data.frame(variable = row.names(min_corr), min_corr)
+  max_corr <- data.frame(variable = row.names(max_corr), max_corr)
+  
+  if(save.result.table) {
+    write.csv(n_positive_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_n_positive_correlation.csv"), row.names = F)
+    write.csv(mean_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_mean_correlation.csv"), row.names = F)
+    write.csv(min_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_min_correlation.csv"), row.names = F)
+    write.csv(max_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_max_correlation.csv"), row.names = F)
+    
+  }
+  
+  
+}  # for(type.start in type.of.start.date)
+
