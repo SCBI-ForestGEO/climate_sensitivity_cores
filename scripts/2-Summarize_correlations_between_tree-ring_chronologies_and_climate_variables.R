@@ -164,6 +164,16 @@ for(type.start in type.of.start.date) {
     
   } # for( c in climate.data.types)
   
+  # re-order the months
+  columns.in.order <- c(paste0("prev.", tolower(month.abb[4:12])), paste0("curr.", tolower(month.abb[1:8])))
+  
+  n_positive_corr <- n_positive_corr[, columns.in.order]
+  mean_corr <- mean_corr[, columns.in.order]
+  min_corr <- min_corr[, columns.in.order]
+  max_corr <- max_corr[, columns.in.order]
+  
+  
+  # give variable column
   n_positive_corr <- data.frame(variable = row.names(n_positive_corr), n_positive_corr)
   mean_corr <- data.frame(variable = row.names(mean_corr), mean_corr)
   min_corr <- data.frame(variable = row.names(min_corr), min_corr)
