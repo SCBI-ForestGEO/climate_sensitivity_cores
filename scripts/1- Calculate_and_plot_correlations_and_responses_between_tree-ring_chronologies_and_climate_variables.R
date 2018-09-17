@@ -215,11 +215,16 @@ for(c in climate.data.types) {
     clim <- clim[!(clim$year %in% min(clim$year) | clim$year %in% max(clim$year)), ]
   }
   
-  ### Pre_chiten PDSI of NOAA data because autocorrelated by definitiaon
+  ### Pre_whiten PDSI of NOAA data because autocorrelated by definitiaon
   if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
     clim$PDSI_prewhiten <- ar(clim$PDSI)$resid
     clim$PHDI_prewhiten <- ar(clim$PHDI)$resid
     clim$PMDI_prewhiten <- ar(clim$PMDI)$resid
+  }
+  
+  ### start NOAA in 1901 only (to be able to compare PDSI with CRU data later) ####
+  if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
+    clim <- clim[clim$year >= 1901, ]
   }
   
   ### remove climate variables we don't care about
