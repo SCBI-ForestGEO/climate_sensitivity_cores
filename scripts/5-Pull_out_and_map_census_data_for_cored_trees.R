@@ -86,7 +86,7 @@ if(save.result.table) write.csv(census.data.for.cored.trees, file = "data/census
 
 
 # plot ####
-tiff(paste0("results/figures_for_manuscript/MAP.tif"), res = 300, width = 132, height = 160, units = "mm", pointsize = 10)
+tiff(paste0("results/figures_for_manuscript/MAP.tif"), res = 300, width = 124, height = 150, units = "mm", pointsize = 10)
 
 
 all(census.data.for.cored.trees$tag %in% c(live.trees.2010.2011, dead.trees.2016.2017)) # should be TRUE
