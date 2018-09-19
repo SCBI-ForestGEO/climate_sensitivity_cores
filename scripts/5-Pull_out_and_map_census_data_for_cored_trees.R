@@ -35,8 +35,8 @@ head(scbi.stem1)
 
 
 # load list of tree censused in 2010 (live trees) and trees censused im 20106-2017 (dead trees)
-trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2010_raw.csv?token=ASwxIYG1x-A8wMjXumqCu2Eohj6PKT1xks5bqTgcwA%3D%3D"), header = T)
-trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2016_17_raw.csv?token=ASwxIYHL_CzSnhVJp7ojdaTcX-PQq4Mbks5bqTjrwA%3D%3D"), header = T)
+trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2010.csv?token=ASwxIayClVq88MBfIrm1jp185idBT_TVks5bq7F1wA%3D%3D"), header = T)
+trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2016_17.csv?token=ASwxISBg8ayLKfIRfIDp5jZeLzdjo2xNks5bq7GKwA%3D%3D"), header = T)
 
 # pull out census data for cored trees ####
 
@@ -62,7 +62,7 @@ for(f in filenames) {
     }
     
     if(tag %in% trees_censused_live$Tag) live.trees.2010.2011 <- c(live.trees.2010.2011, tag)
-    if(tag %in% trees_censused_dead$tag) dead.trees.2016.2017 <- c(dead.trees.2016.2017, tag)
+    if(tag %in% trees_censused_dead$Tag) dead.trees.2016.2017 <- c(dead.trees.2016.2017, tag)
     if(tag %in% trees_censused_live & tag %in% trees_censused_dead) stop("tree in both coring periods")
     
   } #  for (t in names(core))
@@ -86,8 +86,6 @@ if(save.result.table) write.csv(census.data.for.cored.trees, file = "data/census
 
 
 # plot ####
-tiff(paste0("results/figures_for_manuscript/MAP.tif"), res = 300, width = 124, height = 150, units = "mm", pointsize = 10)
-
 
 all(census.data.for.cored.trees$tag %in% c(live.trees.2010.2011, dead.trees.2016.2017)) # should be TRUE
 census.data.for.cored.trees$tag[!census.data.for.cored.trees$tag %in% c(live.trees.2010.2011, dead.trees.2016.2017)]
@@ -95,6 +93,8 @@ census.data.for.cored.trees$tag[!census.data.for.cored.trees$tag %in% c(live.tre
 colors <- colorRamp(c("red4", "red",  "gold", "chartreuse4", "dodgerblue", "blue", "purple4", "magenta", "grey", "black"))
 colors <- colors(c(0:(length(unique(census.data.for.cored.trees$sp))-1))/length(unique(census.data.for.cored.trees$sp)))
 rownames(colors) <- sort(unique(census.data.for.cored.trees$sp))
+
+tiff(paste0("results/figures_for_manuscript/MAP.tif"), res = 300, width = 124, height = 150, units = "mm", pointsize = 10)
 
 
 par(mar = c(3, 0, 0, 9), xpd = T)
