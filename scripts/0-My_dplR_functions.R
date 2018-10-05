@@ -369,7 +369,7 @@ my.dccplot <- function (x, sig, sig2, rescale = TRUE, main, method = c('correlat
   axis(side = 3, at = 1:n, labels = colnames(x), las = 2) # change here
   axis(side = 2, at = 1:m, labels = rownames(x), las = 1)
   
-  title(main, line = 3, outer = T)
+  title(main, line = 4, outer = T)
   
   X.left <- X.right <- Y.bottom <- Y.top <- x
   
@@ -397,9 +397,17 @@ my.dccplot <- function (x, sig, sig2, rescale = TRUE, main, method = c('correlat
   points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig,  "white", "transparent"), col = ifelse(xs.sig, "black", "transparent"), pch = 21) 
   points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig2,  "white", "transparent"), col = ifelse(xs.sig2, "black", "transparent"), pch = 24) 
   
+  # current vs previous year bars ####
   
-  
+  par(xpd= NA)
+    lines(x = 1:9, y = rep(nrow(x)+3, 9), col = "grey", lwd = 2)
+    lines(x = 10:17, y = rep(nrow(x)+3, 8), lwd = 2)
+    text(x = 5, y = nrow(x)+3, labels = "previous year", col = "grey", pos = 3)
+    text(x = 14, y = nrow(x)+3, labels = "current year", pos = 3)
 
+  
+  # legend ####
+  
   par(xpd = NA)
   leg.unit <- (m/15)
   start.unit <- leg.unit/4 + leg.unit

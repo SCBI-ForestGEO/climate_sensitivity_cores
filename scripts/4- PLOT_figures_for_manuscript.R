@@ -16,8 +16,8 @@ library(RCurl)
 source("scripts/0-My_dplR_functions.R")
 
 # set parameters ####
-save.plots <- TRUE
-save.result.table <- TRUE
+save.plots <- T
+save.result.table <- T
 
 
 # ANPP_response_total for each type of starting year (not realy for manuscript as is) ####
@@ -87,7 +87,7 @@ climate_data = "CRU_SCBI_1901_2016"
 
 type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1980") # Going_back_at_earliest_common_year")
 
-ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv?token=ASwxIfr3Rxt2z2lxnOnKrUmaCTxdDBQcks5bpQfewA%3D%3D"), header=T)
+ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv?token=ASwxIRlKXlb-jVynBIcQHCgwDN1yiZINks5bwJ3CwA%3D%3D"), header=T)
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")]) #toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
@@ -336,7 +336,7 @@ for(type.start in type.of.start.date) {
     VARIABLES.IN.ORDER <- c(ENERGY_VARIABLES.IN.ORDER, DEFICIT_VARIABLES.IN.ORDER, MOISTURE_VARIABLES.IN.ORDER)
   }
   
-  x <- x[, VARIABLES.IN.ORDER]
+  x <- x[, rev(VARIABLES.IN.ORDER)]
   colnames(x) <- toupper(colnames(x))
   colnames(x) <- gsub("PDSI_PREWHITEN" , "PDSI", colnames(x))
  
@@ -363,7 +363,7 @@ for(type.start in type.of.start.date) {
   
   # op <- par(no.readonly = TRUE)
   
-  if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 0, 0))
+  if(plot.nb %in% 1 ) par(oma = c(1.5, 5, 0, 0))
   if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 6, 0))
   # if(!plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 4, 0))
   plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
@@ -375,7 +375,7 @@ for(type.start in type.of.start.date) {
   
   
   # y-axis ####
-  if(plot.nb %in% c(1,3,5)) {
+  if(plot.nb %in% c(1)) {
     axis(side = 2, at = 1:m, labels = ifelse(grepl("PDSI", rownames(x)), expression(PDSI^1), rownames(x)) , las = 1)
   } else {
     axis(side = 2, at = 1:m, labels = FALSE, las = 1)
@@ -420,6 +420,15 @@ for(type.start in type.of.start.date) {
     lines(x = 1:9, y = rep(13.25, 9), col = "grey", lwd = 2)
     lines(x = 10:17, y = rep(13.25, 8), lwd = 2)
   }
+  
+  # "energy" vs "water"' variable group bars
+  if(plot.nb %in% c(1)) {
+    lines(x = rep(-4, 6), y = 1:6, lwd = 2)
+    lines(x = rep(-4, 5), y = 7:11, lwd = 2)
+    text(x = -4.4, y = 3, labels = "Water variables", pos = 3, srt = 90)
+    text(x = -4.4, y = 8.5, labels = "Energy variables", pos = 3, srt = 90)
+  }
+  
   
   
   # add letter ####
