@@ -359,7 +359,7 @@ for(c in climate.data.types) {
             tiff(paste0("results/", type.start, "/figures/monthly_", method.to.run, "/", c, "/", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
           }
           
-          v <-  toupper(colnames(v))
+          v <-  toupper(v)
           v <- gsub("PDSI_PREWHITEN" , "PDSI", v)
           
           my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), sig2 = as.data.frame(t(x.sig2)),  main = v, method = method.to.run)

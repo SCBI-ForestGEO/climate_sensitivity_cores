@@ -400,10 +400,10 @@ my.dccplot <- function (x, sig, sig2, rescale = TRUE, main, method = c('correlat
   # current vs previous year bars ####
   
   par(xpd= NA)
-    lines(x = 1:9, y = rep(nrow(x)+3, 9), col = "grey", lwd = 2)
-    lines(x = 10:17, y = rep(nrow(x)+3, 8), lwd = 2)
-    text(x = 5, y = nrow(x)+3, labels = "previous year", col = "grey", pos = 3)
-    text(x = 14, y = nrow(x)+3, labels = "current year", pos = 3)
+    lines(x = 1:9, y = rep(nrow(x) + 3.2, 9), col = "grey", lwd = 2)
+    lines(x = 10:17, y = rep(nrow(x) + 3.2, 8), lwd = 2)
+    text(x = 5, y = nrow(x) + 3.2, labels = "previous year", col = "grey", pos = 3)
+    text(x = 14, y = nrow(x) + 3.2, labels = "current year", pos = 3)
 
   
   # legend ####
@@ -444,6 +444,8 @@ my.dccplot <- function (x, sig, sig2, rescale = TRUE, main, method = c('correlat
                                                                                      values[i]), pos = 4)
     }
   }
+  
+  text(x = right.pos +1, y = start.unit + (i * leg.unit) + 1, labels = method, font = 2)
   
   # par(op)
 }

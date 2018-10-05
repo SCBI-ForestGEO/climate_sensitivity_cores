@@ -60,8 +60,23 @@ for(type.start in type.of.start.date) {
   # remove frs
   if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
   
-  # order by influence on ANPP (defined as predicted changes summed across all months).
-  x <- x[, order(abs(apply(x, 2, sum)))]
+  # order by influence on ANPP (defined as predicted changes summed across all months) in analysis going back as far as possible
+  
+  if(type.start %in% "Going_back_as_far_as_possible") {
+    
+    ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
+    DEFICIT_VARIABLES.IN.ORDER <- "deficit"
+    ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER <- "PDSI_prewhiten"
+    MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "vap", "wet")], 2, sum), decreasing = F))
+    
+    VARIABLES.IN.ORDER <- c(ENERGY_VARIABLES.IN.ORDER, DEFICIT_VARIABLES.IN.ORDER, ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER, MOISTURE_VARIABLES.IN.ORDER)
+  }
+  
+  x <- x[, rev(VARIABLES.IN.ORDER)]
+  colnames(x) <- toupper(colnames(x))
+  colnames(x) <- gsub("PDSI_PREWHITEN" , "PDSI", colnames(x))
+  
+  
   
   
   if(save.plots)  {
@@ -331,9 +346,10 @@ for(type.start in type.of.start.date) {
     
     ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
     DEFICIT_VARIABLES.IN.ORDER <- "deficit"
-    MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "vap", "wet", "PDSI_prewhiten")], 2, sum), decreasing = F))
+    ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER <- "PDSI_prewhiten"
+    MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "vap", "wet")], 2, sum), decreasing = F))
     
-    VARIABLES.IN.ORDER <- c(ENERGY_VARIABLES.IN.ORDER, DEFICIT_VARIABLES.IN.ORDER, MOISTURE_VARIABLES.IN.ORDER)
+    VARIABLES.IN.ORDER <- c(ENERGY_VARIABLES.IN.ORDER, DEFICIT_VARIABLES.IN.ORDER, ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER, MOISTURE_VARIABLES.IN.ORDER)
   }
   
   x <- x[, rev(VARIABLES.IN.ORDER)]
@@ -421,11 +437,11 @@ for(type.start in type.of.start.date) {
     lines(x = 10:17, y = rep(13.25, 8), lwd = 2)
   }
   
-  # "energy" vs "water"' variable group bars
+  # "energy" vs "water"' variable group bars ###
   if(plot.nb %in% c(1)) {
-    lines(x = rep(-4, 6), y = 1:6, lwd = 2)
+    lines(x = rep(-4, 4), y = 1:4, lwd = 2)
     lines(x = rep(-4, 5), y = 7:11, lwd = 2)
-    text(x = -4.4, y = 3, labels = "Water variables", pos = 3, srt = 90)
+    text(x = -4.4, y = 2.5, labels = "Water variables", pos = 3, srt = 90)
     text(x = -4.4, y = 8.5, labels = "Energy variables", pos = 3, srt = 90)
   }
   
