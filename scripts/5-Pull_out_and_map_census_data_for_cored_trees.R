@@ -35,8 +35,8 @@ head(scbi.stem1)
 
 
 # load list of tree censused in 2010 (live trees) and trees censused im 20106-2017 (dead trees)
-trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2010.csv?token=ASwxIayClVq88MBfIrm1jp185idBT_TVks5bq7F1wA%3D%3D"), header = T)
-trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2016_17.csv?token=ASwxISBg8ayLKfIRfIDp5jZeLzdjo2xNks5bq7GKwA%3D%3D"), header = T)
+trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2010.csv?token=ASwxIXfX52VG9UJKt-ZvD2XuaBUVh5Oeks5bzzZDwA%3D%3D"), header = T)
+trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2016_17.csv?token=ASwxITzo3NoHuQGNkGDa7LIxlE5PjOtDks5bzzZWwA%3D%3D"), header = T)
 
 # pull out census data for cored trees ####
 
@@ -80,6 +80,15 @@ sum(duplicated(census.data.for.cored.trees$tag))
 # order by treeID ####
 census.data.for.cored.trees <- census.data.for.cored.trees[order(census.data.for.cored.trees$treeID), ]
 
+
+# add info on whether trees were cored in 2010-11 or 2016-17 ####
+all(census.data.for.cored.trees$tag %in% c(live.trees.2010.2011, dead.trees.2016.2017)) # should be TRUE
+census.data.for.cored.trees$tag[!census.data.for.cored.trees$tag %in% c(live.trees.2010.2011, dead.trees.2016.2017)] # should be empty
+
+census.data.for.cored.trees$year.cored <- ifelse(census.data.for.cored.trees$tag %in% live.trees.2010.2011, "2010-2011", "2016-2017")
+census.data.for.cored.trees$status.at.time.of.coring <- ifelse(census.data.for.cored.trees$tag %in% live.trees.2010.2011, "live", "dead")
+
+
 # save census data####
 
 if(save.result.table) write.csv(census.data.for.cored.trees, file = "data/census_data_for_cored_trees.csv", row.names = F)
@@ -87,8 +96,6 @@ if(save.result.table) write.csv(census.data.for.cored.trees, file = "data/census
 
 # plot ####
 
-all(census.data.for.cored.trees$tag %in% c(live.trees.2010.2011, dead.trees.2016.2017)) # should be TRUE
-census.data.for.cored.trees$tag[!census.data.for.cored.trees$tag %in% c(live.trees.2010.2011, dead.trees.2016.2017)]
 
 colors <- colorRamp(c("red4", "red",  "gold", "chartreuse4", "dodgerblue", "blue", "purple4", "magenta", "grey", "black"))
 colors <- colors(c(0:(length(unique(census.data.for.cored.trees$sp))-1))/length(unique(census.data.for.cored.trees$sp)))
