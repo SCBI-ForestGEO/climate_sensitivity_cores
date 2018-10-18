@@ -1,7 +1,7 @@
 ######################################################
-# Purpose: Calculate correlations and response (and plot correlations) between tree-ring chronologies and climate variables 
-# Developped by: Valentine Herrmann - HerrmannV@si.edu
-# R version 3.4.4 (2018-03-15)
+# Purpose: Calculate correlations and response (and plot correlations) between tree-ring chronologies and climate variables, looking separately at trees cored while alive and trees cored while dead
+# Developped by: Valentine Herrmann - HerrmannV@si.edu 10/18/2018
+# R version 3.5.1 (2018-07-02)
 ######################################################
 
 # Clean environment ####
@@ -29,6 +29,8 @@ ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/Eco
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")]) #toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
+SPECIES_IN_ORDER <- SPECIES_IN_ORDER[grepl("LITU|QURU|FRAM|QUVE", SPECIES_IN_ORDER)] # special for live vs dead only
+
 ## Define sets of climate data to use ####
 
 climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
@@ -55,7 +57,10 @@ end.frs <- 5 # may of current year (for freeze days variable only)
 filenames <- list.dirs("data", full.names = F, recursive = F  ) # filenames <- list.files("raw_data/cores/")
 filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
 
-filenames <- filenames[!grepl("live|dead", filenames, ignore.case = T)] # this line has not been tested yet.
+
+filenames <- filenames[grepl("LITU|QURU|FRAM|QUVE", filenames)] # special for live vs dead only
+
+
 
 all_sss <- NULL
 
@@ -112,7 +117,7 @@ for(f in filenames) {
 
 # save SSS for all species 
 
-write.csv(all_sss, file = "results/SSS_as_a_function_of_the_number_of_trees_in_sample.csv", row.names = F)
+write.csv(all_sss, file = "results/live_vs_dead/SSS_as_a_function_of_the_number_of_trees_in_sample.csv", row.names = F)
 
 
 ## Define start and end year for analysis, common to all species and one for each species ####
@@ -127,7 +132,7 @@ end.year = 2009  # common to all species
 
 # Plot SSS for the the decided threshold ####
 
-if(save.plots) tiff("results/SSS_as_a_function_of_the_number_of_trees_in_sample.tiff", res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
+if(save.plots) tiff("results/live_vs_dead/SSS_as_a_function_of_the_number_of_trees_in_sample.tiff", res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
 
 op <- par(mfrow = c(2, 1), oma = c(5, 5, 2, 0), mar = c(0, 0, 0, 1))
 
@@ -262,16 +267,16 @@ for(c in climate.data.types) {
     
     print(type.start)
     
-    dir.create(paste0("results/", type.start), showWarnings = F)
-    dir.create(paste0("results/", type.start, "/figures"), showWarnings = F)
-    dir.create(paste0("results/", type.start, "/tables"), showWarnings = F)
+    dir.create(paste0("results/live_vs_dead/", type.start), showWarnings = F)
+    dir.create(paste0("results/live_vs_dead/", type.start, "/figures"), showWarnings = F)
+    dir.create(paste0("results/live_vs_dead/", type.start, "/tables"), showWarnings = F)
     
     
     if(type.start %in% "Going_back_as_far_as_possible") start.years <- start.years.sss
     if(type.start %in% "Going_back_to_1920") start.years <- ifelse(start.years.sss > 1920, start.years.sss, 1920)
     if(type.start %in% "Going_back_to_1980") start.years <- ifelse(start.years.sss > 1980, start.years.sss, 1980)
     if(type.start %in% "Going_back_at_earliest_common_year") start.years <- ifelse(start.years.sss > max(start.years.sss), max(start.years.sss), max(start.years.sss))
-     # common to all species
+    # common to all species
     
     
     
@@ -279,7 +284,7 @@ for(c in climate.data.types) {
       
       print(method.to.run)
       
-      dir.create(paste0("results/", type.start, "/tables/monthly_", method.to.run ), showWarnings = F)
+      dir.create(paste0("results/live_vs_dead/", type.start, "/tables/monthly_", method.to.run ), showWarnings = F)
       
       
       all.dcc.output <- NULL
@@ -321,11 +326,11 @@ for(c in climate.data.types) {
         all.dcc.output$month <- sapply(strsplit(row.names(all.dcc.output), "\\."), function(x) paste(x[2], x[3], sep ="."))
         all.dcc.output$month <- gsub("[0-9]", "",   all.dcc.output$month)
         
-        if(save.result.table) write.csv(all.dcc.output, file = paste0("results/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), c, "_climate_data.csv"), row.names = F)
+        if(save.result.table) write.csv(all.dcc.output, file = paste0("results/live_vs_dead/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), c, "_climate_data.csv"), row.names = F)
       }
       
       if(method.to.run %in% c("moving_correlation") & type.start %in% "Going_back_as_far_as_possible") {
-        if(save.result.table) save(all.dcc.output, file = paste0("results/", type.start, "/tables/monthly_moving_correlation/moving_correlation_with_", c, "_climate_data.Rdata"))
+        if(save.result.table) save(all.dcc.output, file = paste0("results/live_vs_dead/", type.start, "/tables/monthly_moving_correlation/moving_correlation_with_", c, "_climate_data.Rdata"))
       }
       
       ## Plot results ####
@@ -356,9 +361,9 @@ for(c in climate.data.types) {
           x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
           
           if(save.plots)  {
-            dir.create(paste0("results/", type.start, "/figures/monthly_", method.to.run), showWarnings = F)
-            dir.create(paste0("results/", type.start, "/figures/monthly_", method.to.run, "/", c), showWarnings = F)
-            tiff(paste0("results/", type.start, "/figures/monthly_", method.to.run, "/", c, "/", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
+            dir.create(paste0("results/live_vs_dead/", type.start, "/figures/monthly_", method.to.run), showWarnings = F)
+            dir.create(paste0("results/live_vs_dead/", type.start, "/figures/monthly_", method.to.run, "/", c), showWarnings = F)
+            tiff(paste0("results/live_vs_dead/", type.start, "/figures/monthly_", method.to.run, "/", c, "/", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
           }
           
           v <-  toupper(v)
@@ -388,10 +393,10 @@ for(c in climate.data.types) {
             })
             
             if(save.plots)  {
-              dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation"), showWarnings = F)
-              dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_species_and_by_month"), showWarnings = F)
-              dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_species_and_by_month/", c), showWarnings = F)
-              tiff(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_species_and_by_month/", c, "/", f, "_", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
+              dir.create(paste0("results/live_vs_dead/", type.start, "/figures/monthly_moving_correlation"), showWarnings = F)
+              dir.create(paste0("results/live_vs_dead/", type.start, "/figures/monthly_moving_correlation/by_species_and_by_month"), showWarnings = F)
+              dir.create(paste0("results/live_vs_dead/", type.start, "/figures/monthly_moving_correlation/by_species_and_by_month/", c), showWarnings = F)
+              tiff(paste0("results/live_vs_dead/", type.start, "/figures/monthly_moving_correlation/by_species_and_by_month/", c, "/", f, "_", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
             }
             
             # op <- par(oma = c(1, 3, 5, 3), mai = c(1, 0.5, 0.2, 1)) #par(oma = c(0, 3, 5, 0), mai = c(0.5, 0.8, 0.2, 2))
@@ -431,9 +436,9 @@ for(c in climate.data.types) {
             X <- list(coef = X, significant = Sig)
             
             if(save.plots) {
-              dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together"), showWarnings = F)
-              dir.create(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together/", c), showWarnings = F)
-              tiff(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together/", c, "/", v, "_", mth, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
+              dir.create(paste0("results/live_vs_dead/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together"), showWarnings = F)
+              dir.create(paste0("results/live_vs_dead/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together/", c), showWarnings = F)
+              tiff(paste0("results/live_vs_dead/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together/", c, "/", v, "_", mth, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
             }
             
             my.mdccplot(X, main = paste(v, mth, sep = " - "), clim.ma = clim.moving.avg[[mth]][, v][colnames(X$coef)], clim.sd = clim.moving.sd[[mth]][, v][colnames(X$coef)])
