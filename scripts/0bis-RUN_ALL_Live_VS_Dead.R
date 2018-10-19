@@ -15,7 +15,7 @@ setwd(".")
 # run all necessary script ####
 
 ##** WARNING** ###
-##** If script #1 does not run. open and update URL like explained in line 28. **##
+##** If script #1 does not run. open it and update URL like explained in line 28. **##
 
 
 source("scripts/1bis- Calculate_and_plot_correlations_and_responses_between_tree-ring_chronologies_and_climate_variables_Live_VS_Dead.R")
