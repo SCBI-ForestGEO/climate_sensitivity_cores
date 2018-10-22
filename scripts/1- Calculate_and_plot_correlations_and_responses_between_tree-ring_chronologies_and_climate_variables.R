@@ -55,8 +55,7 @@ end.frs <- 5 # may of current year (for freeze days variable only)
 filenames <- list.dirs("data", full.names = F, recursive = F  ) # filenames <- list.files("raw_data/cores/")
 filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
 
-filenames <- filenames[!grepl("live|dead", filenames, ignore.case = T)] # this line has not been tested yet.
-
+filenames <- filenames[!grepl("live|dead", filenames, ignore.case = T)] # this is to remove dead vs live data because we don't want to look at it here.
 all_sss <- NULL
 
 for(f in filenames) {

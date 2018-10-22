@@ -28,6 +28,10 @@ type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "
 
 filenames <- list.files("raw_data/cores/") # filenames <- list.files("raw_data/cores/")
 
+filenames <- filenames[!grepl("live|dead", filenames, ignore.case = T)] # this is to remove dead vs live data because we don't want to look at it here.
+
+
+
 for(f in filenames) {
   print(f)
   core <- read.rwl(paste0("raw_data/cores/", f))
