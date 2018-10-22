@@ -31,6 +31,8 @@ SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
 SPECIES_IN_ORDER <- SPECIES_IN_ORDER[grepl("LITU|QURU|FRAM|QUVE", SPECIES_IN_ORDER)] # special for live vs dead only
 
+SPECIES_IN_ORDER <- paste0(rep(SPECIES_IN_ORDER, each =2), c("_live", "_dead"))
+
 ## Define sets of climate data to use ####
 
 climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
@@ -55,26 +57,26 @@ end.frs <- 5 # may of current year (for freeze days variable only)
 # Load and prepare core data ####
 
 filenames <- list.dirs("data", full.names = F, recursive = F  ) # filenames <- list.files("raw_data/cores/")
-filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
+filenames <- filenames[!grepl("[a-z]", filenames) | grepl("dead|live", filenames)] # keep only all caps names
 
 
-filenames <- filenames[grepl("LITU|QURU|FRAM|QUVE", filenames)] # special for live vs dead only
+filenames <- filenames[grepl("dead|live", filenames)] # special for live vs dead only
 
-
+filenames <- gsub("_", "_drop_", filenames)
 
 all_sss <- NULL
 
 for(f in filenames) {
   # get the raw data
-  core_raw <- read.rwl(paste0("raw_data/cores/", tolower(f), "_drop.rwl"))
+  core_raw <- read.rwl(paste0("raw_data/cores/", tolower(f), ".rwl"))
   
   # get the detrended data
-  core <- read.table(paste0("data/", f,"/ARSTANfiles/", tolower(f), "_drop.rwl_tabs.txt"), sep = "\t", h = T)
+  core <- read.table(paste0("data/", gsub("_drop", "", f),"/ARSTANfiles/", tolower(f), ".rwl_tabs.txt"), sep = "\t", h = T)
   core <- data.frame(res = core$res,  samp.depth = core$num, row.names = core$year)
   
   # get the Subsample Signal Strength (sss as function of the number of trees in sample, the last one appearing in the "xxx_drop.rxl_out.txt files)
   
-  sss <- readLines(paste0("data/", f,"/ARSTANfiles/", tolower(f), "_drop.rwl_out.txt"))
+  sss <- readLines(paste0("data/", gsub("_drop", "", f),"/ARSTANfiles/", tolower(f), ".rwl_out.txt"))
   sss <- sss[grep("sss", sss)]
   
   sss <- sss[grep("  sss:   ", sss)[c(rep(FALSE, 3*length(seq(grep("  sss:   ", sss)))/4), rep(TRUE, 1*length(seq(grep("  sss:   ", sss)))/4))]] # keep only last rows that have sss: in them
@@ -315,7 +317,8 @@ for(c in climate.data.types) {
         }# for (v in names(clim)[-c(1:2)])
         
         if(method.to.run %in% c("correlation", "response")) {
-          all.dcc.output <- rbind(all.dcc.output, data.frame(cbind(Species = substr(f, 1, 4), dcc.output)))
+          # all.dcc.output <- rbind(all.dcc.output, data.frame(cbind(Species = substr(f, 1, 4), dcc.output)))
+          all.dcc.output <- rbind(all.dcc.output, data.frame(cbind(Species = gsub("_drop", "", f), dcc.output)))
         }
         
       } # for(f in filenames)
