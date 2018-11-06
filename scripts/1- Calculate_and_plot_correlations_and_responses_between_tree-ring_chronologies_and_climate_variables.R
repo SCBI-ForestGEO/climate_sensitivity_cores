@@ -25,7 +25,7 @@ save.plots <- TRUE
 save.result.table <- TRUE
 
 ## Define order of the species in the  plots, based on ANPP contribution####
-ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv?token=ASwxIcI15ZV1vVyd84R5gnaI0Wo3zpBpks5b0g_2wA%3D%3D"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
+ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv?token=ASwxISXnJclwYynxKKDZxgVwv30Bq1hDks5b6uVNwA%3D%3D"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")]) #toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
@@ -152,6 +152,7 @@ for(sp in levels(all_sss$Species)){
     mtext(side= 2 , "log(No. cores)", line = 3)
     axis(1, labels = F, tcl = 0.5)
     axis(1, labels = F, tcl = -0.5)
+    mtext("a)", side = 1, line = -1, adj = 0.01, font = 2)
     # mtext(side= 1 , "Year", line = 3, outer = T)
     # abline(v = n.core, lty = 3, col = cols[sp,])
     # abline(h = 0.75, lty = 2)
@@ -185,6 +186,8 @@ for(sp in levels(all_sss$Species)){
     axis(1, labels = T, tcl = 0.5)
     axis(1, labels = F, tcl = -0.5)
     mtext(side= 2 , "sss", line = 3)
+    mtext("b)", side = 1, line = -1, adj = 0.01, font = 2)
+    
   } else {
     lines(sss ~ Year, data = x, col = cols[sp,], lwd = 2)
     abline(v = x$Year[x$sss > sss.threshold][1], lty = 2, col = cols[sp,])

@@ -35,8 +35,8 @@ head(scbi.stem1)
 
 
 # load list of tree censused in 2010 (live trees) and trees censused im 20106-2017 (dead trees)
-trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2010.csv?token=ASwxIXfX52VG9UJKt-ZvD2XuaBUVh5Oeks5bzzZDwA%3D%3D"), header = T)
-trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2016_17.csv?token=ASwxITzo3NoHuQGNkGDa7LIxlE5PjOtDks5bzzZWwA%3D%3D"), header = T)
+trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2010.csv?token=ASwxIeimpCK3ehxHEjuiPNCUmI2XwKVtks5b6wNawA%3D%3D"), header = T)
+trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2016_17.csv?token=ASwxITyegBdDcWly09vKdCILMQZiH8uHks5b6wNtwA%3D%3D"), header = T)
 
 # pull out census data for cored trees ####
 
