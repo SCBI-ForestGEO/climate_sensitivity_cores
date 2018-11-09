@@ -25,7 +25,7 @@ save.plots <- TRUE
 save.result.table <- TRUE
 
 ## Define order of the species in the  plots, based on ANPP contribution####
-ANPP_contribution <- read.csv(text=getURL("https://github.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/blob/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
+ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")]) #toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
@@ -206,7 +206,7 @@ if(save.plots) dev.off()
 par(op)
 
 # Run analysis for all types of climate data with all variables ####
-
+mean_and_std_of_clim <- NULL
 for(c in climate.data.types) {
   print(c)
   
@@ -239,7 +239,7 @@ for(c in climate.data.types) {
     clim  <- clim[, !(colnames(clim) %in% c("pet_sum"))]
   }
   
-  ### get a moving average and sd of climate varibales, by month
+  ### get a moving average and sd of climate varibales, by month (for moving correlation)
   
   clim.moving.avg <- NULL
   clim.moving.sd <- NULL
@@ -274,6 +274,15 @@ for(c in climate.data.types) {
     if(type.start %in% "Going_back_to_1980") start.years <- ifelse(start.years.sss > 1980, start.years.sss, 1980)
     if(type.start %in% "Going_back_at_earliest_common_year") start.years <- ifelse(start.years.sss > max(start.years.sss), max(start.years.sss), max(start.years.sss))
      # common to all species
+    
+    ## mean and std of climate variables
+    ## see https://github.com/SCBI-ForestGEO/climate_sensitivity_cores/issues/41
+    
+    mean_and_std_of_clim <- rbind(mean_and_std_of_clim,
+                                  data.frame(climate.data = c, type.start, start.year = min(start.years), end.year,
+                                             variable = colnames(clim[clim$year >=  min(start.years) & clim$year <= end.year, -c(1,2)]),
+                                             do.call(rbind, apply(clim[clim$year >=  min(start.years) & clim$year <= end.year, -c(1,2)],
+                                                                  2, function(x) return(data.frame(mean = mean(x), sd = sd(x)))))))
     
     
     
@@ -455,3 +464,8 @@ for(c in climate.data.types) {
   
   
 } # for(c in climate.data.types)
+
+
+# save mean_and_std_of_clim ####
+write.csv(mean_and_std_of_clim, file = "results/figures_for_manuscript/mean_and_std_of_climate_variables.csv", row.names = F)
+
