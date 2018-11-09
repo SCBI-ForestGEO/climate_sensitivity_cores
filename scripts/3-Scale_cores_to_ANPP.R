@@ -47,7 +47,13 @@ for(f in filenames) {
 # tail(core[, duplicated(gsub("[^0-9]", "", names(core))) | duplicated(gsub("[^0-9]", "", names(core)), fromLast=TRUE)], 100)
 
 # Load 2008 census data ####
-load("data/scbi.stem1.rdata")
+# load("data/scbi.stem1.rdata")
+
+url <- "https://raw.github.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/tree_main_census/data/scbi.stem1.rdata"
+download.file(url, "scbi.stem1.rdata", mode = "wb")
+load("scbi.stem1.rdata")
+file.remove("scbi.stem1.rdata")
+
 head(scbi.stem1)
 
 # Define sets of climate data to use ####

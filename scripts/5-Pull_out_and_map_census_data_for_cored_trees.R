@@ -30,8 +30,17 @@ for(f in filenames) {
 
 
 # Load 2008 census data ####
-load("data/scbi.stem1.rdata")
+# load("data/scbi.stem1.rdata")
+
+url <- "https://raw.github.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/tree_main_census/data/scbi.stem1.rdata"
+download.file(url, "scbi.stem1.rdata", mode = "wb")
+load("scbi.stem1.rdata")
+file.remove("scbi.stem1.rdata")
+
+
+
 head(scbi.stem1)
+
 
 
 # load list of tree censused in 2010 (live trees) and trees censused im 20106-2017 (dead trees)
