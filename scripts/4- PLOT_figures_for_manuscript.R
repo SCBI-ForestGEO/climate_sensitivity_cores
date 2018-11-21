@@ -547,7 +547,7 @@ for(type.start in type.of.start.date) {
     ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
     DEFICIT_VARIABLES.IN.ORDER <- "deficit"
     ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER <- "PDSI_prewhiten"
-    MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "vap", "wet")], 2, sum), decreasing = F))
+    MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "wet")], 2, sum), decreasing = F))
     
     VARIABLES.IN.ORDER <- c(ENERGY_VARIABLES.IN.ORDER, DEFICIT_VARIABLES.IN.ORDER, ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER, MOISTURE_VARIABLES.IN.ORDER)
   }
@@ -628,21 +628,21 @@ for(type.start in type.of.start.date) {
   
   par(xpd= NA)
   if(plot.nb %in% c(1,2)) {
-    lines(x = 1:9, y = rep(13.25, 9), col = "grey", lwd = 2)
-    lines(x = 10:17, y = rep(13.25, 8), lwd = 2)
-    text(x = 5, y = 13.25, labels = "previous year", col = "grey", pos = 3)
-    text(x = 14, y = 13.25, labels = "current year", pos = 3)
+    lines(x = 1:9, y = rep(12.15, 9), col = "grey", lwd = 2)
+    lines(x = 10:17, y = rep(12.15, 8), lwd = 2)
+    text(x = 5, y = 12.15, labels = "previous year", col = "grey", pos = 3)
+    text(x = 14, y = 12.15, labels = "current year", pos = 3)
   } else {
-    lines(x = 1:9, y = rep(13.25, 9), col = "grey", lwd = 2)
-    lines(x = 10:17, y = rep(13.25, 8), lwd = 2)
+    lines(x = 1:9, y = rep(12.15, 9), col = "grey", lwd = 2)
+    lines(x = 10:17, y = rep(12.15, 8), lwd = 2)
   }
   
   # "energy" vs "water"' variable group bars ###
   if(plot.nb %in% c(1)) {
-    lines(x = rep(-4, 4), y = 1:4, lwd = 2)
-    lines(x = rep(-4, 5), y = 7:11, lwd = 2)
-    text(x = -4.4, y = 2.5, labels = "Water variables", pos = 3, srt = 90)
-    text(x = -4.4, y = 8.5, labels = "Energy variables", pos = 3, srt = 90)
+    lines(x = rep(-4, 3), y = 1:3, lwd = 2)
+    lines(x = rep(-4, 5), y = 6:10, lwd = 2)
+    text(x = -4.4, y = 1.8, labels = "Water variables", pos = 3, srt = 90)
+    text(x = -4.4, y = 7.7, labels = "Energy variables", pos = 3, srt = 90)
   }
   
   
