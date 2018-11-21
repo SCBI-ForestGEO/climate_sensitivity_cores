@@ -31,7 +31,7 @@ SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
 ## Define sets of climate data to use ####
 
-climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
+climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017") # "PRISM_SCBI_1930_2015_30second", 
 
 ## Define sets of methods to run ####
 
@@ -207,6 +207,7 @@ par(op)
 
 # Run analysis for all types of climate data with all variables ####
 mean_and_std_of_clim <- NULL
+
 for(c in climate.data.types) {
   print(c)
   
@@ -278,11 +279,32 @@ for(c in climate.data.types) {
     ## mean and std of climate variables
     ## see https://github.com/SCBI-ForestGEO/climate_sensitivity_cores/issues/41
     
+    
     mean_and_std_of_clim <- rbind(mean_and_std_of_clim,
-                                  data.frame(climate.data = c, type.start, start.year = min(start.years), end.year,
+                                  data.frame(climate.data = c, start.year = max(min(start.years), min(clim$year)), end.year,
                                              variable = colnames(clim[clim$year >=  min(start.years) & clim$year <= end.year, -c(1,2)]),
-                                             do.call(rbind, apply(clim[clim$year >=  min(start.years) & clim$year <= end.year, -c(1,2)],
-                                                                  2, function(x) return(data.frame(mean = mean(x), sd = sd(x)))))))
+                                             do.call(rbind, lapply(seq_along(clim[clim$year >=  min(start.years) & clim$year <= end.year, -c(1,2)]),
+                                                                    function(i) {
+                                                                      
+                                                                      X <- clim[clim$year >=  min(start.years) & clim$year <= end.year, -c(1,2)][,i]
+                                                                      v <- names(clim[clim$year >=  min(start.years) & clim$year <= end.year, -c(1,2)])[i]
+                                                                      temp.month <- tapply(X, clim[clim$year >=  min(start.years) & clim$year <= end.year, 2], function(x) return(data.frame(mean = mean(x), sd = sd(x))))
+                                                                      names(temp.month) <- month.abb[as.numeric(names(temp.month))]
+                                                                      temp.month <- as.data.frame(do.call(cbind, temp.month))
+                                                                      
+                                                                      temp.annual <- tapply(X, clim[clim$year >=  min(start.years) & clim$year <= end.year, 1], function(x) {
+                                                                        if(v %in% c("PPT", "pet_sum", "wet")) return(sum(x))
+                                                                        if(v %in% "deficit")  return(sum(x[x>0]))
+                                                                        if(! v %in% c("PPT", "pet_sum", "wet", "deficit"))  return(mean(x))
+                                                                      })
+                                                                      
+                                                                      
+                                                                      temp.annual <- data.frame(Annual.mean = mean(temp.annual), Annual.sd = sd(temp.annual))
+                                                                      
+                                                                      
+                                                                      return(cbind(temp.month, temp.annual))
+                                                                      
+                                                                    }))))
     
     
     
@@ -467,5 +489,5 @@ for(c in climate.data.types) {
 
 
 # save mean_and_std_of_clim ####
-write.csv(mean_and_std_of_clim, file = "results/figures_for_manuscript/mean_and_std_of_climate_variables.csv", row.names = F)
+write.csv(mean_and_std_of_clim, file = "results/climate/mean_and_std_of_climate_variables.csv", row.names = F)
 
