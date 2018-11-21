@@ -910,3 +910,25 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
 
 
 
+
+# Supplementary figures - [climate variable]_SUMMARY ####
+mean_and_std_of_clim <- read.csv("results/climate/mean_and_std_of_climate_variables.csv")
+
+
+for(v in unique(mean_and_std_of_clim$variable)) {
+  if(save.plots)  {
+    tiff(paste0("results/climate//", v, "_monthy_mean_for_both_time_preiods.tif"), res = 150, width = 150, height = 100, units = "mm", pointsize = 10)
+  }
+  
+  X <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("mean", colnames(mean_and_std_of_clim))][, 1:12]
+  
+  plot(x = 1:12, y = c(X[1,]) , type = "l", xaxt = "n", xlab = "", ylab = v, bty = "L", lty = 2, ylim = range(unlist(X)))
+  lines(x = 1:12, y = c(X[2,]))
+  axis(1, at = 1:12, substr(month.abb,1,1))
+  
+  legend("topleft", lty = c(2,1), c("[1901-1938]-2009", "1980-2009"), bty = "n")
+  
+  if(save.plots) dev.off()
+}
+
+
