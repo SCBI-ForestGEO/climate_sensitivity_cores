@@ -38,7 +38,7 @@ climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_
 methods.to.run <- c("correlation") # c("correlation", "response", "moving_correlation")
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "Going_back_to_1980") # Going_back_at_earliest_common_year")
+type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1980") # "Going_back_to_1920")
 
 
 ## Define sss threshold ####
