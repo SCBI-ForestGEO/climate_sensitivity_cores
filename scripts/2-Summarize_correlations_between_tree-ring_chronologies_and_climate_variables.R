@@ -123,6 +123,7 @@ for(type.start in type.of.start.date) {
   print(type.start)
   # consistency_of_climate_responses <- NULL
   n_positive_corr <- NULL
+  n_significant_corr <- NULL
   mean_corr <- NULL
   min_corr <- NULL
   max_corr <- NULL
@@ -141,12 +142,11 @@ for(type.start in type.of.start.date) {
     if(c %in% "CRU_SCBI_1901_2016") all.dc.corr <- droplevels(all.dc.corr[!all.dc.corr$variable %in% c("pet_sum", "frs"), ])
     
     ## Summarize by Variable and by month ####
-    
-    ### n species with Pearson correlation ≥0. ####
-    
+
     n_positive_corr <- rbind(n_positive_corr, tapply(all.dc.corr$coef, list(all.dc.corr$variable, all.dc.corr$month), function(x) sum(x>=0, na.rm = T)))
     # rownames(n_positive_corr) <- "n_positive_correlation"
     
+    n_significant_corr <- rbind(n_significant_corr, tapply(all.dc.corr$significant, list(all.dc.corr$variable, all.dc.corr$month), function(x) sum(x)))
     
     mean_corr <- rbind(mean_corr, tapply(all.dc.corr$coef,  list(all.dc.corr$variable, all.dc.corr$month), function(x) mean(x, na.rm = T)))
     # rownames(mean_corr) <- "mean_correlation"
@@ -168,6 +168,7 @@ for(type.start in type.of.start.date) {
   columns.in.order <- c(paste0("prev.", tolower(month.abb[4:12])), paste0("curr.", tolower(month.abb[1:8])))
   
   n_positive_corr <- n_positive_corr[, columns.in.order]
+  n_significant_corr <- n_significant_corr[, columns.in.order]
   mean_corr <- mean_corr[, columns.in.order]
   min_corr <- min_corr[, columns.in.order]
   max_corr <- max_corr[, columns.in.order]
@@ -175,12 +176,14 @@ for(type.start in type.of.start.date) {
   
   # give variable column
   n_positive_corr <- data.frame(variable = row.names(n_positive_corr), n_positive_corr)
+  n_significant_corr <- data.frame(varibale = row.names(n_significant_corr), n_significant_corr)
   mean_corr <- data.frame(variable = row.names(mean_corr), mean_corr)
   min_corr <- data.frame(variable = row.names(min_corr), min_corr)
   max_corr <- data.frame(variable = row.names(max_corr), max_corr)
   
   if(save.result.table) {
     write.csv(n_positive_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_n_positive_correlation.csv"), row.names = F)
+    write.csv(n_significant_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_n_significant_correlation.csv"), row.names = F)
     write.csv(mean_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_mean_correlation.csv"), row.names = F)
     write.csv(min_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_min_correlation.csv"), row.names = F)
     write.csv(max_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_max_correlation.csv"), row.names = F)
