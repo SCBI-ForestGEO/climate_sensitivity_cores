@@ -176,7 +176,7 @@ for(type.start in type.of.start.date) {
   
   # give variable column
   n_positive_corr <- data.frame(variable = row.names(n_positive_corr), n_positive_corr)
-  n_significant_corr <- data.frame(varibale = row.names(n_significant_corr), n_significant_corr)
+  n_significant_corr <- data.frame(variable = row.names(n_significant_corr), n_significant_corr)
   mean_corr <- data.frame(variable = row.names(mean_corr), mean_corr)
   min_corr <- data.frame(variable = row.names(min_corr), min_corr)
   max_corr <- data.frame(variable = row.names(max_corr), max_corr)
@@ -188,8 +188,72 @@ for(type.start in type.of.start.date) {
     write.csv(min_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_min_correlation.csv"), row.names = F)
     write.csv(max_corr, file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_max_correlation.csv"), row.names = F)
     
+    
+    
+    assign(paste0("n_positive_corr", type.start, sep = "_"), n_positive_corr)
+    assign(paste0("n_significant_corr", type.start, sep = "_"), n_significant_corr)
+    assign(paste0("mean_corr", type.start, sep = "_"), mean_corr)
+    assign(paste0("min_corr", type.start, sep = "_"), min_corr)
+    assign(paste0("max_corr", type.start, sep = "_"), max_corr)
+    
   }
-  
+ 
+           
   
 }  # for(type.start in type.of.start.date)
 
+
+doc <- read_docx()
+
+
+
+for(v in levels(n_positive_corr$variable)) {
+  
+  supp_table_v <- NULL
+  
+for(type.start in c("Going_back_as_far_as_possible", "Going_back_to_1980")) {
+  
+  n_positive_corr <- assign(paste0("n_positive_corr", type.start, sep = "_"), n_positive_corr)
+  n_significant_corr <- assign(paste0("n_significant_corr", type.start, sep = "_"), n_significant_corr)
+  mean_corr <- assign(paste0("mean_corr", type.start, sep = "_"), mean_corr)
+  min_corr <- assign(paste0("min_corr", type.start, sep = "_"), min_corr)
+  max_corr<- assign(paste0("max_corr", type.start, sep = "_"), max_corr)
+  
+  
+  
+  supp_table_v <- as.data.frame(cbind(supp_table_v,
+                                      cbind(t(mean_corr[mean_corr$variable %in% v, -1]),
+                                            t(min_corr[min_corr$variable %in% v, -1]),
+                                            t(max_corr[max_corr$variable %in% v, -1]),
+                                            t(n_positive_corr[n_positive_corr$variable %in% v, -1]),
+                                            t(n_significant_corr[n_significant_corr$variable %in% v, -1])))
+  )
+} # for(type.start in c("Going_back_as_far_as_possible", "Going_back_to_1980"))
+
+  supp_table_v <- cbind(rownames(supp_table_v), supp_table_v)
+  colnames(supp_table_v) <-  letters[1:11]
+
+  ft <- flextable(supp_table_v)
+  ft <- set_header_labels(x = ft,
+                  a = "", b = "mean", c = "min", d = "max", e = "n positive", f = "n significant",
+                                g = "mean", h = "min", i = "max", j = "n positive", k = "n significant", top = FALSE )
+  ft <- add_header(ft,  a = "month", b = "[1901-1938]-2009", c = "[1901-1938]-2009", d = "[1901-1938]-2009", e = "[1901-1938]-2009", f = "[1901-1938]-2009",
+                   g = "[1980-2009]", h = "[1980-2009]", i = "[1980-2009]", j = "[1980-2009]", k = "[1980-2009]")
+  ft <- merge_h(ft, part = "header")
+  ft <- theme_booktabs(ft)
+  ft <- autofit(ft, add_w = 0, add_h = 0)
+
+  doc <- body_add_par(doc, paste0("table ", which(levels(n_positive_corr$variable) %in% v), ": Summary of Pearson correlations across species for ", v), style = "table title", pos = "after")
+  doc <- body_add_flextable(doc, ft, align = "center")
+  
+  } # for(v in levels(n_positive_corr$variable))
+  
+
+
+print(doc, target = "results/tables_for_manuscript/Supplementary_tables_Pearson_correlation_summary_per_variable.docx")
+  
+  
+  
+  
+  
+  
