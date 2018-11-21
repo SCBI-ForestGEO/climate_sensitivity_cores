@@ -370,15 +370,18 @@ for(v in c("pet", "wet", "deficit", "tmx")) {
     
     # op <- par(no.readonly = TRUE)
     
-    if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 0, 0))
-    if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 6, 0))
-    if(!plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 4, 0))
+    if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 5, 0))
+    if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 1.5, 0))
+    if(!plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 0.5, 0))
     plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
          yaxt = "n", ylab = "", xlab = "")
     
     # x-axis ####
-    axis(side = 3, at = 1:n, labels = colnames(x), las = 2) # change here
-    
+    if(plot.nb %in% c(1,2)) {
+    axis(side = 3, at = 1:n, labels = colnames(x), las = 2)
+    } # else {
+    #   axis(side = 3, at = 1:n, labels = F, las = 2)
+    # }
     
     
     # y-axis ####
@@ -389,7 +392,7 @@ for(v in c("pet", "wet", "deficit", "tmx")) {
       axis(side = 2, at = 1:m, labels = FALSE, las = 1)
     } 
     # title ####
-    if(plot.nb %in% c(1,2)) title(main, line = 5, outer = F)
+    if(plot.nb %in% c(1,2)) title(main, line = 4, outer = T, adj = ifelse(plot.nb %in% 1, 0.18, 0.67))
     
     
     # plot quilt ####
@@ -431,14 +434,14 @@ for(v in c("pet", "wet", "deficit", "tmx")) {
       lines(x = 10:17, y = rep(19.2, 8), lwd = 2)
       text(x = 5, y = 19.2, labels = "previous year", col = "grey", pos = 3)
       text(x = 14, y = 19.2, labels = "current year", pos = 3)
-    } else {
-      lines(x = 1:9, y = rep(18.7, 9), col = "grey", lwd = 2)
-      lines(x = 10:17, y = rep(18.7, 8), lwd = 2)
-    }
+    } # else {
+    #   lines(x = 1:9, y = rep(16, 9), col = "grey", lwd = 2)
+    #   lines(x = 10:17, y = rep(16, 8), lwd = 2)
+    # }
     
     
     # add letter ####
-    text(x = -1, y = 18, paste0(letters[plot.nb], ")"), font = 2)
+    text(x = -1, y = 15, paste0(letters[plot.nb], ")"), font = 2)
   } #  for(type.start in type.of.start.date[c(1,3)])
 } # for(v in c("pet", "cld", "deficit"))
 
