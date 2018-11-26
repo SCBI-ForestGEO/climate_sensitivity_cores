@@ -920,13 +920,27 @@ for(v in unique(mean_and_std_of_clim$variable)) {
     tiff(paste0("results/climate//", v, "_monthy_mean_for_both_time_preiods.tif"), res = 150, width = 150, height = 100, units = "mm", pointsize = 10)
   }
   
-  X <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("mean", colnames(mean_and_std_of_clim))][, 1:12]
+  par(mar = c(4, 4.1, 4.1, 4))
+  X.mean <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("mean", colnames(mean_and_std_of_clim))][, 1:12]
+  X.sd <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("sd", colnames(mean_and_std_of_clim))][, 1:12]
   
-  plot(x = 1:12, y = c(X[1,]) , type = "l", xaxt = "n", xlab = "", ylab = v, bty = "L", lty = 2, ylim = range(unlist(X)))
-  lines(x = 1:12, y = c(X[2,]))
+  plot(x = 1:12, y = c(X.mean[1,]) , type = "l", xaxt = "n", xlab = "", ylab = "mean", bty = "L", ylim = range(min(X.mean) - max(X.sd), max(X.mean) + max(X.sd)), yaxt = "n", col = "blue")
+  
+  polygon(x = c(1:12, 12:1), y = c(X.mean[1,]-X.sd[1,], rev(X.mean[1,]+X.sd[1,])), col = rgb(0,0,1,0.1), border = F)
+  polygon(x = c(1:12, 12:1), y = c(X.mean[2,]-X.sd[2,], rev(X.mean[2,]+X.sd[2,])), col = rgb(1,0,0,0.1), border = F)
+  
+  
+  lines(x = 1:12, y = c(X.mean[1,]), col = "blue")
+  lines(x = 1:12, y = c(X.mean[2,]), col = "red")
+  
   axis(1, at = 1:12, substr(month.abb,1,1))
+  axis(2, las = 2)
   
-  legend("topleft", lty = c(2,1), c("[1901-1938]-2009", "1980-2009"), bty = "n")
+  title(v)
+  
+  legend("topleft", lty = 1, col = c("blue", "red"),c("[1901-1938]-2009", "1980-2009"), bty = "n")
+  
+  legend("topright", fill = rgb(0,0,0,0.1), border = F, c("+/- SD"), bty = "n")
   
   if(save.plots) dev.off()
 }
