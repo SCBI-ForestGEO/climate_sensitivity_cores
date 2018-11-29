@@ -924,7 +924,7 @@ for(v in unique(mean_and_std_of_clim$variable)) {
   X.mean <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("mean", colnames(mean_and_std_of_clim))][, 1:12]
   X.sd <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("sd", colnames(mean_and_std_of_clim))][, 1:12]
   
-  plot(x = 1:12, y = c(X.mean[1,]) , type = "l", xaxt = "n", xlab = "", ylab = "mean", bty = "L", ylim = range(min(X.mean) - max(X.sd), max(X.mean) + max(X.sd)), yaxt = "n", col = "blue")
+  plot(x = 1:12, y = c(X.mean[1,]) , type = "l", xaxt = "n", xlab = "month", ylab = v, bty = "L", ylim = range(min(X.mean) - max(X.sd), max(X.mean) + max(X.sd)), yaxt = "n", col = "blue")
   
   polygon(x = c(1:12, 12:1), y = c(X.mean[1,]-X.sd[1,], rev(X.mean[1,]+X.sd[1,])), col = rgb(0,0,1,0.1), border = F)
   polygon(x = c(1:12, 12:1), y = c(X.mean[2,]-X.sd[2,], rev(X.mean[2,]+X.sd[2,])), col = rgb(1,0,0,0.1), border = F)
@@ -936,7 +936,7 @@ for(v in unique(mean_and_std_of_clim$variable)) {
   axis(1, at = 1:12, substr(month.abb,1,1))
   axis(2, las = 2)
   
-  title(v)
+  # title(v)
   
   legend("topleft", lty = 1, col = c("blue", "red"),c("[1901-1938]-2009", "1980-2009"), bty = "n")
   
