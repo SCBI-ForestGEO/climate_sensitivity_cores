@@ -928,7 +928,7 @@ for(v in c("pre", "wet",
            "cld", "tmx",
            "tmp", "tmn",
            "dtr", "pet",
-           "deficit", "PDSI_prewhiten")) { # unique(mean_and_std_of_clim$variable)
+           "deficit", "PDSI")) { # unique(mean_and_std_of_clim$variable)
   # if(save.plots)  {
   #   tiff(paste0("results/climate//", v, "_monthy_mean_for_both_time_preiods.tif"), res = 150, width = 150, height = 100, units = "mm", pointsize = 10)
   # }
