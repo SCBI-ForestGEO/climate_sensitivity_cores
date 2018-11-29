@@ -151,7 +151,7 @@ for(v in c("pet", "wet", "deficit")) {
     x = as.data.frame(t(x))
     sig = as.data.frame(t(x.sig))
     sig2 = as.data.frame(t(x.sig2))
-    main = ifelse(grepl("1980", type.start), "1980-2009", "[1901-1938]-2009")
+    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
     ylab = toupper(v)
     rescale = T
     
@@ -351,7 +351,7 @@ for(v in c("pet", "wet", "deficit", "tmx")) {
     x = as.data.frame(t(x))
     sig = as.data.frame(t(x.sig))
     sig2 = as.data.frame(t(x.sig2))
-    main = ifelse(grepl("1980", type.start), "1980-2009", "[1901-1938]-2009")
+    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
     ylab = toupper(v)
     rescale = T
     
@@ -564,7 +564,7 @@ for(type.start in type.of.start.date) {
   x = as.data.frame(t(x))
   sig = as.data.frame(t(x.sig))
   sig2 = as.data.frame(t(x.sig2))
-  main = ifelse(grepl("1980", type.start), "1980-2009", "[1901-1938]-2009")
+  main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
   rescale = T
   
   if (!is.data.frame(x)) {
@@ -597,7 +597,7 @@ for(type.start in type.of.start.date) {
   if(plot.nb %in% c(1)) {
     axis(side = 2, at = 1:m, labels = ifelse(grepl("PDSI", rownames(x)), expression(PDSI^1), rownames(x)) , las = 1)
   } else {
-    axis(side = 2, at = 1:m, labels = FALSE, las = 1)
+    axis(side = 2, at = 1:m, labels = bquote(.(v_lab)), las = 1)
   } 
   # title ####
   if(plot.nb %in% c(1,2)) title(main, line = 5, outer = F)
@@ -766,7 +766,7 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
     x = as.data.frame(t(x))
     sig = as.data.frame(t(x.sig))
     sig2 = as.data.frame(t(x.sig2))
-    main = ifelse(grepl("1980", type.start), "1980-2009", "[1901-1938]-2009")
+    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
     ylab = toupper(v)
     rescale = T
     
@@ -915,34 +915,65 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
 mean_and_std_of_clim <- read.csv("results/climate/mean_and_std_of_climate_variables.csv")
 
 
-for(v in unique(mean_and_std_of_clim$variable)) {
-  if(save.plots)  {
-    tiff(paste0("results/climate//", v, "_monthy_mean_for_both_time_preiods.tif"), res = 150, width = 150, height = 100, units = "mm", pointsize = 10)
-  }
+if(save.plots)  {
+  tiff(paste0("results/climate/climate_variables_monthy_means_for_both_time_preiods.tif"), res = 150, width = 120, height = 150, units = "mm", pointsize = 10)
+}
+
+par(mfrow = c(5,2))
+par(mar = c(1, 4, 0, 0), oma = c(3, 0, 1, 0))
+
+plot.nb = 1
+
+for(v in c("pre", "wet",
+           "cld", "tmx",
+           "tmp", "tmn",
+           "dtr", "pet",
+           "deficit", "PDSI_prewhiten")) { # unique(mean_and_std_of_clim$variable)
+  # if(save.plots)  {
+  #   tiff(paste0("results/climate//", v, "_monthy_mean_for_both_time_preiods.tif"), res = 150, width = 150, height = 100, units = "mm", pointsize = 10)
+  # }
   
-  par(mar = c(4, 4.1, 4.1, 4))
+  v_lab <- toupper(v)
+  if(v_lab %in% "PDSI_PREWHITEN") v_lab <- bquote(PDSI^1)
+
   X.mean <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("mean", colnames(mean_and_std_of_clim))][, 1:12]
   X.sd <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("sd", colnames(mean_and_std_of_clim))][, 1:12]
   
-  plot(x = 1:12, y = c(X.mean[1,]) , type = "l", xaxt = "n", xlab = "month", ylab = v, bty = "L", ylim = range(min(X.mean) - max(X.sd), max(X.mean) + max(X.sd)), yaxt = "n", col = "blue")
+  plot(x = 1:12, y = c(X.mean[1,]) , type = "l", xaxt = "n", xlab = "", ylab = "", bty = "L", ylim = range(min(X.mean) - max(X.sd), max(X.mean) + max(X.sd)), yaxt = "n", col = "blue")
   
   polygon(x = c(1:12, 12:1), y = c(X.mean[1,]-X.sd[1,], rev(X.mean[1,]+X.sd[1,])), col = rgb(0,0,1,0.1), border = F)
   polygon(x = c(1:12, 12:1), y = c(X.mean[2,]-X.sd[2,], rev(X.mean[2,]+X.sd[2,])), col = rgb(1,0,0,0.1), border = F)
   
-  
   lines(x = 1:12, y = c(X.mean[1,]), col = "blue")
   lines(x = 1:12, y = c(X.mean[2,]), col = "red")
   
-  axis(1, at = 1:12, substr(month.abb,1,1))
+  
+  # x-axis
+  axis(1, at = 1:12, labels = F)
+  
+  if(plot.nb %in% c(9, 10)) {
+    axis(1, at = 1:12, substr(month.abb,1,1))
+    mtext(1, text = "month", line = 2.5, cex = 0.8)
+  }
+  
+  # y-axis
   axis(2, las = 2)
+  mtext(2, text = v_lab, line = 2.5, cex = 0.8)
   
-  # title(v)
+  # legend
+  if(plot.nb %in% 2) {
+    legend("bottomleft", lty = 1, col = c("blue", "red"),c("1901-2009", "1980-2009"), bty = "n") # "[1901-1938]-2009"
+    legend("topright", fill = rgb(0,0,0,0.1), border = "transparent", c("+/- SD"), bty = "n", x.intersp = 0.5)
+  }
   
-  legend("topleft", lty = 1, col = c("blue", "red"),c("[1901-1938]-2009", "1980-2009"), bty = "n")
+  # titles
   
-  legend("topright", fill = rgb(0,0,0,0.1), border = F, c("+/- SD"), bty = "n")
+  mtext(side = 3, line = -1, text = paste0(letters[plot.nb], ")"), adj = 0.01, cex = 0.8)
+
   
-  if(save.plots) dev.off()
+  plot.nb = plot.nb +1
 }
 
+
+if(save.plots) dev.off()
 
