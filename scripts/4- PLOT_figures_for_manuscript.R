@@ -16,8 +16,8 @@ library(RCurl)
 source("scripts/0-My_dplR_functions.R")
 
 # set parameters ####
-save.plots <- F
-save.result.table <- F
+save.plots <- T
+save.result.table <- T
 
 
 # ANPP_response_total for each type of starting year (not realy for manuscript as is) ####
