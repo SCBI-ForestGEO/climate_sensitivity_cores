@@ -244,7 +244,7 @@ for(type.start in c("Going_back_as_far_as_possible", "Going_back_to_1980")) {
                   a = "", b = "mean", c = "min", d = "max", e = "n positive", f = "n significant",
                                 g = "mean", h = "min", i = "max", j = "n positive", k = "n significant", top = FALSE )
   ft <- add_header(ft,  a = "month", b = "1901-2009", c = "1901-2009", d = "1901-2009", e = "1901-2009", f = "1901-2009",
-                   g = "[1980-2009]", h = "[1980-2009]", i = "[1980-2009]", j = "[1980-2009]", k = "[1980-2009]")
+                   g = "1980-2009", h = "1980-2009", i = "1980-2009", j = "1980-2009", k = "1980-2009")
   ft <- merge_h(ft, part = "header")
   ft <- theme_booktabs(ft)
   ft <- autofit(ft, add_w = 0, add_h = 0)
