@@ -597,7 +597,7 @@ for(type.start in type.of.start.date) {
   if(plot.nb %in% c(1)) {
     axis(side = 2, at = 1:m, labels = ifelse(grepl("PDSI", rownames(x)), expression(PDSI^1), rownames(x)) , las = 1)
   } else {
-    axis(side = 2, at = 1:m, labels = bquote(.(v_lab)), las = 1)
+    axis(side = 2, at = 1:m, labels = F, las = 1)
   } 
   # title ####
   if(plot.nb %in% c(1,2)) title(main, line = 5, outer = F)
