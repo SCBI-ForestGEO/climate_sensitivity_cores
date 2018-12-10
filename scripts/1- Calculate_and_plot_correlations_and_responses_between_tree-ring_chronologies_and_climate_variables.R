@@ -288,11 +288,14 @@ for(c in climate.data.types) {
                                                                       
                                                                       X <- clim[clim$year >=  min(start.years) & clim$year <= end.year, -c(1,2)][,i]
                                                                       v <- names(clim[clim$year >=  min(start.years) & clim$year <= end.year, -c(1,2)])[i]
-                                                                      temp.month <- tapply(X, clim[clim$year >=  min(start.years) & clim$year <= end.year, 2], function(x) return(data.frame(mean = mean(x), sd = sd(x))))
+                                                                      X.year <- clim[clim$year >=  min(start.years) & clim$year <= end.year, 1]
+                                                                      X.month <- clim[clim$year >=  min(start.years) & clim$year <= end.year, 2]
+                                                                      
+                                                                      temp.month <- tapply(X, X.month, function(x) return(data.frame(mean = mean(x), sd = sd(x))))
                                                                       names(temp.month) <- month.abb[as.numeric(names(temp.month))]
                                                                       temp.month <- as.data.frame(do.call(cbind, temp.month))
                                                                       
-                                                                      temp.annual <- tapply(X, clim[clim$year >=  min(start.years) & clim$year <= end.year, 1], function(x) {
+                                                                      temp.annual <- tapply(X, X.year, function(x) {
                                                                         if(v %in% c("pre", "PCP", "pet_sum", "wet")) return(sum(x))
                                                                         if(v %in% "deficit")  return(sum(x[x>0]))
                                                                         if(!v %in% c("pre","PCP", "pet_sum", "wet", "deficit"))  return(mean(x))
