@@ -293,9 +293,9 @@ for(c in climate.data.types) {
                                                                       temp.month <- as.data.frame(do.call(cbind, temp.month))
                                                                       
                                                                       temp.annual <- tapply(X, clim[clim$year >=  min(start.years) & clim$year <= end.year, 1], function(x) {
-                                                                        if(v %in% c("pre", "PPT", "pet_sum", "wet")) return(sum(x))
+                                                                        if(v %in% c("pre", "PCP", "pet_sum", "wet")) return(sum(x))
                                                                         if(v %in% "deficit")  return(sum(x[x>0]))
-                                                                        if(!v %in% c("pre","PPT", "pet_sum", "wet", "deficit"))  return(mean(x))
+                                                                        if(!v %in% c("pre","PCP", "pet_sum", "wet", "deficit"))  return(mean(x))
                                                                       })
                                                                       
                                                                       
