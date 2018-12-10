@@ -276,7 +276,7 @@ for(c in climate.data.types) {
     if(type.start %in% "Going_back_at_earliest_common_year") start.years <- ifelse(start.years.sss > max(start.years.sss), max(start.years.sss), max(start.years.sss))
      # common to all species
     
-    ## mean and std of climate variables
+    ## mean and std of climate variables ####
     ## see https://github.com/SCBI-ForestGEO/climate_sensitivity_cores/issues/41
     
     
@@ -293,9 +293,9 @@ for(c in climate.data.types) {
                                                                       temp.month <- as.data.frame(do.call(cbind, temp.month))
                                                                       
                                                                       temp.annual <- tapply(X, clim[clim$year >=  min(start.years) & clim$year <= end.year, 1], function(x) {
-                                                                        if(v %in% c("PPT", "pet_sum", "wet")) return(sum(x))
+                                                                        if(v %in% c("pre", "PPT", "pet_sum", "wet")) return(sum(x))
                                                                         if(v %in% "deficit")  return(sum(x[x>0]))
-                                                                        if(! v %in% c("PPT", "pet_sum", "wet", "deficit"))  return(mean(x))
+                                                                        if(!v %in% c("pre","PPT", "pet_sum", "wet", "deficit"))  return(mean(x))
                                                                       })
                                                                       
                                                                       
@@ -306,7 +306,7 @@ for(c in climate.data.types) {
                                                                       
                                                                     }))))
     
-    
+    ## Run analysis on core data ####
     
     for(method.to.run in methods.to.run) {
       
