@@ -297,8 +297,8 @@ for(c in climate.data.types) {
                                                                       
                                                                       temp.annual <- tapply(X, X.year, function(x) {
                                                                         if(v %in% c("pre", "PCP", "pet_sum", "wet")) return(sum(x))
-                                                                        if(v %in% "deficit")  return(sum(x[x>0]))
-                                                                        if(!v %in% c("pre","PCP", "pet_sum", "wet", "deficit"))  return(mean(x))
+                                                                        if(v %in% "PETminusPRE")  return(sum(x[x>0]))
+                                                                        if(!v %in% c("pre","PCP", "pet_sum", "wet", "PETminusPRE"))  return(mean(x))
                                                                       })
                                                                       
                                                                       
@@ -400,7 +400,7 @@ for(c in climate.data.types) {
           v <-  toupper(v)
           v <- gsub("PDSI_PREWHITEN" , "PDSI", v)
           
-          my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), sig2 = as.data.frame(t(x.sig2)),  main = v, method = method.to.run)
+          my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), sig2 = as.data.frame(t(x.sig2)),  main = ifelse(v %in% "PETminusPRE", "PET-PRE", v), method = method.to.run)
           
           if(save.plots) dev.off()
         } #   for(v in names(clim)[-c(1,2)])
@@ -433,7 +433,7 @@ for(c in climate.data.types) {
             # op <- par(oma = c(1, 3, 5, 3), mai = c(1, 0.5, 0.2, 1)) #par(oma = c(0, 3, 5, 0), mai = c(0.5, 0.8, 0.2, 2))
             # op <- par(mfrow = c(2, 1), oma = c(5, 5, 5, 5), mai = c(1, 0.5, 0.2, 1), mar = c(0,0,0,0))
             
-            my.mdccplot(x = X, main = paste(f, v, sep = " - "))
+            my.mdccplot(x = X, main = paste(f, ifelse(v %in% "PETminusPRE", "PET-PRE", v), sep = " - "))
             
             # par(op)
             
@@ -472,7 +472,7 @@ for(c in climate.data.types) {
               tiff(paste0("results/", type.start, "/figures/monthly_moving_correlation/by_curr_season_month_all_sp_together/", c, "/", v, "_", mth, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
             }
             
-            my.mdccplot(X, main = paste(v, mth, sep = " - "), clim.ma = clim.moving.avg[[mth]][, v][colnames(X$coef)], clim.sd = clim.moving.sd[[mth]][, v][colnames(X$coef)])
+            my.mdccplot(X, main = paste(ifelse(v %in% "PETminusPRE", "PET-PRE", v), mth, sep = " - "), clim.ma = clim.moving.avg[[mth]][, v][colnames(X$coef)], clim.sd = clim.moving.sd[[mth]][, v][colnames(X$coef)])
             
             if(save.plots) dev.off()
           } #  for(m in c( c("apr", "may", "jun", "jul")))

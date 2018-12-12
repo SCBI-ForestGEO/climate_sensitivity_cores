@@ -67,7 +67,7 @@ for(f in good.files) {
 }
 
 # add PET-PPT asd a climate variable (see issue# 23, https://github.com/EcoClimLab/climate_sensitivity_cores/issues/23)
-clim$deficit <- clim$pet_sum - clim$pre
+clim$PETminusPRE <- clim$pet_sum - clim$pre
 
 
 write.csv(clim, file = "raw_data/climate/Formated_CRU_SCBI_1901_2016.csv", row.names = F)

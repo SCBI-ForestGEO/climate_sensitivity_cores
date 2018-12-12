@@ -21,7 +21,7 @@ source("scripts/0-My_dplR_functions.R")
 
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "Going_back_to_1980") # Going_back_at_earliest_common_year")
+type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1980") #  "Going_back_to_1920"
 
 
 # Load core data ####
@@ -57,7 +57,7 @@ file.remove("scbi.stem1.rdata")
 head(scbi.stem1)
 
 # Define sets of climate data to use ####
-climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
+climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017") #"PRISM_SCBI_1930_2015_30second", 
 
 
 
@@ -275,6 +275,7 @@ for( c in climate.data.types) {
  rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
   
  colnames(x) <- gsub("ANPP_response.", "", colnames(x))
+ colnames(x) <- gsub("PETminusPRE", "pet-pre",  colnames(x))
  
  x <- x[c(tolower(month.abb)[4:12],toupper(month.abb)[1:8]),]# order the months correctly
 

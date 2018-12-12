@@ -21,10 +21,10 @@ save.result.table <- TRUE
 
 # Define sets of climate data to use ###3
 
-climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
+climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017") # "PRISM_SCBI_1930_2015_30second", 
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "Going_back_to_1980") # Going_back_at_earliest_common_year")
+type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1980") # "Going_back_to_1920", 
 
 
 # Summarize tables of results for each climate data ####

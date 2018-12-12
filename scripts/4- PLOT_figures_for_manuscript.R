@@ -23,7 +23,7 @@ save.result.table <- T
 # ANPP_response_total for each type of starting year (not realy for manuscript as is) ####
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "Going_back_to_1980") # Going_back_at_earliest_common_year")
+type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1980") # "Going_back_to_1920", 
 
 
 ## plot ####
@@ -65,7 +65,7 @@ for(type.start in type.of.start.date) {
   if(type.start %in% "Going_back_as_far_as_possible") {
     
     ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
-    DEFICIT_VARIABLES.IN.ORDER <- "deficit"
+    DEFICIT_VARIABLES.IN.ORDER <- "PETminusPRE"
     ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER <- "PDSI_prewhiten"
     MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "vap", "wet")], 2, sum), decreasing = F))
     
@@ -75,6 +75,7 @@ for(type.start in type.of.start.date) {
   x <- x[, rev(VARIABLES.IN.ORDER)]
   colnames(x) <- toupper(colnames(x))
   colnames(x) <- gsub("PDSI_PREWHITEN" , "PDSI", colnames(x))
+  colnames(x) <- gsub("PETMINUSPRE" , "PET-PRE", colnames(x))
   
   
   
@@ -116,7 +117,7 @@ nf <- layout(mat = matrix(c(1,2,7,3,4,7,5,6,7), ncol = 3, byrow = T), widths = c
 
 plot.nb = 0
 
-for(v in c("pet", "wet", "deficit")) {
+for(v in c("pet", "wet", "PETminusPRE")) {
   
   print(v)
   for(type.start in type.of.start.date) {
@@ -152,7 +153,7 @@ for(v in c("pet", "wet", "deficit")) {
     sig = as.data.frame(t(x.sig))
     sig2 = as.data.frame(t(x.sig2))
     main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
-    ylab = toupper(v)
+    ylab = toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
     rescale = T
     
     if (!is.data.frame(x)) {
@@ -240,7 +241,7 @@ for(v in c("pet", "wet", "deficit")) {
     # add letter ####
     text(x = -1, y = 18, paste0(letters[plot.nb], ")"), font = 2)
   } #  for(type.start in type.of.start.date[c(1,3)])
-} # for(v in c("pet", "cld", "deficit"))
+} # for(v in c("pet", "cld", "PETminusPRE"))
 
 
 # legend ####
@@ -316,7 +317,7 @@ nf <- layout(mat = matrix(c(1,2,9,3,4,9,5,6,9,7, 8, 9), ncol = 3, byrow = T), wi
 
 plot.nb = 0
 
-for(v in c("pet", "wet", "deficit", "tmx")) {
+for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
   
   print(v)
   for(type.start in type.of.start.date) {
@@ -352,7 +353,7 @@ for(v in c("pet", "wet", "deficit", "tmx")) {
     sig = as.data.frame(t(x.sig))
     sig2 = as.data.frame(t(x.sig2))
     main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
-    ylab = toupper(v)
+    ylab = toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
     rescale = T
     
     if (!is.data.frame(x)) {
@@ -443,7 +444,7 @@ for(v in c("pet", "wet", "deficit", "tmx")) {
     # add letter ####
     text(x = -1, y = 15, paste0(letters[plot.nb], ")"), font = 2)
   } #  for(type.start in type.of.start.date[c(1,3)])
-} # for(v in c("pet", "cld", "deficit"))
+} # for(v in c("pet", "cld", "PETminusPRE"))
 
 
 # legend ####
@@ -548,7 +549,7 @@ for(type.start in type.of.start.date) {
   if(type.start %in% "Going_back_as_far_as_possible") {
     
     ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
-    DEFICIT_VARIABLES.IN.ORDER <- "deficit"
+    DEFICIT_VARIABLES.IN.ORDER <- "PETminusPRE"
     ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER <- "PDSI_prewhiten"
     MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "wet")], 2, sum), decreasing = F))
     
@@ -558,7 +559,8 @@ for(type.start in type.of.start.date) {
   x <- x[, rev(VARIABLES.IN.ORDER)]
   colnames(x) <- toupper(colnames(x))
   colnames(x) <- gsub("PDSI_PREWHITEN" , "PDSI", colnames(x))
- 
+  colnames(x) <- gsub("PETMINUSPRE" , "PET-PRE", colnames(x))
+  
   
   # plot (adapted my.dccplot function) ####
   x = as.data.frame(t(x))
@@ -719,7 +721,7 @@ SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
 # plot ####
 
-for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_prewhiten", "deficit")) {
+for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_prewhiten", "PETminusPRE")) {
   
   print(v)
   
@@ -767,7 +769,7 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
     sig = as.data.frame(t(x.sig))
     sig2 = as.data.frame(t(x.sig2))
     main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
-    ylab = toupper(v)
+    ylab = toupper(v) ; ylab = gsub("PETMINUSPRE", "PET-PRE", ylab)
     rescale = T
     
     if (!is.data.frame(x)) {
@@ -906,7 +908,7 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
   
   # dev.off ####
   if(save.plots) dev.off()
-} # for(v in c("pet", "cld", "deficit"))
+} # for(v in c("pet", "cld", "PETminusPRE"))
 
 
 
@@ -928,13 +930,13 @@ for(v in c("pre", "wet",
            "cld", "tmx",
            "tmp", "tmn",
            "dtr", "pet",
-           "deficit", "PDSI")) { # unique(mean_and_std_of_clim$variable)
+           "PETminusPRE", "PDSI")) { # unique(mean_and_std_of_clim$variable)
   # if(save.plots)  {
   #   tiff(paste0("results/climate//", v, "_monthy_mean_for_both_time_preiods.tif"), res = 150, width = 150, height = 100, units = "mm", pointsize = 10)
   # }
   
-  v_lab <- toupper(v)
-  if(v_lab %in% "PDSI_PREWHITEN") v_lab <- bquote(PDSI^1)
+  ylab <- toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
+  if(ylab %in% "PDSI_PREWHITEN") ylab <- bquote(PDSI^1)
 
   X.mean <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("mean", colnames(mean_and_std_of_clim))][, 1:12]
   X.sd <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("sd", colnames(mean_and_std_of_clim))][, 1:12]
@@ -958,7 +960,7 @@ for(v in c("pre", "wet",
   
   # y-axis
   axis(2, las = 2)
-  mtext(2, text = v_lab, line = 2.5, cex = 0.8)
+  mtext(2, text = ylab, line = 2.5, cex = 0.8)
   
   # legend
   if(plot.nb %in% 2) {
