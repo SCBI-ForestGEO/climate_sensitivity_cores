@@ -544,18 +544,23 @@ for(type.start in type.of.start.date) {
   # remove frs
   if("frs" %in% names(x)) x <- x[,-which(names(x) %in% "frs")]
   
+  # order the variables ####
+  # ---- BEFORE (order by influence on ANPP) -----
   # order by influence on ANPP (defined as predicted changes summed across all months) in analysis going back as far as possible
   
-  if(type.start %in% "Going_back_as_far_as_possible") {
-    
-    ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
-    DEFICIT_VARIABLES.IN.ORDER <- "PETminusPRE"
-    ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER <- "PDSI_prewhiten"
-    MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "wet")], 2, sum), decreasing = F))
-    
-    VARIABLES.IN.ORDER <- c(ENERGY_VARIABLES.IN.ORDER, DEFICIT_VARIABLES.IN.ORDER, ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER, MOISTURE_VARIABLES.IN.ORDER)
-  }
+  # if(type.start %in% "Going_back_as_far_as_possible") {
+  #   
+  #   ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
+  #   DEFICIT_VARIABLES.IN.ORDER <- "PETminusPRE"
+  #   ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER <- "PDSI_prewhiten"
+  #   MOISTURE_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("cld", "pre", "wet")], 2, sum), decreasing = F))
+  #   
+  #   VARIABLES.IN.ORDER <- c(ENERGY_VARIABLES.IN.ORDER, DEFICIT_VARIABLES.IN.ORDER, ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER, MOISTURE_VARIABLES.IN.ORDER)
+  # }
+  # ---- NOW (fix order)  ----
   
+  VARIABLES.IN.ORDER <- c("tmx", "tmp", "tmn", "dtr", "pet", "PETminusPRE", "PDSI_prewhiten", 
+                          "pre", "wet", "cld") # , "vap"
   x <- x[, rev(VARIABLES.IN.ORDER)]
   colnames(x) <- toupper(colnames(x))
   colnames(x) <- gsub("PDSI_PREWHITEN" , "PDSI", colnames(x))
@@ -597,7 +602,7 @@ for(type.start in type.of.start.date) {
   
   # y-axis ####
   if(plot.nb %in% c(1)) {
-    axis(side = 2, at = 1:m, labels = ifelse(grepl("PDSI", rownames(x)), expression(PDSI^1), rownames(x)) , las = 1)
+    axis(side = 2, at = 1:m, labels =rownames(x) , las = 1) # axis(side = 2, at = 1:m, labels = ifelse(grepl("PDSI", rownames(x)), expression(PDSI^1), rownames(x)) , las = 1)
   } else {
     axis(side = 2, at = 1:m, labels = F, las = 1)
   } 
