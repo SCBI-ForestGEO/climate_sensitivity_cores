@@ -175,6 +175,7 @@ for(c in climate.data.types) {
   ## do steps 1 through 6 ####
   pb <- txtProgressBar(style = 3, min = 1, max = nrow(Results_correlation_climate))
 
+  ANPP_stem_core <- NULL # (this is for Table S3 Comparison of ANPP_stem estimates from census data and cores.) 
   
   for(i in 1:nrow(Results_correlation_climate)) {
     
@@ -216,6 +217,7 @@ for(c in climate.data.types) {
     
     # 4- get ANPP_2008 on a normal year ####
     ANPP_2008 <- sum(agb_2009 - agb_2008) / 25.6
+    ANPP_stem_core <- rbind(ANPP_stem_core, data.frame(sp = sp_complete, ANPP_2008)) # this is for Table S3 Comparison of ANPP_stem estimates from census data and cores. 
     
     # 5- get ANPP_2008 on a year with one unit of increase in climate variable ####
     ANPP_2008_plus <- sum(agb_2009_plus - agb_2008) / 25.6
@@ -309,9 +311,9 @@ for( c in climate.data.types) {
 
 } # for(type.start in type.of.start.date)
 
- 
-# format and save Table S2: Species-specific allometries between radial increment and DBH ####
-## Allometries are the same for both type of start so we use the last one.
+# Supplementary tables ####
+##  format and save Table S2: Species-specific allometries between radial increment and DBH ####
+### Allometries are the same for both type of start so we use the last one.
 
 library(officer)
 library(flextable)
@@ -335,3 +337,51 @@ doc <- body_add_par(doc, "Table S2: Species-specific allometries between radial 
 doc <- body_add_flextable(doc, ft, align = "center")
 
 print(doc, target = paste0("results/tables_for_manuscript/Table_S2.docx"))
+
+##  format and save Table S3 Comparison of ANPP_stem estimates from census data and cores. ####
+### ANPP stem is the same for both type of start and all climate variable and month so we need to reduce the table and keep one line per species.
+
+Table_S3 <- ANPP_stem_core[!duplicated(ANPP_stem_core),]
+
+ANPP_stem_census <- read.csv(text = getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"))
+ANPP_stem_census <- ANPP_stem_census[ANPP_stem_census$census_interval %in% "census_1_2" & ANPP_stem_census$species %in% Table_S3$sp, c("species", 
+                                                                                                                                       "ANPP_Mg.C.ha1.y1_10cm")]
+
+Table_S3 <- cbind(Table_S3,  ANPP_stem_census = ANPP_stem_census[match(Table_S3$sp, ANPP_stem_census$species), 2])
+Table_S3$sp <- toupper(Table_S3$sp)
+
+# Table_S3 <- Table_S3[match(Table_S3$sp, c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "juni", "cato", "caco", "fagr", "caov", "pist", "frni")), ]
+Table_S3 <- Table_S3[order(Table_S3$ANPP_stem_census, decreasing = T), ]
+
+doc <- read_docx()
+
+ft <- flextable(Table_S3)
+ft <- set_header_labels(x = ft, sp = "Species code")
+
+ft <- display( ft, col_key = "ANPP_2008", 
+                 part = "header",
+                 pattern = "ANPP {{my_message}} core data", 
+                 formatters = list(
+                   my_message ~ sprintf("stem") 
+                 ), 
+                 fprops = list(
+                   my_message = fp_text(vertical.align = "subscript")
+                 ) 
+)
+ft <- display( ft, col_key = "ANPP_stem_census", 
+               part = "header",
+               pattern = "ANPP {{my_message}} census data", 
+               formatters = list(
+                 my_message ~ sprintf("stem") 
+               ), 
+               fprops = list(
+                 my_message = fp_text(vertical.align = "subscript")
+               ) 
+)
+ft <- autofit(ft)
+ft
+
+doc <- body_add_par(doc, "Table S3 Comparison of ANPP_stem estimates from census data and cores", style = "table title", pos = "after")
+doc <- body_add_flextable(doc, ft, align = "center")
+
+print(doc, target = paste0("results/tables_for_manuscript/Table_S3.docx"))
