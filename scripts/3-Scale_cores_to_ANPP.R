@@ -260,7 +260,6 @@ write.csv(ANPP_response, file = paste0("results/", type.start, "/tables/monthly_
 ### save ANPP_response total, climate variable and by month ####
 write.csv(ANPP_response_total, file = paste0("results/", type.start, "/tables/monthly_responses_ANPP_to_climate_variables/Total_ANPP_response_climate_variable_and_month.csv"), row.names = F)
 
-
 # 8- plot the quilt ####
 
 for( c in climate.data.types) {
@@ -309,3 +308,30 @@ for( c in climate.data.types) {
 
 
 } # for(type.start in type.of.start.date)
+
+ 
+# format and save Table S2: Species-specific allometries between radial increment and DBH ####
+## Allometries are the same for both type of start so we use the last one.
+
+library(officer)
+library(flextable)
+
+Table_S2 <- as.data.frame(t(sapply(DBH_to_r_inc_lms, function(x) return(c(summary(x)$coefficients[,1], P_value_slope = summary(x)$coefficients[2,4])))))
+Table_S2 <- cbind(Species = toupper(rownames(Table_S2)), Table_S2)
+colnames(Table_S2)[2:3] <- c("a", "b")
+Table_S2[, 2:4] <- round(Table_S2[, 2:4], 4)
+Table_S2 <- Table_S2[c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "juni", 
+  "cato", "caco", "fagr", "caov", "pist", "frni"), ]
+Table_S2$Species <- gsub("CAOV", "CAOVL", Table_S2$Species)
+
+
+
+doc <- read_docx()
+
+ft <- flextable(Table_S2)
+ft <- set_header_labels(x = ft, Species = "Species code", P_value_slope = "P-value")
+
+doc <- body_add_par(doc, "Table S2: Species-specific allometries between radial increment and DBH with  P-value of the slope. Radial increment = a + b * DBH.", style = "table title", pos = "after")
+doc <- body_add_flextable(doc, ft, align = "center")
+
+print(doc, target = paste0("results/tables_for_manuscript/Table_S2.docx"))
