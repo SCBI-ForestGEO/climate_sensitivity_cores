@@ -1,10 +1,12 @@
 
+f = paste0(tolower(f), "_drop.rwl")
+
 all_identical <- NULL
 for(f in filenames[-13]) {
   print(f)
   sp <- toupper(substr(f, 1, 4))
-  sp_dropbox <- read.rwl(paste0('C:/Users/HerrmannV/Dropbox (Smithsonian)/climate sensitivity/results/z_FinalChronologies/', sp, '/', f))
-  sp_core <- read.rwl(paste0('C:/Users/HerrmannV/Dropbox (Smithsonian)/GitHub/SCBI-ForestGEO-Data_private/tree_cores/chronologies/current_chronologies/complete/', f))
+  sp_dropbox <- read.rwl(paste0('C:/Users/valen/Dropbox (Smithsonian)/climate sensitivity/results/z_FinalChronologies/', sp, '/', f))
+  sp_core <- read.rwl(paste0('D:/GitHub Valentine/SCBI-ForestGEO-Data_private/tree_cores/chronologies/current_chronologies/complete/', f))
   sp_raw <- read.rwl(paste0('raw_data/cores/', f))
   sp_data <- read.rwl(paste0('data/', ifelse(sp %in% "CAOV", "CAOVL", sp), '/', f))
   all_identical <- rbind(all_identical, data.frame(sp = sp, identical = all(c(identical(sp_dropbox, sp_core), identical(sp_dropbox, sp_raw),  identical(sp_dropbox, sp_data)))))
