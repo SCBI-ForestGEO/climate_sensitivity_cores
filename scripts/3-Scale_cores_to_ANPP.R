@@ -196,7 +196,7 @@ for(c in climate.data.types) {
 
     # steps 1,2,3 - get the AGB for 2008, 2009 and 2009 if there were one unit of increase in climate variable ####
     
-    sp_complete <- ifelse(sp %in% "caov", "caovl", sp)
+    # sp_complete <- ifelse(sp %in% "caov", "caovl", sp)
     
     ## AGB 2008
     x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx])
@@ -323,8 +323,8 @@ Table_S2 <- cbind(Species = toupper(rownames(Table_S2)), Table_S2)
 colnames(Table_S2)[2:3] <- c("a", "b")
 Table_S2[, 2:4] <- round(Table_S2[, 2:4], 4)
 Table_S2 <- Table_S2[c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "juni", 
-  "cato", "caco", "fagr", "caov", "pist", "frni"), ]
-Table_S2$Species <- gsub("CAOV", "CAOVL", Table_S2$Species)
+  "cato", "caco", "fagr", "caovl", "pist", "frni"), ]
+# Table_S2$Species <- gsub("CAOV", "CAOVL", Table_S2$Species)
 
 
 
@@ -350,7 +350,7 @@ ANPP_stem_census <- ANPP_stem_census[ANPP_stem_census$census_interval %in% "cens
 Table_S3 <- cbind(Table_S3,  ANPP_stem_census = ANPP_stem_census[match(Table_S3$sp, ANPP_stem_census$species), 2])
 Table_S3$sp <- toupper(Table_S3$sp)
 
-# Table_S3 <- Table_S3[match(Table_S3$sp, c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "juni", "cato", "caco", "fagr", "caov", "pist", "frni")), ]
+# Table_S3 <- Table_S3[match(Table_S3$sp, c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "juni", "cato", "caco", "fagr", "caovl", "pist", "frni")), ]
 Table_S3 <- Table_S3[order(Table_S3$ANPP_stem_census, decreasing = T), ]
 
 doc <- read_docx()
