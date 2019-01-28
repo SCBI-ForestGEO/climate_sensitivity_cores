@@ -196,7 +196,7 @@ for(c in climate.data.types) {
 
     # steps 1,2,3 - get the AGB for 2008, 2009 and 2009 if there were one unit of increase in climate variable ####
     
-    # sp_complete <- ifelse(sp %in% "caov", "caovl", sp)
+    sp_complete <- ifelse(sp %in% "caov", "caovl", sp)
     
     ## AGB 2008
     x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx])
