@@ -26,7 +26,7 @@ save.result.table <- TRUE
 
 ## Define order of the species in the  plots, based on ANPP contribution####
 ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv?token=ASwxIcI15ZV1vVyd84R5gnaI0Wo3zpBpks5b0g_2wA%3D%3D"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
-SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")]) #toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
+SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
 SPECIES_IN_ORDER <- SPECIES_IN_ORDER[grepl("LITU|QURU|FRAM|QUVE", SPECIES_IN_ORDER)] # special for live vs dead only
@@ -35,14 +35,14 @@ SPECIES_IN_ORDER <- paste0(rep(SPECIES_IN_ORDER, each =2), c("_live", "_dead"))
 
 ## Define sets of climate data to use ####
 
-climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
+climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
 ## Define sets of methods to run ####
 
 methods.to.run <- c("correlation") # c("correlation", "response", "moving_correlation")
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1920", "Going_back_to_1980") # Going_back_at_earliest_common_year")
+type.of.start.date <- c("1901_2009", "1980_2009")
 
 
 ## Define sss threshold ####
@@ -56,27 +56,25 @@ end.frs <- 5 # may of current year (for freeze days variable only)
 
 # Load and prepare core data ####
 
-filenames <- list.dirs("data", full.names = F, recursive = F  ) # filenames <- list.files("raw_data/cores/")
+filenames <- list.dirs("data/cores", full.names = F, recursive = F  ) # filenames <- list.files("raw_data/cores/")
 filenames <- filenames[!grepl("[a-z]", filenames) | grepl("dead|live", filenames)] # keep only all caps names
 
 
 filenames <- filenames[grepl("dead|live", filenames)] # special for live vs dead only
 
-filenames <- gsub("_", "_drop_", filenames)
-
 all_sss <- NULL
 
 for(f in filenames) {
   # get the raw data
-  core_raw <- read.rwl(paste0("raw_data/cores/", tolower(f), ".rwl"))
+  core_raw <- read.rwl(paste0("data/cores/", f, "/", tolower(gsub("_", "_drop_", f)), ".rwl"))
   
   # get the detrended data
-  core <- read.table(paste0("data/", gsub("_drop", "", f),"/ARSTANfiles/", tolower(f), ".rwl_tabs.txt"), sep = "\t", h = T)
+  core <- read.table(paste0("data/cores/", f, "/ARSTANfiles/", tolower(gsub("_", "_drop_", f)), ".rwl_tabs.txt"), sep = "\t", h = T)
   core <- data.frame(res = core$res,  samp.depth = core$num, row.names = core$year)
   
   # get the Subsample Signal Strength (sss as function of the number of trees in sample, the last one appearing in the "xxx_drop.rxl_out.txt files)
   
-  sss <- readLines(paste0("data/", gsub("_drop", "", f),"/ARSTANfiles/", tolower(f), ".rwl_out.txt"))
+  sss <- readLines(paste0("data/cores/", f, "/ARSTANfiles/", tolower(gsub("_", "_drop_", f)), ".rwl_out.txt"))
   sss <- sss[grep("sss", sss)]
   
   sss <- sss[grep("  sss:   ", sss)[c(rep(FALSE, 3*length(seq(grep("  sss:   ", sss)))/4), rep(TRUE, 1*length(seq(grep("  sss:   ", sss)))/4))]] # keep only last rows that have sss: in them
@@ -217,7 +215,7 @@ for(c in climate.data.types) {
   
   ## Load climate data ####
   
-  clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
+  clim <- read.csv(paste0("data/climate/Formated_", c, ".csv"))
   
   ### crop first and last year of NOAA data because outliers
   if(c %in% "NOAA_PDSI_Northern_Virginia_1895_2017") {
