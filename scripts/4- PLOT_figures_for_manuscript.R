@@ -1,7 +1,7 @@
 ######################################################
 # Purpose: Plot figures for publications
 # Developped by: Valentine Herrmann - HerrmannV@si.edu
-# R version 3.4.4 (2018-03-15)
+# R version 3.5.1 (2018-07-02)
 ######################################################
 
 # Clean environment ####
@@ -23,7 +23,7 @@ save.result.table <- T
 # ANPP_response_total for each type of starting year (not realy for manuscript as is) ####
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1980") # "Going_back_to_1920", 
+type.of.start.date <- c("1901_2009", "1980_2009") 
 
 
 ## plot ####
@@ -62,7 +62,7 @@ for(type.start in type.of.start.date) {
   
   # order by influence on ANPP (defined as predicted changes summed across all months) in analysis going back as far as possible
   
-  if(type.start %in% "Going_back_as_far_as_possible") {
+  if(type.start %in% "1901_2009") {
     
     ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
     DEFICIT_VARIABLES.IN.ORDER <- "PETminusPRE"
@@ -81,8 +81,7 @@ for(type.start in type.of.start.date) {
   
   
   if(save.plots)  {
-    dir.create(paste0("results/", type.start, "/figures/for_manuscript"), showWarnings = F)
-    tiff(paste0("results/", type.start, "/figures/for_manuscript/ANPP_response.tif"), res = 300, width = 169, height = 140, units = "mm", pointsize = 10)
+    tiff(paste0("results/", type.start, "/figures/ANPP_response.tif"), res = 300, width = 169, height = 140, units = "mm", pointsize = 10)
   }
   
   my.dccplot(x = as.data.frame(t(x)), sig = as.data.frame(t(x.sig)), sig2 = as.data.frame(t(x.sig2)), main = "", method = "response")
@@ -101,10 +100,10 @@ for(type.start in type.of.start.date) {
 method.to.run = "correlation"
 climate_data = "CRU_SCBI_1901_2016"
 
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1980") # Going_back_at_earliest_common_year")
+type.of.start.date <- c("1901_2009", "1980_2009") # Going_back_at_earliest_common_year")
 
 ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
-SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")]) #toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
+SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
 # plot ####
@@ -168,8 +167,6 @@ for(v in c("pet", "wet", "PETminusPRE")) {
     
     pos.max <- 0.65 #max(x)
     neg.max <- 0.65 #abs(min(x))
-    
-    # op <- par(no.readonly = TRUE)
     
     if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 0, 0))
     if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 6, 0))
@@ -240,6 +237,7 @@ for(v in c("pet", "wet", "PETminusPRE")) {
     
     # add letter ####
     text(x = -1, y = 18, paste0(letters[plot.nb], ")"), font = 2)
+    
   } #  for(type.start in type.of.start.date[c(1,3)])
 } # for(v in c("pet", "cld", "PETminusPRE"))
 
@@ -301,10 +299,10 @@ if(save.plots) dev.off()
 method.to.run = "correlation"
 climate_data = "CRU_SCBI_1901_2016"
 
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1980") # Going_back_at_earliest_common_year")
+type.of.start.date <- c("1901_2009", "1980_2009") # Going_back_at_earliest_common_year")
 
 ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
-SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")]) #toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
+SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
 # plot ####
@@ -352,7 +350,7 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
     x = as.data.frame(t(x))
     sig = as.data.frame(t(x.sig))
     sig2 = as.data.frame(t(x.sig2))
-    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
+    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009")
     ylab = toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
     rescale = T
     
@@ -379,11 +377,8 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
     
     # x-axis ####
     if(plot.nb %in% c(1,2)) {
-    axis(side = 3, at = 1:n, labels = colnames(x), las = 2)
-    } # else {
-    #   axis(side = 3, at = 1:n, labels = F, las = 2)
-    # }
-    
+      axis(side = 3, at = 1:n, labels = colnames(x), las = 2)
+    }
     
     # y-axis ####
     if(plot.nb %in% c(1,3,5,7)) {
@@ -435,10 +430,7 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
       lines(x = 10:17, y = rep(19.2, 8), lwd = 2)
       text(x = 5, y = 19.2, labels = "previous year", col = "grey", pos = 3)
       text(x = 14, y = 19.2, labels = "current year", pos = 3)
-    } # else {
-    #   lines(x = 1:9, y = rep(16, 9), col = "grey", lwd = 2)
-    #   lines(x = 10:17, y = rep(16, 8), lwd = 2)
-    # }
+    }
     
     
     # add letter ####
@@ -501,7 +493,7 @@ if(save.plots) dev.off()
 # Figure 2 ####
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("Going_back_as_far_as_possible","Going_back_to_1980") # Going_back_at_earliest_common_year")
+type.of.start.date <- c("1901_2009","1980_2009")
 
 
 ## plot ####
@@ -532,7 +524,7 @@ for(type.start in type.of.start.date) {
   rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
   
   colnames(x) <- gsub("ANPP_response.", "", colnames(x))
-
+  
   
   x <- x[c(tolower(month.abb)[4:12],toupper(month.abb)[1:8]),]# order the months correctly
   
@@ -548,7 +540,7 @@ for(type.start in type.of.start.date) {
   # ---- BEFORE (order by influence on ANPP) -----
   # order by influence on ANPP (defined as predicted changes summed across all months) in analysis going back as far as possible
   
-  # if(type.start %in% "Going_back_as_far_as_possible") {
+  # if(type.start %in% "1901_2009") {
   #   
   #   ENERGY_VARIABLES.IN.ORDER <- names(sort(apply(x[c("MAY", "JUN", "JUL", "AUG"), c("pet", "dtr", "tmp", "tmn", "tmx")], 2, sum), decreasing = F))
   #   DEFICIT_VARIABLES.IN.ORDER <- "PETminusPRE"
@@ -557,7 +549,7 @@ for(type.start in type.of.start.date) {
   #   
   #   VARIABLES.IN.ORDER <- c(ENERGY_VARIABLES.IN.ORDER, DEFICIT_VARIABLES.IN.ORDER, ENERGY_WATER_BALANCE_VARIABLES_IN_ORDER, MOISTURE_VARIABLES.IN.ORDER)
   # }
-  # ---- NOW (fix order)  ----
+  # ---- NOW (fixed order)  ----
   
   VARIABLES.IN.ORDER <- c("tmx", "tmp", "tmn", "dtr", "pet", "PETminusPRE", "PDSI_prewhiten", 
                           "pre", "wet", "cld") # , "vap"
@@ -571,7 +563,7 @@ for(type.start in type.of.start.date) {
   x = as.data.frame(t(x))
   sig = as.data.frame(t(x.sig))
   sig2 = as.data.frame(t(x.sig2))
-  main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
+  main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009")
   rescale = T
   
   if (!is.data.frame(x)) {
@@ -587,11 +579,9 @@ for(type.start in type.of.start.date) {
   pos.max <- 0.12 #max(x)
   neg.max <- 0.12 #abs(min(x))
   
-  # op <- par(no.readonly = TRUE)
-  
   if(plot.nb %in% 1 ) par(oma = c(1.5, 5, 0, 0))
   if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 6, 0))
-  # if(!plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 4, 0))
+  
   plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
        yaxt = "n", ylab = "", xlab = "")
   
@@ -634,7 +624,7 @@ for(type.start in type.of.start.date) {
   
   rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
   
- # current vs previous year bars ####
+  # current vs previous year bars ####
   
   par(xpd= NA)
   if(plot.nb %in% c(1,2)) {
@@ -711,17 +701,17 @@ text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "Response", font = 2)
 if(save.plots) dev.off()
 
 
- 
+
 
 # Supplementary figures - [climate variable]_species responses ####
 ## see this issue: https://github.com/SCBI-ForestGEO/climate_sensitivity_cores/issues/43
 
 method.to.run = "correlation"
 
-type.of.start.date <- c("Going_back_as_far_as_possible", "Going_back_to_1980") # Going_back_at_earliest_common_year")
+type.of.start.date <- c("1901_2009", "1980_2009")
 
 ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
-SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")]) #toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caov", "pist", "frni"))
+SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
 # plot ####
@@ -742,10 +732,10 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
   for(type.start in type.of.start.date) {
     
     plot.nb <- plot.nb + 1
-  
+    
     if(v %in% "PDSI_prewhiten")  climate_data <- "NOAA_PDSI_Northern_Virginia_1895_2017" else climate_data <- "CRU_SCBI_1901_2016"
     all.dcc.output <- read.csv(paste0("results/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), climate_data, "_climate_data.csv"), stringsAsFactors = F)
-  
+    
     
     X <- all.dcc.output[all.dcc.output$variable %in% v, ]
     
@@ -773,7 +763,7 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
     x = as.data.frame(t(x))
     sig = as.data.frame(t(x.sig))
     sig2 = as.data.frame(t(x.sig2))
-    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
+    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009")
     ylab = toupper(v) ; ylab = gsub("PETMINUSPRE", "PET-PRE", ylab)
     rescale = T
     
@@ -789,8 +779,6 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
     
     pos.max <- 0.65 #max(x)
     neg.max <- 0.65 #abs(min(x))
-    
-    # op <- par(no.readonly = TRUE)
     
     if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 0, 0))
     if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 7, 0))
@@ -935,14 +923,11 @@ for(v in c("pre", "wet",
            "cld", "tmx",
            "tmp", "tmn",
            "dtr", "pet",
-           "PETminusPRE", "PDSI")) { # unique(mean_and_std_of_clim$variable)
-  # if(save.plots)  {
-  #   tiff(paste0("results/climate//", v, "_monthy_mean_for_both_time_preiods.tif"), res = 150, width = 150, height = 100, units = "mm", pointsize = 10)
-  # }
+           "PETminusPRE", "PDSI")) {
   
   ylab <- toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
   if(ylab %in% "PDSI_PREWHITEN") ylab <- bquote(PDSI^1)
-
+  
   X.mean <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("mean", colnames(mean_and_std_of_clim))][, 1:12]
   X.sd <- mean_and_std_of_clim[mean_and_std_of_clim$variable %in% v, grepl("sd", colnames(mean_and_std_of_clim))][, 1:12]
   
@@ -976,7 +961,7 @@ for(v in c("pre", "wet",
   # titles
   
   mtext(side = 3, line = -1, text = paste0(letters[plot.nb], ")"), adj = 0.01, cex = 0.8)
-
+  
   
   plot.nb = plot.nb +1
 }

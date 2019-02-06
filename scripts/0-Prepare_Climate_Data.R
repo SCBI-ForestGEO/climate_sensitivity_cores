@@ -17,19 +17,6 @@ library(RCurl)
 
 save.plots <- TRUE
 
-## PRISM ####
-
-clim.raw <- read.csv("raw_data/climate/PRISM_SCBI_1930_2015_30second.csv")
-head(clim.raw)
-
-clim <- data.frame(year = as.integer(substr(clim.raw$Variable, 2, 5)),
-                   month = as.integer(substr(clim.raw$Variable, 7, 9)))
-
-clim <- cbind(clim, clim.raw[, -1]) # clim <- cbind(clim, PPT = clim.raw$PPT)
-head(clim)
-
-write.csv(clim, file = "raw_data/climate/Formated_PRISM_SCBI_1930_2015_30second.csv", row.names = F)
-
 ## CRU data ####
 ### https://github.com/forestgeo/Climate/tree/master/Gridded_Data_Products/Historical%20Climate%20Data/CRU_v4_01
 
@@ -70,7 +57,7 @@ for(f in good.files) {
 clim$PETminusPRE <- clim$pet_sum - clim$pre
 
 
-write.csv(clim, file = "raw_data/climate/Formated_CRU_SCBI_1901_2016.csv", row.names = F)
+write.csv(clim, file = "data/climate/Formated_CRU_SCBI_1901_2016.csv", row.names = F)
 
 
 ### Palmer Drought Severity Index ####
@@ -88,7 +75,7 @@ head(clim)
 
 clim <- clim[, !names(clim) %in% c("CDD", "HDD")]
 
-write.csv(clim, file = "raw_data/climate/Formated_NOAA_PDSI_Northern_Virginia_1895_2017.csv", row.names = F)
+write.csv(clim, file = "data/climate/Formated_NOAA_PDSI_Northern_Virginia_1895_2017.csv", row.names = F)
 
 
 
@@ -99,29 +86,27 @@ write.csv(clim, file = "raw_data/climate/Formated_NOAA_PDSI_Northern_Virginia_18
 
 # plot ####
 
-climate.data.types <- c("PRISM_SCBI_1930_2015_30second", "CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
+if(save.plots)  {
+  dir.create(paste0("results/climate/Graphs_climate_data/"), showWarnings = F)
+}
+
+climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
 for( c in climate.data.types) {
   print(c)
   
   ## Load climate data ####
   
-  clim <- read.csv(paste0("raw_data/climate/Formated_", c, ".csv"))
-
+  clim <- read.csv(paste0("data/climate/Formated_", c, ".csv"))
+  
+  clim<- clim[clim$year >= 1900 & clim$year <= 2015, ]
   ## plot data ####
   for(v in names(clim)[-c(1:2)]) {
     
     if(save.plots)  {
-      dir.create(paste0("raw_data/climate/Graphs_raw_climate_data/", c), showWarnings = F)
-      tiff(paste0("raw_data/climate/Graphs_raw_climate_data/", c, "/", v, ".tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
-    }
-  
-    plot(clim[, v] ~ as.Date(paste(clim$year, clim$month, "01", sep = "-")), main = v, type = "l", xlab = "year", ylab = v, las = 1)
-    
-    if(save.plots) dev.off()
-    
-    if(save.plots)  {
-     tiff(paste0("raw_data/climate/Graphs_raw_climate_data/", c, "/", v, "_by_month.tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
+     dir.create(paste0("results/climate/Graphs_climate_data/", c), showWarnings = F)
+     
+     tiff(paste0("results/climate/Graphs_climate_data/", c, "/", v, "_by_month.tif"), res = 150, width = 169, height = 169, units = "mm", pointsize = 10)
     }
     
     colors <- rainbow(12)

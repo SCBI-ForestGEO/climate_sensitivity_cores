@@ -1,7 +1,7 @@
 ######################################################
 # Purpose: pull out and map census data for cored trees
 # Developped by: Valentine Herrmann - HerrmannV@si.edu
-# R version 3.4.4 (2018-03-15)
+# R version 3.5.1 (2018-07-02)
 ######################################################
 
 # Clean environment ####
@@ -20,11 +20,14 @@ save.result.table <- TRUE
 
 # Load core data ####
 
-filenames <- list.files("raw_data/cores/") # filenames <- list.files("raw_data/cores/")
+filenames <- list.files("data/cores/")
+filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
+
+filenames <- filenames[!grepl("live|dead", filenames, ignore.case = T)] # this is to remove dead vs live data because we don't want to look at it here.
 
 for(f in filenames) {
   print(f)
-  core <- read.rwl(paste0("raw_data/cores/", f))
+  core <- read.rwl(paste0("data/cores/", f,"/", tolower(f), "_drop.rwl"))
   assign(f, core)
 }
 
@@ -45,8 +48,8 @@ head(scbi.stem1)
 
 # load list of tree censused in 2010 (live trees) and trees censused im 20106-2017 (dead trees)
 ## these 2 URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/tree/master/tree_cores/measurement_files/measurement_notes_2010_chronology.csv and https://github.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/tree/master/tree_cores/measurement_files/measurement_notes_2016_17_chronology.csv, click on Raw, copy the URL and paste it in corresponding place bellow, inbetween the quotes of this line of code.
-trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2010_chronology.csv?token=ASwxIbtHraak6TK2wkAhjcT5JJV4pzRfks5cWGcRwA%3D%3D"), header = T)
-trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2016_17_chronology.csv?token=ASwxIYLO4IdTeWqhUREAiN4LtP66WPdpks5cWGcjwA%3D%3D"), header = T)
+trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2010_chronology.csv?token=ASwxIQEFD5fzL3leH9shueobeYqjt7kOks5cZE4ZwA%3D%3D"), header = T)
+trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2016_17_chronology.csv?token=ASwxIfLai6MuYGSeAN5aDpoACBDHzIF7ks5cZE4mwA%3D%3D"), header = T)
 
 # pull out census data for cored trees ####
 
@@ -62,7 +65,7 @@ for(f in filenames) {
   core <- get(f)
   
   for (t in names(core)) {
-
+    
     # get census data in 2008
     tag <- sub("[a-z]{1,}", "", t, ignore.case = T) # remove last letter
     tag <- sub("^0", "", tag ) # remove first zero if any
