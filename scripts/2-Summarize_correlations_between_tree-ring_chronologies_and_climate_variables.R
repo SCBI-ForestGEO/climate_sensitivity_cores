@@ -240,7 +240,7 @@ for(v in levels(n_positive_corr_1901_2009$variable)) {
 } # for(v in levels(n_positive_corr$variable))
 
 
-
+dir.create("results/tables_for_manuscript/", showWarnings = F)
 print(doc, target = "results/tables_for_manuscript/Supplementary_tables_Pearson_correlation_summary_per_variable.docx")
 
 

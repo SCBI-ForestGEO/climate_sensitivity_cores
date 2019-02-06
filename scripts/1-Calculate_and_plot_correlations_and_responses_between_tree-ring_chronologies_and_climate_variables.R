@@ -465,5 +465,6 @@ for(c in climate.data.types) {
 
 
 # save mean_and_std_of_clim ####
+dir.create("results/climate/", showWarnings = F)
 write.csv(mean_and_std_of_clim, file = "results/climate/mean_and_std_of_climate_variables.csv", row.names = F)
 
