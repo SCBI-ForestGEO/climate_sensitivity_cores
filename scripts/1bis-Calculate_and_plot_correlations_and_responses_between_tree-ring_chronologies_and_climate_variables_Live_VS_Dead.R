@@ -54,25 +54,21 @@ end.frs <- 5 # may of current year (for freeze days variable only)
 
 # Load and prepare core data ####
 
-filenames <- list.dirs("data/cores", full.names = F, recursive = F  ) # filenames <- list.files("raw_data/cores/")
-filenames <- filenames[!grepl("[a-z]", filenames) | grepl("dead|live", filenames)] # keep only all caps names
-
-
-filenames <- filenames[grepl("dead|live", filenames)] # special for live vs dead only
+filenames <- list.dirs("data/cores/live_vs_dead/", full.names = F, recursive = F  )
 
 all_sss <- NULL
 
 for(f in filenames) {
   # get the raw data
-  core_raw <- read.rwl(paste0("data/cores/", f,"/", tolower(tolower(gsub("_", "_drop_", f))), ".rwl"))
+  core_raw <- read.rwl(paste0("data/cores/live_vs_dead/", f,"/", tolower(tolower(gsub("_", "_drop_", f))), ".rwl"))
   
   # get the detrended data
-  core <- read.table(paste0("data/cores/", f,"/ARSTANfiles/", tolower(tolower(gsub("_", "_drop_", f))), ".rwl_tabs.txt"), sep = "\t", h = T)
+  core <- read.table(paste0("data/cores/live_vs_dead/", f,"/ARSTANfiles/", tolower(tolower(gsub("_", "_drop_", f))), ".rwl_tabs.txt"), sep = "\t", h = T)
   core <- data.frame(res = core$res,  samp.depth = core$num, row.names = core$year)
   
   # get the Subsample Signal Strength (sss as function of the number of trees in sample, the last one appearing in the "xxx_drop.rxl_out.txt files)
   
-  sss <- readLines(paste0("data/cores/", f,"/ARSTANfiles/", tolower(tolower(gsub("_", "_drop_", f))), ".rwl_out.txt"))
+  sss <- readLines(paste0("data/cores/live_vs_dead/", f,"/ARSTANfiles/", tolower(tolower(gsub("_", "_drop_", f))), ".rwl_out.txt"))
   sss <- sss[grep("sss", sss)]
   
   sss <- sss[grep("  sss:   ", sss)[c(rep(FALSE, 3*length(seq(grep("  sss:   ", sss)))/4), rep(TRUE, 1*length(seq(grep("  sss:   ", sss)))/4))]] # keep only last rows that have sss: in them
