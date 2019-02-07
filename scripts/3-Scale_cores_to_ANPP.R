@@ -29,8 +29,6 @@ type.of.start.date <- c("1901_2009", "1980_2009")
 filenames <- list.files("data/cores/")
 filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
 
-filenames <- filenames[!grepl("live|dead", filenames, ignore.case = T)] # this is to remove dead vs live data because we don't want to look at it here.
-
 
 for(f in filenames) {
   print(f)

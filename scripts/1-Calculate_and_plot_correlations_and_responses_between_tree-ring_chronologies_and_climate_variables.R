@@ -25,7 +25,8 @@ save.plots <- TRUE
 save.result.table <- TRUE
 
 ## Define order of the species in the  plots, based on ANPP contribution####
-ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
+ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) 
+
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
 
@@ -55,7 +56,6 @@ end.frs <- 5 # may of current year (for freeze days variable only)
 filenames <- list.dirs("data/cores/", full.names = F, recursive = F  )
 filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
 
-filenames <- filenames[!grepl("live|dead", filenames, ignore.case = T)] # this is to remove dead vs live data because we don't want to look at it here.
 all_sss <- NULL
 
 for(f in filenames) {

@@ -46,10 +46,9 @@ head(scbi.stem1)
 
 
 
-# load list of tree censused in 2010 (live trees) and trees censused im 20106-2017 (dead trees)
-## these 2 URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/tree/master/tree_cores/measurement_files/measurement_notes_2010_chronology.csv and https://github.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/tree/master/tree_cores/measurement_files/measurement_notes_2016_17_chronology.csv, click on Raw, copy the URL and paste it in corresponding place bellow, inbetween the quotes of this line of code.
-trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2010_chronology.csv?token=ASwxIQEFD5fzL3leH9shueobeYqjt7kOks5cZE4ZwA%3D%3D"), header = T)
-trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data_private/master/tree_cores/measurement_files/measurement_notes_2016_17_chronology.csv?token=ASwxIfLai6MuYGSeAN5aDpoACBDHzIF7ks5cZE4mwA%3D%3D"), header = T)
+# load list of tree censused in 2010 (live trees) and trees censused im 2016-2017 (dead trees)
+trees_censused_live <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/tree_cores/measurement_files/measurement_notes_2010_chronology.csv"), header = T)
+trees_censused_dead <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/tree_cores/measurement_files/measurement_notes_2016_17_chronology.csv"), header = T)
 
 # pull out census data for cored trees ####
 

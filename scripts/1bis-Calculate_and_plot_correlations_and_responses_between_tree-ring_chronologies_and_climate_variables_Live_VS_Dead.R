@@ -1,5 +1,6 @@
 ######################################################
-# Purpose: Calculate correlations and response (and plot correlations) between tree-ring chronologies and climate variables, looking separately at trees cored while alive and trees cored while dead# Developped by: Valentine Herrmann - HerrmannV@si.edu
+# Purpose: Calculate correlations and response (and plot correlations) between tree-ring chronologies and climate variables, looking separately at trees cored while alive and trees cored while dead
+# Developped by: Valentine Herrmann - HerrmannV@si.edu
 # R version 3.5.1 (2018-07-02)
 ######################################################
 
@@ -24,7 +25,8 @@ save.plots <- TRUE
 save.result.table <- TRUE
 
 ## Define order of the species in the  plots, based on ANPP contribution####
-ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
+ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T)
+
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
 
 SPECIES_IN_ORDER <- SPECIES_IN_ORDER[grepl("LITU|QURU|FRAM|QUVE", SPECIES_IN_ORDER)] # special for live vs dead only
