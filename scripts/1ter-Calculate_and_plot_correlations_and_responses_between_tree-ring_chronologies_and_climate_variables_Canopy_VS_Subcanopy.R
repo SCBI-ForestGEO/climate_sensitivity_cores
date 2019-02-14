@@ -30,6 +30,7 @@ ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCB
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
 
 SPECIES_IN_ORDER <- paste0(rep(SPECIES_IN_ORDER, each =2), c("_canopy", "_subcanopy"))
+SPECIES_IN_ORDER <- SPECIES_IN_ORDER[-grep("CATO_canopy", SPECIES_IN_ORDER)]# remove CATO canopy because does not exist
 
 ## Define sets of climate data to use ####
 
