@@ -128,6 +128,8 @@ for(f in filenames) {
   start.years.sss <- c(start.years.sss, sss[sss$sss >= sss.threshold, ]$Year[1])
 }
 
+start.years.sss <- unlist(tapply(start.years.sss, sapply(strsplit(filenames, "_"), "[[", 1), function(x){ x[] <- max(x); return(x)}), use.names = F) # start year has to be the same for a canopy/subcanopy pair
+
 end.year = 2009  # common to all species
 
 # Plot SSS for the the decided threshold ####
