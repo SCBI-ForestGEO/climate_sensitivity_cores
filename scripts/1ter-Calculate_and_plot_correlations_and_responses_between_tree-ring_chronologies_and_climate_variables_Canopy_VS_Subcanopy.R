@@ -32,6 +32,7 @@ SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species
 SPECIES_IN_ORDER <- paste0(rep(SPECIES_IN_ORDER, each =2), c("_canopy", "_subcanopy"))
 SPECIES_IN_ORDER <- SPECIES_IN_ORDER[-grep("CATO_canopy", SPECIES_IN_ORDER)]# remove CATO canopy because does not exist
 
+
 ## Define sets of climate data to use ####
 
 climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
@@ -96,10 +97,21 @@ for(f in filenames) {
   
   sss <- Year_to_Num_of_trees
   
-  assign(f, core)
-  assign(paste0(f, "_sss"), sss)
+  # remove chronologies with <7 cores, save others
   
-  all_sss <- rbind(all_sss, sss)
+  if(ncol(core_raw) < 7) {
+    # remove 
+    SPECIES_IN_ORDER <- SPECIES_IN_ORDER[-grep(f, SPECIES_IN_ORDER)]
+    filenames <- filenames[-grep(f, filenames)]
+    
+  } else {
+    assign(f, core)
+    assign(paste0(f, "_sss"), sss)
+    
+    all_sss <- rbind(all_sss, sss)
+  }
+  
+  
   
 }
 
