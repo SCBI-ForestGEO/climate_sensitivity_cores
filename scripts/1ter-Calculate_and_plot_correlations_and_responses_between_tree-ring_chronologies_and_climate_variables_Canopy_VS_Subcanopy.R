@@ -120,6 +120,11 @@ end.year = 2009  # common to all species
 
 # Plot SSS for the the decided threshold ####
 
+cols <- data.frame(col = rainbow(length(unique(sapply(strsplit(filenames, "_"), "[[", 1)))), row.names = unique(sapply(strsplit(filenames, "_"), "[[", 1)), stringsAsFactors = F)
+
+cols <- data.frame(col = cols$col[match(sapply(strsplit(filenames, "_"), "[[", 1), row.names(cols))], row.names = filenames, stringsAsFactors = F)
+
+
 for(c_or_sc in c("canopy", "subcanopy")) {
   
   if(c_or_sc %in% "canopy") all_sss_to_use <- droplevels(all_sss[grep("_can", all_sss$Species), ])
@@ -131,8 +136,7 @@ for(c_or_sc in c("canopy", "subcanopy")) {
   
   op <- par(mfrow = c(2, 1), oma = c(5, 5, 2, 0), mar = c(0, 0, 0, 1))
   
-  cols <- data.frame(col = rainbow(length(filenames)), row.names = filenames, stringsAsFactors = F)
-  
+
   years <- NULL
   for(sp in levels(all_sss_to_use$Species)){
     x = all_sss_to_use[all_sss_to_use$Species %in% sp,]
@@ -163,7 +167,7 @@ for(c_or_sc in c("canopy", "subcanopy")) {
   }
   
   abline(v =years,  col = cols$col, lty = 2)
-  legend("topleft", col = cols$col, lty = 1, bty = "n", legend = paste(levels(all_sss_to_use$Species), years, sep = " - "), lwd = 2, cex = 0.8)
+  legend("topleft", col = cols$col[rownames(cols) %in% levels(all_sss_to_use$Species)], lty = 1, bty = "n", legend = paste(levels(all_sss_to_use$Species), years, sep = " - "), lwd = 2, cex = 0.8)
   
   plot.nb <- 1
   
