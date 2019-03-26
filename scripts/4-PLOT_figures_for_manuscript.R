@@ -970,3 +970,52 @@ for(v in c("pre", "wet",
 
 if(save.plots) dev.off()
 
+
+# Supplementary figures - time series for each species ####
+# see this issue: https://github.com/SCBI-ForestGEO/climate_sensitivity_cores/issues/59
+
+filenames <- list.dirs("data/cores/", full.names = F, recursive = F  )
+filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
+
+all_sss <- read.csv("results/SSS_as_a_function_of_the_number_of_trees_in_sample.csv")
+
+sss.threshold = 0.75
+
+
+colors.species <- colorRampPalette(c("purple", "cadetblue", "yellow", "darkorange", "red", "brown"))(14)
+
+if(save.plots)  {
+  tiff(paste0("results/Time_series_for_each_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
+}
+
+par(mfrow = c(14, 1), mar = c(0,0,0,0), oma = c(4, 4, 0, 0))
+
+for(f in filenames) {
+  
+  # get the detrended data
+  core <- read.table(paste0("data/cores/", f,"/ARSTANfiles/", tolower(f), "_drop.rwl_tabs.txt"), sep = "\t", h = T)
+  
+  years.with.enough.sss <- all_sss[all_sss$Species %in% f & all_sss$sss >= sss.threshold, ]$Year
+  
+  years.with.enough.sss <- years.with.enough.sss[years.with.enough.sss >=1901 & years.with.enough.sss <= 2009]
+
+  core <- core[core$year %in% years.with.enough.sss, ] # trim to use only years for which with have clim data 
+
+  plot(NULL,
+       axes = F,
+       ann = F, 
+       xlim = c(1900,2020), ylim = c(0.5, 1.5))
+  
+  abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
+  
+  lines(res ~ year, data = core,
+       col = colors.species[which(filenames %in% f)])
+  axis(2, at = c(0.7, 1, 1.3), las = 1)
+  text(x = 2010, y = 1, f, pos = 4, col = colors.species[which(filenames %in% f)])
+
+}
+axis(1)
+mtext(side = 1, "Year", outer = T, line = 2.5)
+mtext(side = 2, "res", outer = T, line = 3)
+
+if(save.plots) dev.off()
