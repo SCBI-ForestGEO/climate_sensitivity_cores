@@ -990,7 +990,10 @@ if(save.plots)  {
 
 par(mfrow = c(14, 1), mar = c(0,0,0,0), oma = c(4, 4, 0, 0))
 
-for(f in filenames) {
+for(f in SPECIES_IN_ORDER) {
+  
+  
+  if (f %in% "CAOV") f <- "CAOVL"
   
   # get the detrended data
   core <- read.table(paste0("data/cores/", f,"/ARSTANfiles/", tolower(f), "_drop.rwl_tabs.txt"), sep = "\t", h = T)
@@ -1001,6 +1004,8 @@ for(f in filenames) {
 
   core <- core[core$year %in% years.with.enough.sss, ] # trim to use only years for which with have clim data 
 
+  if (f %in% "CAOVL") f <- "CAOV"
+  
   plot(NULL,
        axes = F,
        ann = F, 
@@ -1009,9 +1014,9 @@ for(f in filenames) {
   abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
   
   lines(res ~ year, data = core,
-       col = colors.species[which(filenames %in% f)])
+       col = colors.species[which(SPECIES_IN_ORDER %in% f)])
   axis(2, at = c(0.7, 1, 1.3), las = 1)
-  text(x = 2010, y = 1, f, pos = 4, col = colors.species[which(filenames %in% f)])
+  text(x = 2010, y = 1, f, pos = 4, col = colors.species[which(SPECIES_IN_ORDER %in% f)])
 
 }
 axis(1)
