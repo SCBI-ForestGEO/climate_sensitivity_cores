@@ -983,13 +983,51 @@ sss.threshold = 0.75
 
 
 colors.species <- colorRampPalette(c("purple", "cadetblue", "yellow", "darkorange", "red", "brown"))(14)
+clim <- read.csv("data/climate/Formated_CRU_SCBI_1901_2016.csv")
+
+clim <- clim[clim$month %in% c(5:7), c("year", "pre", "pet_sum")]
+clim <- clim[clim$year <= 2009 & clim$year >= 1901,]
+
+clim <- apply(clim, 2, function(x) tapply(x, clim$year, mean))
 
 if(save.plots)  {
   tiff(paste0("results/Time_series_for_each_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
 }
 
-par(mfrow = c(14, 1), mar = c(0,0,0,0), oma = c(4, 4, 0, 0))
+par(mfrow = c(14 + 2, 1), mar = c(0,0,0,0), oma = c(4, 4, 0, 0))
 
+# pre ####
+plot(NULL,
+     axes = F,
+     ann = F, 
+     xlim = c(1900,2020), ylim = c(40, 180))
+
+
+abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
+
+lines(pre ~ year, data = clim, lwd = 2)
+
+text(x = 2010, y = 100, "pre", pos = 4)
+
+axis(2, at = c(60, 110, 160), las = 1)
+
+# pet_sum ####
+plot(NULL,
+     axes = F,
+     ann = F, 
+     xlim = c(1900,2020), ylim = c(100, 160))
+
+
+abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
+
+lines(pet_sum ~ year, data = clim)
+text(x = 2010, y = 130, "pet_sum", pos = 4)
+
+
+
+axis(2, at = c(110, 130, 150), las = 1)
+
+# chronologies ####
 for(f in SPECIES_IN_ORDER) {
   
   
