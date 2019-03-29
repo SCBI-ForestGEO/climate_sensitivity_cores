@@ -22,7 +22,7 @@ save.result.table <- TRUE
 climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("1901_2009", "1980_2009")
+type.of.start.date <- c("1901_2009", "1980_2009", "1910_1939", "1940_1979")
 
 
 # Summarize tables of results for each climate data ####
@@ -188,7 +188,7 @@ library(officer)
 library(flextable)
 
 
-for(type.start in c("1901_2009", "1980_2009")) {
+for(type.start in type.of.start.date) {
   assign(paste("n_positive_corr", type.start, sep = "_"), read.csv(file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_n_positive_correlation.csv")))
   assign(paste("n_significant_corr", type.start, sep = "_"), read.csv(file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_n_significant_correlation.csv")))
   assign(paste("mean_corr", type.start, sep = "_"), read.csv(file = paste0("results/", type.start, "/tables/monthly_correlation/SUMMARY_mean_correlation.csv")))
@@ -202,7 +202,7 @@ for(v in levels(n_positive_corr_1901_2009$variable)) {
   
   supp_table_v <- NULL
   
-  for(type.start in c("1901_2009", "1980_2009")) {
+  for(type.start in type.of.start.date) {
     
     n_positive_corr <- get(paste("n_positive_corr", type.start, sep = "_"))
     n_significant_corr <- get(paste("n_significant_corr", type.start, sep = "_"))
@@ -222,14 +222,21 @@ for(v in levels(n_positive_corr_1901_2009$variable)) {
   } # for(type.start in c("1901_2009", "1980_2009"))
   
   supp_table_v <- cbind(rownames(supp_table_v), supp_table_v)
-  colnames(supp_table_v) <-  letters[1:11]
+  colnames(supp_table_v) <-  LETTERS[1:ncol(supp_table_v)]
   
   ft <- flextable(supp_table_v)
   ft <- set_header_labels(x = ft,
-                          a = "", b = "mean", c = "min", d = "max", e = "n positive", f = "n significant",
-                          g = "mean", h = "min", i = "max", j = "n positive", k = "n significant", top = FALSE )
-  ft <- add_header(ft,  a = "month", b = "1901-2009", c = "1901-2009", d = "1901-2009", e = "1901-2009", f = "1901-2009",
-                   g = "1980-2009", h = "1980-2009", i = "1980-2009", j = "1980-2009", k = "1980-2009")
+                          A = "", B = "mean", C = "min", D = "max", E = "n positive", "F" = "n significant",
+                          G = "mean", H = "min", I = "max", J = "n positive", K = "n significant", 
+                          L = "mean", M = "min", N = "max", O = "n positive", P = "n significant",
+                          Q = "mean", R = "min", S = "max", "T" = "n positive", U = "n significant",
+                          top = FALSE )
+  
+  ft <- add_header(ft,  A = "month", B = "1901-2009", C = "1901-2009", D = "1901-2009", E = "1901-2009", "F" = "1901-2009",
+                   G = "1980-2009", H = "1980-2009", I = "1980-2009", J = "1980-2009", K = "1980-2009",
+                   L = "1910-1939", M = "1910-1939", N = "1910-1939", O = "1910-1939", P = "1910-1939",
+                   Q = "1940-1979", R = "1940-1979", S = "1940-1979", "T" = "1940-1979", U = "1940-1979")
+  
   ft <- merge_h(ft, part = "header")
   ft <- theme_booktabs(ft)
   ft <- autofit(ft, add_w = 0, add_h = 0)

@@ -353,7 +353,7 @@ my.dccplot <- function (x, sig, sig2, rescale = TRUE, main, method = c('correlat
   n <- dim(x)[2]
 
   if (rescale & method == "correlation")  {
-    pos.max <- 0.65 #max(x)
+    pos.max <- 1.2 #max(x)
     neg.max <- 0.65 #abs(min(x))
   }
   

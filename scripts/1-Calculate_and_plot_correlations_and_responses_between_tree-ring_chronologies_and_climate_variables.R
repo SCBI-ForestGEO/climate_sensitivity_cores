@@ -39,7 +39,7 @@ climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_
 methods.to.run <- c("correlation") # c("correlation", "response", "moving_correlation")
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("1901_2009", "1980_2009")
+type.of.start.date <- c("1901_2009", "1980_2009", "1910_1939", "1940_1979")
 
 
 ## Define sss threshold ####
@@ -112,7 +112,7 @@ for(f in filenames) {
   start.years.sss <- c(start.years.sss, sss[sss$sss >= sss.threshold, ]$Year[1])
 }
 
-end.year = 2009  # common to all species
+end.year = 2009  # common to all species (but will change fo 30 year time periods)
 
 # Plot SSS for the the decided threshold ####
 
@@ -252,6 +252,28 @@ for(c in climate.data.types) {
     if(type.start %in% "1901_2009") start.years <- start.years.sss
     if(type.start %in% "1980_2009") start.years <- ifelse(start.years.sss > 1980, start.years.sss, 1980)
     
+    if(type.start %in% "1910_1939") {
+      start.years <- ifelse(start.years.sss > 1910, start.years.sss, 1910)
+      end.year <- 1939
+    }
+    
+    if(type.start %in% "1940_1979") {
+      start.years <- ifelse(start.years.sss > 1940, start.years.sss, 1940)
+      end.year <- 1979
+    }
+    
+    
+    species_to_drop <- "none"
+      
+    if(type.start %in% c("1910_1939", "1940_1979")) {
+      # Species should be dropped when they have SSS<0.75 for any part of the period (which means we'll miss a lot in 1910-1939).
+      species_to_drop <- filenames[which(start.years != min(start.years))]
+      start.years <- start.years[!filenames %in% species_to_drop]
+      # filenames <- filenames[!filenames %in% species_to_drop]
+      # SPECIES_IN_ORDER <- SPECIES_IN_ORDER[!SPECIES_IN_ORDER %in% gsub("CAOVL", "CAOV", species_to_drop)]
+    }
+    
+    
     ## mean and std of climate variables ####
     ## see https://github.com/SCBI-ForestGEO/climate_sensitivity_cores/issues/41
     
@@ -297,14 +319,14 @@ for(c in climate.data.types) {
       all.dcc.output <- NULL
       
       ### run analysis ###
-      for(f in filenames) {
+      for(f in filenames[!filenames %in% species_to_drop]) {
         print(f)
         
         core <- get(f)
         
         core <- core[rownames(core) %in% clim$year, ] # trim to use only years for which with have clim data 
         
-        start.year <- max(min(clim$year), start.years[which(filenames %in% f)])
+        start.year <- max(min(clim$year), start.years[which(filenames[!filenames %in% species_to_drop] %in% f)])
         
         dcc.output <- NULL
         
@@ -363,9 +385,9 @@ for(c in climate.data.types) {
           x.sig <- x.sig[, -1]
           x.sig2 <- x.sig2[, -1]
           
-          x <- x[, rev(SPECIES_IN_ORDER)]
-          x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
-          x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
+          x <- x[, rev(SPECIES_IN_ORDER[!SPECIES_IN_ORDER %in% gsub("CAOVL", "CAOV", species_to_drop)])]
+          x.sig <- x.sig[, rev(SPECIES_IN_ORDER[!SPECIES_IN_ORDER %in% gsub("CAOVL", "CAOV", species_to_drop)])]
+          x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER[!SPECIES_IN_ORDER %in% gsub("CAOVL", "CAOV", species_to_drop)])]
           
           if(save.plots)  {
             dir.create(paste0("results/", type.start, "/figures/monthly_", method.to.run), showWarnings = F)
@@ -385,7 +407,7 @@ for(c in climate.data.types) {
       if(method.to.run %in% c("moving_correlation") & type.start %in% "1901_2009") {
         
         ## plot by SPECIES and by Climate variable ####
-        for(f in filenames) {
+        for(f in filenames[!filenames %in% species_to_drop]) {
           print(f)
           for(v in names(clim)[-c(1,2)]) {
             print(v)
