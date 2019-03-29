@@ -58,6 +58,8 @@ filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
 
 all_sss <- NULL
 
+sd_coreres <- NULL # will store SD of the detrended chronologie
+
 for(f in filenames) {
   # get the raw data
   core_raw <- read.rwl(paste0("data/cores/", f,"/", tolower(f), "_drop.rwl"))
@@ -65,6 +67,9 @@ for(f in filenames) {
   # get the detrended data
   core <- read.table(paste0("data/cores/", f,"/ARSTANfiles/", tolower(f), "_drop.rwl_tabs.txt"), sep = "\t", h = T)
   core <- data.frame(res = core$res,  samp.depth = core$num, row.names = core$year)
+  
+  # output the SD of the detrended chronologies (see issue # 63 on GitHub)
+  sd_coreres <- rbind(sd_coreres, data.frame(Species = f, SD = round(sd(core$res), 2)))
   
   # get the Subsample Signal Strength (sss as function of the number of trees in sample, the last one appearing in the "xxx_drop.rxl_out.txt files)
   
@@ -102,6 +107,10 @@ for(f in filenames) {
 # save SSS for all species 
 
 write.csv(all_sss, file = "results/SSS_as_a_function_of_the_number_of_trees_in_sample.csv", row.names = F)
+
+# save sd_coreres for all species
+write.csv(sd_coreres, file = "results/SD_of_each_detrended_chornologies.csv", row.names = F)
+
 
 
 ## Define start and end year for analysis, common to all species and one for each species ####
