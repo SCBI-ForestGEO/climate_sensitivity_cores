@@ -994,7 +994,23 @@ if(save.plots)  {
   tiff(paste0("results/Time_series_for_each_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
 }
 
-par(mfrow = c(14 + 2, 1), mar = c(0,0,0,0), oma = c(4, 4, 0, 0))
+par(mfrow = c(14 + 2, 1), mar = c(0,0,0,0), oma = c(4, 8, 0, 0))
+
+
+# pet_sum ####
+plot(NULL,
+     axes = F,
+     ann = F, 
+     xlim = c(1900,2020), ylim = c(100, 160))
+
+
+abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
+
+lines(pet_sum ~ year, data = clim)
+# text(x = 2010, y = 130, "pet_sum", pos = 4)
+
+axis(2, at = c(110, 130, 150), las = 1)
+mtext(side = 2, text = expression("PETsum\n(mm mo"^-1*")"), las = 1, cex = 0.7, line = 3)
 
 # pre ####
 plot(NULL,
@@ -1007,25 +1023,11 @@ abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
 
 lines(pre ~ year, data = clim, lwd = 2)
 
-text(x = 2010, y = 100, "pre", pos = 4)
+# text(x = 2010, y = 100, "pre", pos = 4)
 
 axis(2, at = c(60, 110, 160), las = 1)
-
-# pet_sum ####
-plot(NULL,
-     axes = F,
-     ann = F, 
-     xlim = c(1900,2020), ylim = c(100, 160))
-
-
-abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
-
-lines(pet_sum ~ year, data = clim)
-text(x = 2010, y = 130, "pet_sum", pos = 4)
-
-
-
-axis(2, at = c(110, 130, 150), las = 1)
+mtext(side = 2, text = expression("PRE\n(mm mo"^-1*")"), las = 1, cex = 0.7, line = 3)
+axis(1, at = c(1700, 2020), labels = F, tck = 0, col = "grey60")
 
 # chronologies ####
 for(f in SPECIES_IN_ORDER) {
@@ -1059,6 +1061,6 @@ for(f in SPECIES_IN_ORDER) {
 }
 axis(1)
 mtext(side = 1, "Year", outer = T, line = 2.5)
-mtext(side = 2, "res", outer = T, line = 3)
+mtext(side = 2, "RWI", outer = T, line = 4)
 
 if(save.plots) dev.off()
