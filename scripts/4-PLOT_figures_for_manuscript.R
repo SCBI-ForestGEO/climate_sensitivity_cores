@@ -994,7 +994,7 @@ if(save.plots)  {
   tiff(paste0("results/Time_series_for_each_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
 }
 
-par(mfrow = c(14 + 2, 1), mar = c(0,0,0,0), oma = c(4, 8, 0, 0))
+par(mfrow = c(14 + 2, 1), mar = c(0,0,0,0), oma = c(4, 6, 0, 0))
 
 
 # pet_sum ####
@@ -1006,11 +1006,11 @@ plot(NULL,
 
 abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
 
-lines(pet_sum ~ year, data = clim)
-# text(x = 2010, y = 130, "pet_sum", pos = 4)
+lines(pet_sum ~ year, data = clim, col  = "red", lwd = 2)
+text(x = 2010, y = 130, "PET", pos = 4, col = "red")
 
 axis(2, at = c(110, 130, 150), las = 1)
-mtext(side = 2, text = expression("PETsum\n(mm mo"^-1*")"), las = 1, cex = 0.7, line = 3)
+# mtext(side = 2, text = expression("(mm mo"^-1*")"), las = 1, cex = 0.7, line = 3)
 
 # pre ####
 plot(NULL,
@@ -1021,12 +1021,13 @@ plot(NULL,
 
 abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
 
-lines(pre ~ year, data = clim, lwd = 2)
+lines(pre ~ year, data = clim, col  = "blue",lwd = 2)
 
-# text(x = 2010, y = 100, "pre", pos = 4)
+text(x = 2010, y = 100, "PRE", pos = 4, col = "blue")
 
 axis(2, at = c(60, 110, 160), las = 1)
-mtext(side = 2, text = expression("PRE\n(mm mo"^-1*")"), las = 1, cex = 0.7, line = 3)
+
+mtext(side = 2, text = expression("(mm mo"^-1*")"), line = 3, adj = 0)
 axis(1, at = c(1700, 2020), labels = F, tck = 0, col = "grey60")
 
 # chronologies ####
@@ -1061,6 +1062,71 @@ for(f in SPECIES_IN_ORDER) {
 }
 axis(1)
 mtext(side = 1, "Year", outer = T, line = 2.5)
-mtext(side = 2, "RWI", outer = T, line = 4)
+mtext(side = 2, "Ring Width Index", outer = T, line = 4)
 
 if(save.plots) dev.off()
+
+
+
+# Supplementary figures - Correlation plots between species ####
+# see this issue: https://github.com/SCBI-ForestGEO/climate_sensitivity_cores/issues/64
+
+filenames <- list.dirs("data/cores/", full.names = F, recursive = F  )
+filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
+
+all_sss <- read.csv("results/SSS_as_a_function_of_the_number_of_trees_in_sample.csv")
+
+sss.threshold = 0.75
+
+
+colors.species <- colorRampPalette(c("purple", "cadetblue", "yellow", "darkorange", "red", "brown"))(14)
+
+
+if(save.plots)  {
+  tiff(paste0("results/Correlation_plots_between_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
+}
+
+bigtable_of_res <- data.frame(year = 1901:2009)
+
+for(f in SPECIES_IN_ORDER) {
+  
+  
+  if (f %in% "CAOV") f <- "CAOVL"
+  
+  # get the detrended data
+  core <- read.table(paste0("data/cores/", f,"/ARSTANfiles/", tolower(f), "_drop.rwl_tabs.txt"), sep = "\t", h = T)
+  
+  bigtable_of_res <- cbind(bigtable_of_res,data.frame( res =  core$res[match(bigtable_of_res$year, core$year)]))
+  
+  
+  }
+
+head(bigtable_of_res)
+names(bigtable_of_res)[-1] <- SPECIES_IN_ORDER
+
+
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor.fac=.9, ...)
+{
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(0, 1, 0, 1))
+  r.sign <- sign(cor(x, y, use = "pairwise.complete.obs"))
+  r <- cor(x, y, use = "pairwise.complete.obs")
+  txt <- format(c(r, 0.123456789), digits = digits)[1]
+  txt <- paste0(prefix, txt)
+  cex.cor <- cex.cor.fac/strwidth(txt)
+  text(0.5, 0.5, txt, cex = cex.cor * abs(r), col=ifelse(r.sign > 0, "blue", "red"))
+}
+## put histograms on the diagonal
+panel.hist <- function(x, ...)
+{
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(usr[1:2], 0, 1.5) )
+  h <- hist(x, plot = FALSE)
+  breaks <- h$breaks; nB <- length(breaks)
+  y <- h$counts; y <- y/max(y)
+  rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
+}
+
+pairs(bigtable_of_res[-1], upper.panel = panel.cor, lower.panel = NULL, yaxt = "n", xaxt = "n")
+
+
