@@ -1074,14 +1074,6 @@ if(save.plots) dev.off()
 filenames <- list.dirs("data/cores/", full.names = F, recursive = F  )
 filenames <- filenames[!grepl("[a-z]", filenames)] # keep only all caps names
 
-all_sss <- read.csv("results/SSS_as_a_function_of_the_number_of_trees_in_sample.csv")
-
-sss.threshold = 0.75
-
-
-colors.species <- colorRampPalette(c("purple", "cadetblue", "yellow", "darkorange", "red", "brown"))(14)
-
-
 if(save.plots)  {
   tiff(paste0("results/Correlation_plots_between_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
 }
@@ -1101,11 +1093,10 @@ for(f in SPECIES_IN_ORDER) {
   
   }
 
-head(bigtable_of_res)
 names(bigtable_of_res)[-1] <- SPECIES_IN_ORDER
 
 
-panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor.fac=.9, ...)
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor.fac=.5, ...)
 {
   usr <- par("usr"); on.exit(par(usr))
   par(usr = c(0, 1, 0, 1))
@@ -1114,19 +1105,9 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor.fac=.9, ...)
   txt <- format(c(r, 0.123456789), digits = digits)[1]
   txt <- paste0(prefix, txt)
   cex.cor <- cex.cor.fac/strwidth(txt)
-  text(0.5, 0.5, txt, cex = cex.cor * abs(r), col=ifelse(r.sign > 0, "blue", "red"))
-}
-## put histograms on the diagonal
-panel.hist <- function(x, ...)
-{
-  usr <- par("usr"); on.exit(par(usr))
-  par(usr = c(usr[1:2], 0, 1.5) )
-  h <- hist(x, plot = FALSE)
-  breaks <- h$breaks; nB <- length(breaks)
-  y <- h$counts; y <- y/max(y)
-  rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
+  text(0.5, 0.5, txt, cex = cex.cor * abs(r) +1, col=ifelse(r.sign > 0, "blue", "red"))
 }
 
 pairs(bigtable_of_res[-1], upper.panel = panel.cor, lower.panel = NULL, yaxt = "n", xaxt = "n")
 
-
+if(save.plots) dev.off()
