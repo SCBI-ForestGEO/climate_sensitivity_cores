@@ -988,7 +988,11 @@ clim <- read.csv("data/climate/Formated_CRU_SCBI_1901_2016.csv")
 clim <- clim[clim$month %in% c(5:7), c("year", "pre", "pet_sum")]
 clim <- clim[clim$year <= 2009 & clim$year >= 1901,]
 
-clim <- apply(clim, 2, function(x) tapply(x, clim$year, mean))
+clim <- data.frame(apply(clim, 2, function(x) tapply(x, clim$year, mean)))
+
+drought_years <- clim$year[which(c(clim$pet_sum - clim$pre) >= (sort(clim$pet_sum - clim$pre, decreasing = T)[10]))]
+
+cbind(drought_years, (sort(clim$pet_sum - clim$pre, decreasing = T)[1:10]))
 
 if(save.plots)  {
   tiff(paste0("results/Time_series_for_each_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
@@ -1004,7 +1008,7 @@ plot(NULL,
      xlim = c(1900,2020), ylim = c(100, 160))
 
 
-abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
+abline(v = drought_years, col = "grey", lty = 2) # seq(1900, 2000, by = 20)
 
 lines(pet_sum ~ year, data = clim, col  = "red", lwd = 2)
 text(x = 2010, y = 130, "PET", pos = 4, col = "red")
@@ -1019,7 +1023,7 @@ plot(NULL,
      xlim = c(1900,2020), ylim = c(40, 180))
 
 
-abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
+abline(v = drought_years, col = "grey", lty = 2)
 
 lines(pre ~ year, data = clim, col  = "blue",lwd = 2)
 
@@ -1052,7 +1056,7 @@ for(f in SPECIES_IN_ORDER) {
        ann = F, 
        xlim = c(1900,2020), ylim = c(0.5, 1.5))
   
-  abline(v = seq(1900, 2000, by = 20), col = "grey", lty = 2)
+  abline(v = drought_years, col = "grey", lty = 2)
   
   lines(res ~ year, data = core,
        col = colors.species[which(SPECIES_IN_ORDER %in% f)])
