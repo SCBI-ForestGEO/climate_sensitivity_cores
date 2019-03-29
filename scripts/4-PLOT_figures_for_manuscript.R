@@ -1111,3 +1111,6 @@ panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor.fac=.5, ...)
 pairs(bigtable_of_res[-1], upper.panel = panel.cor, lower.panel = NULL, yaxt = "n", xaxt = "n")
 
 if(save.plots) dev.off()
+
+
+mean(cor(bigtable_of_res[-1], use="pairwise.complete.obs")[upper.tri(cor(bigtable_of_res[-1], use="pairwise.complete.obs"))]) # 0.41
