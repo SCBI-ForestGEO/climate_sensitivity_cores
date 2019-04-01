@@ -21,7 +21,7 @@ source("scripts/0-My_dplR_functions.R")
 
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("1901_2009", "1910_1939", "1940_1979", "1980_2009")
+type.of.start.date <- c("1901_2009", "1911_1943", "1944_1976", "1977_2009")
 
 
 # Load core data ####

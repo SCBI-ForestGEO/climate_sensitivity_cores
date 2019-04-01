@@ -39,7 +39,7 @@ climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_
 methods.to.run <- c("correlation") # c("correlation", "response", "moving_correlation")
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("1901_2009", "1910_1939", "1940_1979", "1980_2009")
+type.of.start.date <- c("1901_2009", "1911_1943", "1944_1976", "1977_2009")
 
 
 ## Define sss threshold ####
@@ -259,22 +259,25 @@ for(c in climate.data.types) {
     
     
     if(type.start %in% "1901_2009") start.years <- start.years.sss
-    if(type.start %in% "1980_2009") start.years <- ifelse(start.years.sss > 1980, start.years.sss, 1980)
-    
-    if(type.start %in% "1910_1939") {
-      start.years <- ifelse(start.years.sss > 1910, start.years.sss, 1910)
-      end.year <- 1939
+
+    if(type.start %in% "1911_1943") {
+      start.years <- ifelse(start.years.sss > 1911, start.years.sss, 1911)
+      end.year <- 1943
     }
     
-    if(type.start %in% "1940_1979") {
-      start.years <- ifelse(start.years.sss > 1940, start.years.sss, 1940)
-      end.year <- 1979
+    if(type.start %in% "1944_1976") {
+      start.years <- ifelse(start.years.sss > 1944, start.years.sss, 1944)
+      end.year <- 1976
     }
     
+    if(type.start %in% "1977_2009") {
+      start.years <- ifelse(start.years.sss > 1977, start.years.sss, 1977)
+      end.year <- 2009
+    }
     
     species_to_drop <- "none"
       
-    if(type.start %in% c("1910_1939", "1940_1979")) {
+    if(type.start %in% c("1911_1943", "1944_1976", "1977_2009")) {
       # Species should be dropped when they have SSS<0.75 for any part of the period (which means we'll miss a lot in 1910-1939).
       species_to_drop <- filenames[which(start.years != min(start.years))]
       start.years <- start.years[!filenames %in% species_to_drop]

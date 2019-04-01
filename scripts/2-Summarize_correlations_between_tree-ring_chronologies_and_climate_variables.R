@@ -22,7 +22,7 @@ save.result.table <- TRUE
 climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("1901_2009", "1910_1939", "1940_1979", "1980_2009")
+type.of.start.date <- c("1901_2009", "1911_1943", "1944_1976", "1977_2009")
 
 
 # Summarize tables of results for each climate data ####
@@ -233,9 +233,9 @@ for(v in levels(n_positive_corr_1901_2009$variable)) {
                           top = FALSE )
   
   ft <- add_header(ft,  A = "month", B = "1901-2009", C = "1901-2009", D = "1901-2009", E = "1901-2009", "F" = "1901-2009",
-                   G = "1910-1939", H = "1910-1939", I = "1910-1939", J = "1910-1939", K ="1910-1939",
-                   L = "1940-1979", M = "1940-1979", N = "1940-1979", O = "1940-1979", P = "1940-1979",
-                   Q = "1980-2009", R = "1980-2009", S = "1980-2009", "T" = "1980-2009", U = "1980-2009")
+                   G = "1911-1943", H = "1911-1943", I = "1911-1943", J = "1911-1943", K ="1911-1943",
+                   L = "1944-1976", M = "1944-1976", N = "1944-1976", O = "1944-1976", P = "1944-1976",
+                   Q = "1977-2009", R = "1977-2009", S = "1977-2009", "T" = "1977-2009", U = "1977-2009")
   
   ft <- merge_h(ft, part = "header")
   ft <- theme_booktabs(ft)
