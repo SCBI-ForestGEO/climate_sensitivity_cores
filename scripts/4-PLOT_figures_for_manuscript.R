@@ -709,7 +709,7 @@ if(save.plots) dev.off()
 
 method.to.run = "correlation"
 
-type.of.start.date <- c("1901_2009", "1980_2009")
+type.of.start.date <-c("1901_2009", "1911_1943", "1944_1976", "1977_2009")
 
 ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
@@ -722,10 +722,10 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
   print(v)
   
   if(save.plots)  {
-    tiff(paste0("results/figures_for_manuscript/supplementary_figures/", v, "_species_responses.tif"), res = 150, width = 150, height = 100, units = "mm", pointsize = 10)
+    tiff(paste0("results/figures_for_manuscript/supplementary_figures/", v, "_species_responses.tif"), res = 150, width = 150, height = 140, units = "mm", pointsize = 10)
   }
   
-  nf <- layout(mat = matrix(c(1,2,3), ncol = 3, byrow = T), widths = c(1,1,0.4))
+  nf <- layout(mat = matrix(c(1,2,5,3,4,5), ncol = 3, byrow = T), widths = c(1,1,0.4))
   # layout.show(nf)
   
   plot.nb = 0
@@ -755,16 +755,40 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
     x.sig <- x.sig[, -1]
     x.sig2 <- x.sig2[, -1]
     
-    x <- x[, rev(SPECIES_IN_ORDER)]
-    x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
-    x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
+    if(length(names(x)) < length(SPECIES_IN_ORDER)) {
+      
+      missing_species <- SPECIES_IN_ORDER[!SPECIES_IN_ORDER %in% names(x)]
+
+      missing_species_x <- data.frame(matrix(0, nrow = nrow(x), ncol = length(missing_species)))
+      missing_species_x.sig <- data.frame(matrix(FALSE, nrow = nrow(x), ncol = length(missing_species)))
+      
+      colnames(missing_species_x) <- missing_species
+      colnames(missing_species_x.sig) <- missing_species
+      
+      x <- cbind(x, missing_species_x)
+      x.sig <- cbind(x.sig, missing_species_x.sig)
+      x.sig2 <- cbind(x.sig, missing_species_x.sig)
+
+      x <- x[, rev(SPECIES_IN_ORDER)]
+      x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
+      x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
+      
+    } else {
+      
+      x <- x[, rev(SPECIES_IN_ORDER)]
+      x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
+      x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
+      
+    }
+    
+
     
     
     # plot (adapted my.dccplot function)
     x = as.data.frame(t(x))
     sig = as.data.frame(t(x.sig))
     sig2 = as.data.frame(t(x.sig2))
-    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009")
+    main = gsub("_", "-", type.start)
     ylab = toupper(v) ; ylab = gsub("PETMINUSPRE", "PET-PRE", ylab)
     rescale = T
     
@@ -781,9 +805,9 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
     pos.max <- 0.65 #max(x)
     neg.max <- 0.65 #abs(min(x))
     
-    if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 0, 0))
-    if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 7, 0))
-    if(!plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 4, 0))
+    if(plot.nb %in% c(1)) par(oma = c(1.5, 4, 0, 0))
+    if(plot.nb %in% c(1:4)) par(mar = c(0, 1.5, 6, 0))
+    if(!plot.nb %in% c(1:4)) par(mar = c(0, 1.5, 4, 0))
     plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
          yaxt = "n", ylab = "", xlab = "")
     
@@ -793,14 +817,18 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
     
     
     # y-axis ####
+    if(plot.nb %in% 1) mtext(side = 3, ylab, line = 4, outer = F, adj = -0.2)
+    
+    
     if(plot.nb %in% c(1,3,5)) {
       axis(side = 2, at = 1:m, labels = rownames(x), las = 1)
-      mtext(side = 2, ylab, line = 4)
     } else {
       axis(side = 2, at = 1:m, labels = FALSE, las = 1)
     } 
+    
     # title ####
     if(plot.nb %in% c(1,2)) title(main, line = 5, outer = F)
+    if(plot.nb %in% c(3,4)) title(main, line = 4, outer = F)
     
     
     # plot quilt ####
@@ -838,18 +866,18 @@ for(v in c("pet", "dtr", "tmp", "tmn", "tmx", "cld", "pre", "vap", "wet", "PDSI_
     
     par(xpd= NA)
     if(plot.nb %in% c(1,2)) {
-      lines(x = 1:9, y = rep(16.8, 9), col = "grey", lwd = 2)
-      lines(x = 10:17, y = rep(16.8, 8), lwd = 2)
-      text(x = 5, y = 16.8, labels = "previous year", col = "grey", pos = 3)
-      text(x = 14, y = 16.8, labels = "current year", pos = 3)
+      lines(x = 1:9, y = rep(17.7, 9), col = "grey", lwd = 2)
+      lines(x = 10:17, y = rep(17.7, 8), lwd = 2)
+      text(x = 5, y = 17.7, labels = "previous year", col = "grey", pos = 3)
+      text(x = 14, y = 17.7, labels = "current year", pos = 3)
     } else {
-      lines(x = 1:9, y = rep(16.8, 9), col = "grey", lwd = 2)
-      lines(x = 10:17, y = rep(16.8, 8), lwd = 2)
+      lines(x = 1:9, y = rep(17.7, 9), col = "grey", lwd = 2)
+      lines(x = 10:17, y = rep(17.7, 8), lwd = 2)
     }
     
     
     # add letter ####
-    text(x = -1, y = 18, paste0(letters[plot.nb], ")"), font = 2)
+    text(x = -1, y = 16, paste0(letters[plot.nb], ")"), font = 2)
   } #  for(type.start in type.of.start.date[c(1,3)])
   
   
