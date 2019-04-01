@@ -912,7 +912,7 @@ mean_and_std_of_clim <- read.csv("results/climate/mean_and_std_of_climate_variab
 
 
 if(save.plots)  {
-  tiff(paste0("results/climate/climate_variables_monthy_means_for_both_time_preiods.tif"), res = 150, width = 120, height = 150, units = "mm", pointsize = 10)
+  tiff(paste0("results/climate/climate_variables_monthy_means_for_both_time_periods.tif"), res = 150, width = 120, height = 150, units = "mm", pointsize = 10)
 }
 
 par(mfrow = c(5,2))
@@ -934,11 +934,15 @@ for(v in c("pre", "wet",
   
   plot(x = 1:12, y = c(X.mean[1,]) , type = "l", xaxt = "n", xlab = "", ylab = "", bty = "L", ylim = range(min(X.mean) - max(X.sd), max(X.mean) + max(X.sd)), yaxt = "n", col = "blue")
   
-  polygon(x = c(1:12, 12:1), y = c(X.mean[1,]-X.sd[1,], rev(X.mean[1,]+X.sd[1,])), col = rgb(0,0,1,0.1), border = F)
+  polygon(x = c(1:12, 12:1), y = c(X.mean[1,]-X.sd[1,], rev(X.mean[1,]+X.sd[1,])), col = rgb(0,0,0,0.1), border = F)
   polygon(x = c(1:12, 12:1), y = c(X.mean[2,]-X.sd[2,], rev(X.mean[2,]+X.sd[2,])), col = rgb(1,0,0,0.1), border = F)
+  polygon(x = c(1:12, 12:1), y = c(X.mean[3,]-X.sd[3,], rev(X.mean[3,]+X.sd[3,])), col = rgb(0,0,1,0.1), border = F)
+  polygon(x = c(1:12, 12:1), y = c(X.mean[4,]-X.sd[4,], rev(X.mean[4,]+X.sd[4,])), col = rgb(1,0.8,0,0.1), border = F)
   
-  lines(x = 1:12, y = c(X.mean[1,]), col = "blue")
-  lines(x = 1:12, y = c(X.mean[2,]), col = "red")
+  lines(x = 1:12, y = c(X.mean[1,]), col = rgb(0,0,0), lwd = 2)
+  lines(x = 1:12, y = c(X.mean[2,]), col = rgb(1,0,0))
+  lines(x = 1:12, y = c(X.mean[3,]), col = rgb(0,0,1))
+  lines(x = 1:12, y = c(X.mean[4,]), col = rgb(1,0.8,0))
   
   
   # x-axis
@@ -955,7 +959,13 @@ for(v in c("pre", "wet",
   
   # legend
   if(plot.nb %in% 2) {
-    legend("bottomleft", lty = 1, col = c("blue", "red"),c("1901-2009", "1980-2009"), bty = "n") # "[1901-1938]-2009"
+    legend("bottomleft", lty = 1, lwd = c(2,1,1,1), 
+           col = c(rgb(0,0,0),
+                   rgb(1,0,0),
+                   rgb(0,0,1),
+                   rgb(1,0.8,0)),
+           legend = c("1901-2009", "1911-1943", "1944-1976", "1977-2009"), bty = "n",
+           ncol = 2) # "[1901-1938]-2009"
     legend("topright", fill = rgb(0,0,0,0.1), border = "transparent", c("+/- SD"), bty = "n", x.intersp = 0.5)
   }
   
@@ -992,7 +1002,7 @@ clim <- data.frame(apply(clim, 2, function(x) tapply(x, clim$year, mean)))
 
 drought_years <- clim$year[which(c(clim$pet_sum - clim$pre) >= (sort(clim$pet_sum - clim$pre, decreasing = T)[10]))]
 
-cbind(drought_years, (sort(clim$pet_sum - clim$pre, decreasing = T)[1:10]))
+cbind(drought_years, c(clim$pet_sum - clim$pre)[which(c(clim$pet_sum - clim$pre) >= (sort(clim$pet_sum - clim$pre, decreasing = T)[10]))])
 
 if(save.plots)  {
   tiff(paste0("results/Time_series_for_each_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
