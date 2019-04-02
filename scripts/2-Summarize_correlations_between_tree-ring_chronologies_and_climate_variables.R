@@ -226,10 +226,10 @@ for(v in levels(n_positive_corr_1901_2009$variable)) {
   
   ft <- flextable(supp_table_v)
   ft <- set_header_labels(x = ft,
-                          A = "", B = "mean", C = "min", D = "max", E = "n positive", "F" = "n significant",
-                          G = "mean", H = "min", I = "max", J = "n positive", K = "n significant", 
-                          L = "mean", M = "min", N = "max", O = "n positive", P = "n significant",
-                          Q = "mean", R = "min", S = "max", "T" = "n positive", U = "n significant",
+                          A = "", B = "mean", C = "min", D = "max", E = "n pos", "F" = "n sig",
+                          G = "mean", H = "min", I = "max", J = "n pos", K = "n sig", 
+                          L = "mean", M = "min", N = "max", O = "n pos", P = "n sig",
+                          Q = "mean", R = "min", S = "max", "T" = "n pos", U = "n sig",
                           top = FALSE )
   
   ft <- add_header(ft,  A = "month", B = "1901-2009", C = "1901-2009", D = "1901-2009", E = "1901-2009", "F" = "1901-2009",
@@ -239,24 +239,25 @@ for(v in levels(n_positive_corr_1901_2009$variable)) {
   
   ft <- merge_h(ft, part = "header")
   ft <- theme_booktabs(ft)
-  ft <- fontsize(ft, size = 8.5, part = "all")
+  ft <- colformat_num(ft, col_keys = ft$col_keys, digits = 2)
+  ft <- fontsize(ft, size = 7.5, part = "all")
   ft <- autofit(ft, add_w = 0, add_h = 0)
-  ft <- flextable::width(ft, width = c(0.6,
-                                       rep(0.45, 4),
-                                       0.6,
-                                       rep(0.45, 4),
-                                       0.6,
-                                       rep(0.45, 4),
-                                       0.6,
-                                       rep(0.45, 4),
-                                       0.6)) # dput(prop.table(dim_pretty(ft)$widths)*11)
+  ft <- flextable::width(ft, width = c(0.43,
+                                       rep(0.32, 4),
+                                       0.43,
+                                       rep(0.32, 4),
+                                       0.43,
+                                       rep(0.32, 4),
+                                       0.43,
+                                       rep(0.32, 4),
+                                       0.43)) # dput(prop.table(dim_pretty(ft)$widths)*11)
   
   doc <- body_add_par(doc, paste0("table ", which(levels(n_positive_corr$variable) %in% v), ": Summary of Pearson correlations across species for ", v), style = "table title", pos = "after")
   doc <- body_add_flextable(doc, ft, align = "center")
   
   doc <- body_add_break(doc)
   
-  doc <- body_default_section(doc, landscape = TRUE, 
+  doc <- body_default_section(doc, landscape = F, 
                               margins = c(top = 0.5, bottom = 0.5, left = 0.5, right = 0.5))
   
 } # for(v in levels(n_positive_corr$variable))
