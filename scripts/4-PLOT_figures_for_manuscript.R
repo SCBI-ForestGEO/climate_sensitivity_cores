@@ -23,7 +23,7 @@ save.result.table <- T
 # ANPP_response_total for each type of starting year (not realy for manuscript as is) ####
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("1901_2009", "1980_2009") 
+type.of.start.date <- c("1901_2009", "1977_2009") 
 
 
 ## plot ####
@@ -94,224 +94,422 @@ for(type.start in type.of.start.date) {
 } # for(type.start in type.of.start.date)
 
 
-# Figure 1 ####
+# # Figure 1 ####
+# ## see this issue: https://github.com/EcoClimLab/climate_sensitivity_cores/issues/31
+# 
+# method.to.run = "correlation"
+# climate_data = "CRU_SCBI_1901_2016"
+# 
+# type.of.start.date <- c("1901_2009", "1977_2009") # Going_back_at_earliest_common_year")
+# 
+# ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T)
+# 
+# SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
+# SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
+# 
+# # plot ####
+# if(save.plots)  {
+#   tiff("results/figures_for_manuscript/Figure_1.tif", res = 150, width = 150, height = 169, units = "mm", pointsize = 10)
+# }
+# 
+# nf <- layout(mat = matrix(c(1,2,7,3,4,7,5,6,7), ncol = 3, byrow = T), widths = c(1,1,0.4))
+# # layout.show(nf)
+# 
+# plot.nb = 0
+# 
+# for(v in c("pet", "wet", "PETminusPRE")) {
+#   
+#   print(v)
+#   for(type.start in type.of.start.date) {
+#     
+#     plot.nb <- plot.nb + 1
+#     
+#     all.dcc.output <- read.csv(paste0("results/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), climate_data, "_climate_data.csv"), stringsAsFactors = F)
+#     
+#     X <- all.dcc.output[all.dcc.output$variable %in% v, ]
+#     
+#     x <- data.frame(reshape(X[, c("month", "Species", "coef")], idvar = "month", timevar = "Species", direction = "wide"))
+#     rownames(x) <- ifelse(grepl("curr",  x$month), toupper( x$month), tolower(  x$month))
+#     rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
+#     
+#     x.sig <- reshape(X[, c("month", "Species", "significant")], idvar = "month", timevar = "Species", direction = "wide")
+#     x.sig2 <- reshape(X[, c("month", "Species", "significant2")], idvar = "month", timevar = "Species", direction = "wide")
+#     
+#     colnames(x) <- gsub("coef.", "", colnames(x))
+#     colnames(x.sig) <- gsub("significant.", "", colnames(x.sig))
+#     colnames(x.sig2) <- gsub("significant2.", "", colnames(x.sig2))
+#     
+#     x <- x[, -1]
+#     x.sig <- x.sig[, -1]
+#     x.sig2 <- x.sig2[, -1]
+#     
+#     x <- x[, rev(SPECIES_IN_ORDER)]
+#     x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
+#     x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
+#     
+#     
+#     # plot (adapted my.dccplot function)
+#     x = as.data.frame(t(x))
+#     sig = as.data.frame(t(x.sig))
+#     sig2 = as.data.frame(t(x.sig2))
+#     main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
+#     ylab = toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
+#     rescale = T
+#     
+#     if (!is.data.frame(x)) {
+#       x <- x$coef
+#     }
+#     
+#     blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
+#     reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
+#     
+#     m <- dim(x)[1]
+#     n <- dim(x)[2]
+#     
+#     pos.max <- 0.65 #max(x)
+#     neg.max <- 0.65 #abs(min(x))
+#     
+#     if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 0, 0))
+#     if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 6, 0))
+#     if(!plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 4, 0))
+#     plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
+#          yaxt = "n", ylab = "", xlab = "")
+#     
+#     # x-axis ####
+#     axis(side = 3, at = 1:n, labels = colnames(x), las = 2) # change here
+#     
+#     
+#     
+#     # y-axis ####
+#     if(plot.nb %in% c(1,3,5)) {
+#       axis(side = 2, at = 1:m, labels = rownames(x), las = 1)
+#       mtext(side = 2, ylab, line = 4)
+#     } else {
+#       axis(side = 2, at = 1:m, labels = FALSE, las = 1)
+#     } 
+#     # title ####
+#     if(plot.nb %in% c(1,2)) title(main, line = 5, outer = F)
+#     
+#     
+#     # plot quilt ####
+#     X.left <- X.right <- Y.bottom <- Y.top <- x
+#     
+#     X.left[] <- rep((1:n - 0.5), each = m)
+#     X.right[] <- rep((1:n + 0.5), each = m)
+#     Y.bottom[] <- rep(1:m - 0.5, n)
+#     Y.top[] <- rep(1:m + 0.5, n)
+#     
+#     
+#     x.left <- unlist(c(X.left))
+#     x.right <- unlist(c(X.right))
+#     y.bottom <- unlist(c(Y.bottom))
+#     y.top <- unlist(c(Y.top))
+#     
+#     xs <- unlist(c(x))
+#     xs.sig <- unlist(c(sig))
+#     xs.sig2 <- unlist(c(sig2))
+#     
+#     color <- xs
+#     color[xs <= 0] <- rgb(reds(abs(xs[xs <= 0])/ neg.max), maxColorValue = 255)
+#     color[xs > 0] <- rgb(blues(xs[xs > 0]/ pos.max), maxColorValue = 255)
+#     
+#     rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
+#     
+#     points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig,  "white", "transparent"), col = ifelse(xs.sig, "black", "transparent"), pch = 21) 
+#     points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig2,  "white", "transparent"), col = ifelse(xs.sig2, "black", "transparent"), pch = 24) 
+#     
+#     
+#     
+#     
+#     
+#     # current vs previous year bars ####
+#     
+#     par(xpd= NA)
+#     if(plot.nb %in% c(1,2)) {
+#       lines(x = 1:9, y = rep(18.5, 9), col = "grey", lwd = 2)
+#       lines(x = 10:17, y = rep(18.5, 8), lwd = 2)
+#       text(x = 5, y = 18.5, labels = "previous year", col = "grey", pos = 3)
+#       text(x = 14, y = 18.5, labels = "current year", pos = 3)
+#     } else {
+#       lines(x = 1:9, y = rep(18, 9), col = "grey", lwd = 2)
+#       lines(x = 10:17, y = rep(18, 8), lwd = 2)
+#     }
+#     
+#     
+#     # add letter ####
+#     text(x = -1, y = 18, paste0(letters[plot.nb], ")"), font = 2)
+#     
+#   } #  for(type.start in type.of.start.date[c(1,3)])
+# } # for(v in c("pet", "cld", "PETminusPRE"))
+# 
+# 
+# # legend ####
+# par(mar = c(0,0,0,0))
+# plot.new( )
+# plot.window( xlim=c(0,10), ylim=c(0,100) )
+# 
+# leg.unit <- 2
+# start.unit <- 30
+# right.pos <- 1
+# leg.width <- 2
+# values <- seq(-1, 1, length = 11)
+# 
+# neg.rescaled.values <- round(seq(-neg.max, 0, length = 6), 
+#                              2)
+# pos.rescaled.values <- rev(round(seq(pos.max, 0, length = 6), 
+#                                  2)[-6])
+# rescaled.values <- c(neg.rescaled.values, pos.rescaled.values)
+# 
+# for (i in 1:11) {
+#   if (values[i] <= 0) {
+#     polygon(c(right.pos, right.pos + leg.width, right.pos + 
+#                 leg.width, right.pos), c(start.unit + ((i - 1) * 
+#                                                          leg.unit), start.unit + ((i - 1) * leg.unit), 
+#                                          start.unit + (i * leg.unit), start.unit + (i * 
+#                                                                                       leg.unit)), col = rgb(reds(abs(values[i])), 
+#                                                                                                             maxColorValue = 255), lty = 0)
+#     text(right.pos + leg.width , start.unit + (i * 
+#                                                  leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+#                                                                                 values[i]), pos = 4)
+#   }
+#   else {
+#     polygon(c(right.pos, right.pos + leg.width, right.pos + 
+#                 leg.width, right.pos), c(start.unit + ((i - 1) * 
+#                                                          leg.unit), start.unit + ((i - 1) * leg.unit), 
+#                                          start.unit + (i * leg.unit), start.unit + (i * 
+#                                                                                       leg.unit)), col = rgb(blues(values[i]), maxColorValue = 255), 
+#             lty = 0)
+#     text(right.pos + leg.width, start.unit + (i * 
+#                                                 leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+#                                                                                values[i]), pos = 4)
+#   }
+# } #  for (i in 1:11) 
+# 
+# text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "Correlation", font = 2)
+# 
+# legend(x = 1, y = 25 , pch =  c(21, 24), bg = "white", col = "black", legend = c( "0.05", "0.0002"), bty = "n")
+# text(x = 5, y = 26, labels = "Significance", font = 2)
+# 
+# # dev.off ####
+# if(save.plots) dev.off()
+# 
+# 
+# # Figure 1 _longer (4 variables) ####
+# ## see this issue: https://github.com/EcoClimLab/climate_sensitivity_cores/issues/31
+# 
+# method.to.run = "correlation"
+# climate_data = "CRU_SCBI_1901_2016"
+# 
+# type.of.start.date <- c("1901_2009", "1980_2009") # Going_back_at_earliest_common_year")
+# 
+# ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
+# SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
+# SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
+# 
+# # plot ####
+# if(save.plots)  {
+#   tiff("results/figures_for_manuscript/Figure_1_longer.tif", res = 150, width = 140, height = 190, units = "mm", pointsize = 10)
+# }
+# 
+# nf <- layout(mat = matrix(c(1,2,9,3,4,9,5,6,9,7, 8, 9), ncol = 3, byrow = T), widths = c(1,1,0.4))
+# # layout.show(nf)
+# 
+# plot.nb = 0
+# 
+# for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
+#   
+#   print(v)
+#   for(type.start in type.of.start.date) {
+#     
+#     plot.nb <- plot.nb + 1
+#     
+#     all.dcc.output <- read.csv(paste0("results/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), climate_data, "_climate_data.csv"), stringsAsFactors = F)
+#     
+#     X <- all.dcc.output[all.dcc.output$variable %in% v, ]
+#     
+#     x <- data.frame(reshape(X[, c("month", "Species", "coef")], idvar = "month", timevar = "Species", direction = "wide"))
+#     rownames(x) <- ifelse(grepl("curr",  x$month), toupper( x$month), tolower(  x$month))
+#     rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
+#     
+#     x.sig <- reshape(X[, c("month", "Species", "significant")], idvar = "month", timevar = "Species", direction = "wide")
+#     x.sig2 <- reshape(X[, c("month", "Species", "significant2")], idvar = "month", timevar = "Species", direction = "wide")
+#     
+#     colnames(x) <- gsub("coef.", "", colnames(x))
+#     colnames(x.sig) <- gsub("significant.", "", colnames(x.sig))
+#     colnames(x.sig2) <- gsub("significant2.", "", colnames(x.sig2))
+#     
+#     x <- x[, -1]
+#     x.sig <- x.sig[, -1]
+#     x.sig2 <- x.sig2[, -1]
+#     
+#     x <- x[, rev(SPECIES_IN_ORDER)]
+#     x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
+#     x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
+#     
+#     
+#     # plot (adapted my.dccplot function)
+#     x = as.data.frame(t(x))
+#     sig = as.data.frame(t(x.sig))
+#     sig2 = as.data.frame(t(x.sig2))
+#     main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009")
+#     ylab = toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
+#     rescale = T
+#     
+#     if (!is.data.frame(x)) {
+#       x <- x$coef
+#     }
+#     
+#     blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
+#     reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
+#     
+#     m <- dim(x)[1]
+#     n <- dim(x)[2]
+#     
+#     pos.max <- 0.65 #max(x)
+#     neg.max <- 0.65 #abs(min(x))
+#     
+#     # op <- par(no.readonly = TRUE)
+#     
+#     if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 5, 0))
+#     if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 1.5, 0))
+#     if(!plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 0.5, 0))
+#     plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
+#          yaxt = "n", ylab = "", xlab = "")
+#     
+#     # x-axis ####
+#     if(plot.nb %in% c(1,2)) {
+#       axis(side = 3, at = 1:n, labels = colnames(x), las = 2)
+#     }
+#     
+#     # y-axis ####
+#     if(plot.nb %in% c(1,3,5,7)) {
+#       axis(side = 2, at = 1:m, labels = rownames(x), las = 1)
+#       mtext(side = 2, ylab, line = 4)
+#     } else {
+#       axis(side = 2, at = 1:m, labels = FALSE, las = 1)
+#     } 
+#     # title ####
+#     if(plot.nb %in% c(1,2)) title(main, line = 4, outer = T, adj = ifelse(plot.nb %in% 1, 0.18, 0.67))
+#     
+#     
+#     # plot quilt ####
+#     X.left <- X.right <- Y.bottom <- Y.top <- x
+#     
+#     X.left[] <- rep((1:n - 0.5), each = m)
+#     X.right[] <- rep((1:n + 0.5), each = m)
+#     Y.bottom[] <- rep(1:m - 0.5, n)
+#     Y.top[] <- rep(1:m + 0.5, n)
+#     
+#     
+#     x.left <- unlist(c(X.left))
+#     x.right <- unlist(c(X.right))
+#     y.bottom <- unlist(c(Y.bottom))
+#     y.top <- unlist(c(Y.top))
+#     
+#     xs <- unlist(c(x))
+#     xs.sig <- unlist(c(sig))
+#     xs.sig2 <- unlist(c(sig2))
+#     
+#     color <- xs
+#     color[xs <= 0] <- rgb(reds(abs(xs[xs <= 0])/ neg.max), maxColorValue = 255)
+#     color[xs > 0] <- rgb(blues(xs[xs > 0]/ pos.max), maxColorValue = 255)
+#     
+#     rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
+#     
+#     points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig,  "white", "transparent"), col = ifelse(xs.sig, "black", "transparent"), pch = 21) 
+#     points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig2,  "white", "transparent"), col = ifelse(xs.sig2, "black", "transparent"), pch = 24) 
+#     
+#     
+#     
+#     
+#     
+#     # current vs previous year bars ####
+#     
+#     par(xpd= NA)
+#     if(plot.nb %in% c(1,2)) {
+#       lines(x = 1:9, y = rep(19.2, 9), col = "grey", lwd = 2)
+#       lines(x = 10:17, y = rep(19.2, 8), lwd = 2)
+#       text(x = 5, y = 19.2, labels = "previous year", col = "grey", pos = 3)
+#       text(x = 14, y = 19.2, labels = "current year", pos = 3)
+#     }
+#     
+#     
+#     # add letter ####
+#     text(x = -1, y = 15, paste0(letters[plot.nb], ")"), font = 2)
+#   } #  for(type.start in type.of.start.date[c(1,3)])
+# } # for(v in c("pet", "cld", "PETminusPRE"))
+# 
+# 
+# # legend ####
+# par(mar = c(0,0,0,0))
+# plot.new( )
+# plot.window( xlim=c(0,10), ylim=c(0,100) )
+# 
+# leg.unit <- 2
+# start.unit <- 30
+# right.pos <- 1
+# leg.width <- 2
+# values <- seq(-1, 1, length = 11)
+# 
+# neg.rescaled.values <- round(seq(-neg.max, 0, length = 6), 
+#                              2)
+# pos.rescaled.values <- rev(round(seq(pos.max, 0, length = 6), 
+#                                  2)[-6])
+# rescaled.values <- c(neg.rescaled.values, pos.rescaled.values)
+# 
+# for (i in 1:11) {
+#   if (values[i] <= 0) {
+#     polygon(c(right.pos, right.pos + leg.width, right.pos + 
+#                 leg.width, right.pos), c(start.unit + ((i - 1) * 
+#                                                          leg.unit), start.unit + ((i - 1) * leg.unit), 
+#                                          start.unit + (i * leg.unit), start.unit + (i * 
+#                                                                                       leg.unit)), col = rgb(reds(abs(values[i])), 
+#                                                                                                             maxColorValue = 255), lty = 0)
+#     text(right.pos + leg.width , start.unit + (i * 
+#                                                  leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+#                                                                                 values[i]), pos = 4)
+#   }
+#   else {
+#     polygon(c(right.pos, right.pos + leg.width, right.pos + 
+#                 leg.width, right.pos), c(start.unit + ((i - 1) * 
+#                                                          leg.unit), start.unit + ((i - 1) * leg.unit), 
+#                                          start.unit + (i * leg.unit), start.unit + (i * 
+#                                                                                       leg.unit)), col = rgb(blues(values[i]), maxColorValue = 255), 
+#             lty = 0)
+#     text(right.pos + leg.width, start.unit + (i * 
+#                                                 leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+#                                                                                values[i]), pos = 4)
+#   }
+# } #  for (i in 1:11) 
+# 
+# text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "Correlation", font = 2)
+# 
+# legend(x = 1, y = 25 , pch =  c(21, 24), bg = "white", col = "black", legend = c( "0.05", "0.0002"), bty = "n")
+# text(x = 5, y = 26, labels = "Significance", font = 2)
+# 
+# # dev.off ####
+# if(save.plots) dev.off()
+# 
+
+# Figure 1B _ with Percent change of ANPP _longer (4 variables) ####
 ## see this issue: https://github.com/EcoClimLab/climate_sensitivity_cores/issues/31
 
-method.to.run = "correlation"
 climate_data = "CRU_SCBI_1901_2016"
 
-type.of.start.date <- c("1901_2009", "1980_2009") # Going_back_at_earliest_common_year")
-
-ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T)
-
-SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
-SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
-
-# plot ####
-if(save.plots)  {
-  tiff("results/figures_for_manuscript/Figure_1.tif", res = 150, width = 150, height = 169, units = "mm", pointsize = 10)
-}
-
-nf <- layout(mat = matrix(c(1,2,7,3,4,7,5,6,7), ncol = 3, byrow = T), widths = c(1,1,0.4))
-# layout.show(nf)
-
-plot.nb = 0
-
-for(v in c("pet", "wet", "PETminusPRE")) {
-  
-  print(v)
-  for(type.start in type.of.start.date) {
-    
-    plot.nb <- plot.nb + 1
-    
-    all.dcc.output <- read.csv(paste0("results/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), climate_data, "_climate_data.csv"), stringsAsFactors = F)
-    
-    X <- all.dcc.output[all.dcc.output$variable %in% v, ]
-    
-    x <- data.frame(reshape(X[, c("month", "Species", "coef")], idvar = "month", timevar = "Species", direction = "wide"))
-    rownames(x) <- ifelse(grepl("curr",  x$month), toupper( x$month), tolower(  x$month))
-    rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
-    
-    x.sig <- reshape(X[, c("month", "Species", "significant")], idvar = "month", timevar = "Species", direction = "wide")
-    x.sig2 <- reshape(X[, c("month", "Species", "significant2")], idvar = "month", timevar = "Species", direction = "wide")
-    
-    colnames(x) <- gsub("coef.", "", colnames(x))
-    colnames(x.sig) <- gsub("significant.", "", colnames(x.sig))
-    colnames(x.sig2) <- gsub("significant2.", "", colnames(x.sig2))
-    
-    x <- x[, -1]
-    x.sig <- x.sig[, -1]
-    x.sig2 <- x.sig2[, -1]
-    
-    x <- x[, rev(SPECIES_IN_ORDER)]
-    x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
-    x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
-    
-    
-    # plot (adapted my.dccplot function)
-    x = as.data.frame(t(x))
-    sig = as.data.frame(t(x.sig))
-    sig2 = as.data.frame(t(x.sig2))
-    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009") # "[1901-1938]-2009"
-    ylab = toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
-    rescale = T
-    
-    if (!is.data.frame(x)) {
-      x <- x$coef
-    }
-    
-    blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
-    reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
-    
-    m <- dim(x)[1]
-    n <- dim(x)[2]
-    
-    pos.max <- 0.65 #max(x)
-    neg.max <- 0.65 #abs(min(x))
-    
-    if(plot.nb %in% 1 ) par(oma = c(1.5, 4, 0, 0))
-    if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 6, 0))
-    if(!plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 4, 0))
-    plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
-         yaxt = "n", ylab = "", xlab = "")
-    
-    # x-axis ####
-    axis(side = 3, at = 1:n, labels = colnames(x), las = 2) # change here
-    
-    
-    
-    # y-axis ####
-    if(plot.nb %in% c(1,3,5)) {
-      axis(side = 2, at = 1:m, labels = rownames(x), las = 1)
-      mtext(side = 2, ylab, line = 4)
-    } else {
-      axis(side = 2, at = 1:m, labels = FALSE, las = 1)
-    } 
-    # title ####
-    if(plot.nb %in% c(1,2)) title(main, line = 5, outer = F)
-    
-    
-    # plot quilt ####
-    X.left <- X.right <- Y.bottom <- Y.top <- x
-    
-    X.left[] <- rep((1:n - 0.5), each = m)
-    X.right[] <- rep((1:n + 0.5), each = m)
-    Y.bottom[] <- rep(1:m - 0.5, n)
-    Y.top[] <- rep(1:m + 0.5, n)
-    
-    
-    x.left <- unlist(c(X.left))
-    x.right <- unlist(c(X.right))
-    y.bottom <- unlist(c(Y.bottom))
-    y.top <- unlist(c(Y.top))
-    
-    xs <- unlist(c(x))
-    xs.sig <- unlist(c(sig))
-    xs.sig2 <- unlist(c(sig2))
-    
-    color <- xs
-    color[xs <= 0] <- rgb(reds(abs(xs[xs <= 0])/ neg.max), maxColorValue = 255)
-    color[xs > 0] <- rgb(blues(xs[xs > 0]/ pos.max), maxColorValue = 255)
-    
-    rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
-    
-    points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig,  "white", "transparent"), col = ifelse(xs.sig, "black", "transparent"), pch = 21) 
-    points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig2,  "white", "transparent"), col = ifelse(xs.sig2, "black", "transparent"), pch = 24) 
-    
-    
-    
-    
-    
-    # current vs previous year bars ####
-    
-    par(xpd= NA)
-    if(plot.nb %in% c(1,2)) {
-      lines(x = 1:9, y = rep(18.5, 9), col = "grey", lwd = 2)
-      lines(x = 10:17, y = rep(18.5, 8), lwd = 2)
-      text(x = 5, y = 18.5, labels = "previous year", col = "grey", pos = 3)
-      text(x = 14, y = 18.5, labels = "current year", pos = 3)
-    } else {
-      lines(x = 1:9, y = rep(18, 9), col = "grey", lwd = 2)
-      lines(x = 10:17, y = rep(18, 8), lwd = 2)
-    }
-    
-    
-    # add letter ####
-    text(x = -1, y = 18, paste0(letters[plot.nb], ")"), font = 2)
-    
-  } #  for(type.start in type.of.start.date[c(1,3)])
-} # for(v in c("pet", "cld", "PETminusPRE"))
-
-
-# legend ####
-par(mar = c(0,0,0,0))
-plot.new( )
-plot.window( xlim=c(0,10), ylim=c(0,100) )
-
-leg.unit <- 2
-start.unit <- 30
-right.pos <- 1
-leg.width <- 2
-values <- seq(-1, 1, length = 11)
-
-neg.rescaled.values <- round(seq(-neg.max, 0, length = 6), 
-                             2)
-pos.rescaled.values <- rev(round(seq(pos.max, 0, length = 6), 
-                                 2)[-6])
-rescaled.values <- c(neg.rescaled.values, pos.rescaled.values)
-
-for (i in 1:11) {
-  if (values[i] <= 0) {
-    polygon(c(right.pos, right.pos + leg.width, right.pos + 
-                leg.width, right.pos), c(start.unit + ((i - 1) * 
-                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
-                                         start.unit + (i * leg.unit), start.unit + (i * 
-                                                                                      leg.unit)), col = rgb(reds(abs(values[i])), 
-                                                                                                            maxColorValue = 255), lty = 0)
-    text(right.pos + leg.width , start.unit + (i * 
-                                                 leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
-                                                                                values[i]), pos = 4)
-  }
-  else {
-    polygon(c(right.pos, right.pos + leg.width, right.pos + 
-                leg.width, right.pos), c(start.unit + ((i - 1) * 
-                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
-                                         start.unit + (i * leg.unit), start.unit + (i * 
-                                                                                      leg.unit)), col = rgb(blues(values[i]), maxColorValue = 255), 
-            lty = 0)
-    text(right.pos + leg.width, start.unit + (i * 
-                                                leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
-                                                                               values[i]), pos = 4)
-  }
-} #  for (i in 1:11) 
-
-text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "Correlation", font = 2)
-
-legend(x = 1, y = 25 , pch =  c(21, 24), bg = "white", col = "black", legend = c( "0.05", "0.0002"), bty = "n")
-text(x = 5, y = 26, labels = "Significance", font = 2)
-
-# dev.off ####
-if(save.plots) dev.off()
-
-
-# Figure 1 _longer (4 variables) ####
-## see this issue: https://github.com/EcoClimLab/climate_sensitivity_cores/issues/31
-
-method.to.run = "correlation"
-climate_data = "CRU_SCBI_1901_2016"
-
-type.of.start.date <- c("1901_2009", "1980_2009") # Going_back_at_earliest_common_year")
+type.start <- c("1901_2009")
 
 ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
 SPECIES_IN_ORDER <- gsub("CAOVL", "CAOV", SPECIES_IN_ORDER)
+
+
 
 # plot ####
 if(save.plots)  {
   tiff("results/figures_for_manuscript/Figure_1_longer.tif", res = 150, width = 140, height = 190, units = "mm", pointsize = 10)
 }
 
-nf <- layout(mat = matrix(c(1,2,9,3,4,9,5,6,9,7, 8, 9), ncol = 3, byrow = T), widths = c(1,1,0.4))
+nf <- layout(mat = matrix(c(1,9,2,10,3,9,4,10,5,9,6,10,7,9,8,10), ncol = 4, byrow = T), widths = c(1,0.4, 1,0.4))
 # layout.show(nf)
 
 plot.nb = 0
@@ -319,39 +517,61 @@ plot.nb = 0
 for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
   
   print(v)
-  for(type.start in type.of.start.date) {
+  for(corr_or_ANPP in c("correlation", "ANPP_response")) {
     
     plot.nb <- plot.nb + 1
     
-    all.dcc.output <- read.csv(paste0("results/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), climate_data, "_climate_data.csv"), stringsAsFactors = F)
     
-    X <- all.dcc.output[all.dcc.output$variable %in% v, ]
+    if(corr_or_ANPP %in% "correlation") {
+      method.to.run = "correlation"
+      
+      all.dcc.output <- read.csv(paste0("results/", type.start, "/tables/monthly_", method.to.run, "/", method.to.run, ifelse(grepl("corr", method.to.run), "_with_", "_to_"), climate_data, "_climate_data.csv"), stringsAsFactors = F)
+      
+      X <- all.dcc.output[all.dcc.output$variable %in% v, ]
+      
+      x <- data.frame(reshape(X[, c("month", "Species", "coef")], idvar = "month", timevar = "Species", direction = "wide"))
+      rownames(x) <- ifelse(grepl("curr",  x$month), toupper( x$month), tolower(  x$month))
+      rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
+      
+      x.sig <- reshape(X[, c("month", "Species", "significant")], idvar = "month", timevar = "Species", direction = "wide")
+      x.sig2 <- reshape(X[, c("month", "Species", "significant2")], idvar = "month", timevar = "Species", direction = "wide")
+      
+      colnames(x) <- gsub("coef.", "", colnames(x))
+      colnames(x.sig) <- gsub("significant.", "", colnames(x.sig))
+      colnames(x.sig2) <- gsub("significant2.", "", colnames(x.sig2))
+      
+      x <- x[, -1]
+      x.sig <- x.sig[, -1]
+      x.sig2 <- x.sig2[, -1]
+      
+      x <- x[, rev(SPECIES_IN_ORDER)]
+      x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
+      x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
+      
+    }
     
-    x <- data.frame(reshape(X[, c("month", "Species", "coef")], idvar = "month", timevar = "Species", direction = "wide"))
+    if(corr_or_ANPP %in% "ANPP_response") {
+    ANPP_response <- read.csv(paste0("results/", type.start, "/tables/monthly_responses_ANPP_to_climate_variables/ANPP_response_by_species_climate_variable_and_month.csv"), stringsAsFactors = F)
+    
+    X <- ANPP_response[ANPP_response$variable %in% v, ]
+
+    x <- data.frame(reshape(X[, c("month", "Species", "ANPP_response")], idvar = "month", timevar = "Species", direction = "wide"))
     rownames(x) <- ifelse(grepl("curr",  x$month), toupper( x$month), tolower(  x$month))
     rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
-    
-    x.sig <- reshape(X[, c("month", "Species", "significant")], idvar = "month", timevar = "Species", direction = "wide")
-    x.sig2 <- reshape(X[, c("month", "Species", "significant2")], idvar = "month", timevar = "Species", direction = "wide")
-    
-    colnames(x) <- gsub("coef.", "", colnames(x))
-    colnames(x.sig) <- gsub("significant.", "", colnames(x.sig))
-    colnames(x.sig2) <- gsub("significant2.", "", colnames(x.sig2))
+    colnames(x) <- gsub("ANPP_response.", "", toupper(colnames(x)), ignore.case = T)
     
     x <- x[, -1]
-    x.sig <- x.sig[, -1]
-    x.sig2 <- x.sig2[, -1]
-    
     x <- x[, rev(SPECIES_IN_ORDER)]
-    x.sig <- x.sig[, rev(SPECIES_IN_ORDER)]
-    x.sig2 <- x.sig2[, rev(SPECIES_IN_ORDER)]
     
+    x.sig <- x; x.sig[] <- FALSE
+    x.sig2 <- x.sig
+
+    }
     
     # plot (adapted my.dccplot function)
     x = as.data.frame(t(x))
-    sig = as.data.frame(t(x.sig))
-    sig2 = as.data.frame(t(x.sig2))
-    main = ifelse(grepl("1980", type.start), "1980-2009", "1901-2009")
+
+    main = "1901-2009"
     ylab = toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
     rescale = T
     
@@ -365,8 +585,8 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
     m <- dim(x)[1]
     n <- dim(x)[2]
     
-    pos.max <- 0.65 #max(x)
-    neg.max <- 0.65 #abs(min(x))
+    pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
+    neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
     
     # op <- par(no.readonly = TRUE)
     
@@ -389,7 +609,8 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
       axis(side = 2, at = 1:m, labels = FALSE, las = 1)
     } 
     # title ####
-    if(plot.nb %in% c(1,2)) title(main, line = 4, outer = T, adj = ifelse(plot.nb %in% 1, 0.18, 0.67))
+    # if(plot.nb %in% c(1,2)) title(main, line = 4, outer = T, adj = ifelse(plot.nb %in% 1, 0.18, 0.67))
+    if(plot.nb %in% c(1)) title(main, line = 4, outer = T, adj = 0.45)
     
     
     # plot quilt ####
@@ -407,18 +628,13 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
     y.top <- unlist(c(Y.top))
     
     xs <- unlist(c(x))
-    xs.sig <- unlist(c(sig))
-    xs.sig2 <- unlist(c(sig2))
-    
+
     color <- xs
     color[xs <= 0] <- rgb(reds(abs(xs[xs <= 0])/ neg.max), maxColorValue = 255)
     color[xs > 0] <- rgb(blues(xs[xs > 0]/ pos.max), maxColorValue = 255)
     
     rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
-    
-    points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig,  "white", "transparent"), col = ifelse(xs.sig, "black", "transparent"), pch = 21) 
-    points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig2,  "white", "transparent"), col = ifelse(xs.sig2, "black", "transparent"), pch = 24) 
-    
+
     
     
     
@@ -440,7 +656,11 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
 } # for(v in c("pet", "cld", "PETminusPRE"))
 
 
-# legend ####
+# legend corelation####
+corr_or_ANPP = "correlation"
+pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
+neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
+
 par(mar = c(0,0,0,0))
 plot.new( )
 plot.window( xlim=c(0,10), ylim=c(0,100) )
@@ -487,6 +707,56 @@ text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "Correlation", font = 
 legend(x = 1, y = 25 , pch =  c(21, 24), bg = "white", col = "black", legend = c( "0.05", "0.0002"), bty = "n")
 text(x = 5, y = 26, labels = "Significance", font = 2)
 
+# legend ANPP####
+
+corr_or_ANPP = "ANPP_response"
+pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
+neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
+
+
+par(mar = c(0,0,0,0))
+plot.new( )
+plot.window( xlim=c(0,10), ylim=c(0,100) )
+
+leg.unit <- 2
+start.unit <- 30
+right.pos <- 1
+leg.width <- 2
+values <- seq(-1, 1, length = 11)
+
+neg.rescaled.values <- round(seq(-neg.max, 0, length = 6), 
+                             2)
+pos.rescaled.values <- rev(round(seq(pos.max, 0, length = 6), 
+                                 2)[-6])
+rescaled.values <- c(neg.rescaled.values, pos.rescaled.values)
+
+for (i in 1:11) {
+  if (values[i] <= 0) {
+    polygon(c(right.pos, right.pos + leg.width, right.pos + 
+                leg.width, right.pos), c(start.unit + ((i - 1) * 
+                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
+                                         start.unit + (i * leg.unit), start.unit + (i * 
+                                                                                      leg.unit)), col = rgb(reds(abs(values[i])), 
+                                                                                                            maxColorValue = 255), lty = 0)
+    text(right.pos + leg.width , start.unit + (i * 
+                                                 leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+                                                                                values[i]), pos = 4)
+  }
+  else {
+    polygon(c(right.pos, right.pos + leg.width, right.pos + 
+                leg.width, right.pos), c(start.unit + ((i - 1) * 
+                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
+                                         start.unit + (i * leg.unit), start.unit + (i * 
+                                                                                      leg.unit)), col = rgb(blues(values[i]), maxColorValue = 255), 
+            lty = 0)
+    text(right.pos + leg.width, start.unit + (i * 
+                                                leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+                                                                               values[i]), pos = 4)
+  }
+} #  for (i in 1:11) 
+
+text(x = 5, y = start.unit + (i * leg.unit) + c(5, 3), labels = c(expression(bold(Delta*"ANPP")), expression(bold("response"))), font = 2)
+
 # dev.off ####
 if(save.plots) dev.off()
 
@@ -494,17 +764,18 @@ if(save.plots) dev.off()
 # Figure 2 ####
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("1901_2009","1980_2009")
+type.of.start.date <- c("1901_2009") # c("1901_2009","1980_2009")
 
 
 ## plot ####
 
 if(save.plots)  {
-  tiff(paste0("results/figures_for_manuscript/Figure_2.tif"), res = 300, width = 169, height = 100, units = "mm", pointsize = 10)
+  tiff(paste0("results/figures_for_manuscript/Figure_2.tif"), res = 300, width = 169, height = 120, units = "mm", pointsize = 10)
 }
 
 
-nf <- layout(mat = matrix(c(1,2,3), ncol = 3, byrow = T), widths = c(1,1,0.4))
+nf <- layout(mat = matrix(c(1,2), ncol = 2, byrow = T), widths = c(1,0.4)) # nf <- layout(mat = matrix(c(1,2,3), ncol = 3, byrow = T), widths = c(1,1,0.4))
+
 # layout.show(nf)
 
 plot.nb = 0
@@ -577,8 +848,8 @@ for(type.start in type.of.start.date) {
   m <- dim(x)[1]
   n <- dim(x)[2]
   
-  pos.max <- 0.12 #max(x)
-  neg.max <- 0.12 #abs(min(x))
+  pos.max <- 0.053 # 0.12, max(x)
+  neg.max <- 0.053 # 0.12, abs(min(x))
   
   if(plot.nb %in% 1 ) par(oma = c(1.5, 5, 0, 0))
   if(plot.nb %in% c(1,2)) par(mar = c(0, 1.5, 6, 0))
@@ -629,13 +900,13 @@ for(type.start in type.of.start.date) {
   
   par(xpd= NA)
   if(plot.nb %in% c(1,2)) {
-    lines(x = 1:9, y = rep(12.15, 9), col = "grey", lwd = 2)
-    lines(x = 10:17, y = rep(12.15, 8), lwd = 2)
-    text(x = 5, y = 12.15, labels = "previous year", col = "grey", pos = 3)
-    text(x = 14, y = 12.15, labels = "current year", pos = 3)
+    lines(x = 1:9, y = rep(12.5, 9), col = "grey", lwd = 2)
+    lines(x = 10:17, y = rep(12.5, 8), lwd = 2)
+    text(x = 5, y = 12.5, labels = "previous year", col = "grey", pos = 3)
+    text(x = 14, y = 12.5, labels = "current year", pos = 3)
   } else {
-    lines(x = 1:9, y = rep(12.15, 9), col = "grey", lwd = 2)
-    lines(x = 10:17, y = rep(12.15, 8), lwd = 2)
+    lines(x = 1:9, y = rep(12.5, 9), col = "grey", lwd = 2)
+    lines(x = 10:17, y = rep(12.5, 8), lwd = 2)
   }
   
   # "energy" vs "water"' variable group bars ###
@@ -670,6 +941,7 @@ neg.rescaled.values <- round(seq(-neg.max, 0, length = 6),
 pos.rescaled.values <- rev(round(seq(pos.max, 0, length = 6), 
                                  2)[-6])
 rescaled.values <- c(neg.rescaled.values, pos.rescaled.values)
+rescaled.values <- as.vector(sapply(rescaled.values, function(x) bquote(.(x) ~ bold(" - ") ~ .(round(x*100/ANPP_contribution$ANPP_Mg.C.ha1.y1_10cm[ANPP_contribution$species %in% "total"], 2)))))
 
 for (i in 1:11) {
   if (values[i] <= 0) {
@@ -680,7 +952,7 @@ for (i in 1:11) {
                                                                                       leg.unit)), col = rgb(reds(abs(values[i])), 
                                                                                                             maxColorValue = 255), lty = 0)
     text(right.pos + leg.width , start.unit + (i * 
-                                                 leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+                                                 leg.unit) - leg.unit/2, ifelse(rescale, as.expression(rescaled.values[i]), 
                                                                                 values[i]), pos = 4)
   }
   else {
@@ -691,12 +963,12 @@ for (i in 1:11) {
                                                                                       leg.unit)), col = rgb(blues(values[i]), maxColorValue = 255), 
             lty = 0)
     text(right.pos + leg.width, start.unit + (i * 
-                                                leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+                                                leg.unit) - leg.unit/2, ifelse(rescale, as.expression(rescaled.values[i]), 
                                                                                values[i]), pos = 4)
   }
 } #  for (i in 1:11) 
 
-text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "Response", font = 2)
+text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = expression(bold(atop("ANPP Response", Mg ~ ha^-1 ~ yr^-1 ~" - %"))))
 
 # dev.off ####
 if(save.plots) dev.off()

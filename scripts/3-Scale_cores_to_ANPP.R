@@ -45,6 +45,9 @@ file.remove("scbi.stem1.rdata")
 
 head(scbi.stem1)
 
+# load mean_radius_increment ####
+mean_radius_increment_per_sp <- read.csv("results/mean_radius_increment.csv")
+
 # Define sets of climate data to use ####
 climate.data.types <- c("CRU_SCBI_1901_2016", "NOAA_PDSI_Northern_Virginia_1895_2017")
 
@@ -155,7 +158,10 @@ for(type.start in type.of.start.date) {
       SP <- Results_correlation_climate$Species[i]
       sp <- tolower(SP)
       
-      rad_plus <- Results_correlation_climate$chg_rad_inc_1SD_clim[i]
+      mean_radius_increment <- mean_radius_increment_per_sp[mean_radius_increment_per_sp$Species %in% gsub("CAOV", "CAOVL", toupper(sp)), ]$mean_rad_inc
+      
+      rad_plus <- Results_correlation_climate$chg_rad_inc_1SD_clim[i] # rad_plus is the absolute change in radius increment for 1SD increase in climate variable
+      rad_plus_rel <- rad_plus / mean_radius_increment #  rad_plus is the relative change in radius increment for 1SD increase in climate variable, based on mean radial increment of all trees of that species over the whole time period. It is (D*SD/mean radial increment) in issue #62 (https://github.com/SCBI-ForestGEO/climate_sensitivity_cores/issues/62)
       
       lm1 <- DBH_to_r_inc_lms[[SP]]
       
@@ -178,8 +184,8 @@ for(type.start in type.of.start.date) {
       agb_2009 <- x$agb * .47
       
       ## AGB 2009 with one unit of increase in climate variable  (using DBH in 2009 predicted using  linear model + response coeficient)
-      x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx] + c(2 * (predict(object = lm1, newdata = data.frame(dbh_2008 = scbi.stem1$dbh[idx])) + rad_plus * 2))) # rad_plus is the absolute change in radius increment for 1SD increase in climate variable
-      
+      x <- data.frame(sp = sp_complete, dbh = scbi.stem1$dbh[idx] + c(2 * (predict(object = lm1, newdata = data.frame(dbh_2008 = scbi.stem1$dbh[idx])))) * (1 + as.numeric(rad_plus_rel))) # DBH_2009_inc = DBH_2008 + 2 * A (1 + D*SD/mean radial increment)
+                      
       source("scripts/0-scbi_Allometries.R")
       agb_2009_plus <- x$agb * .47
       
@@ -195,7 +201,7 @@ for(type.start in type.of.start.date) {
       # 6 - get the difference between ANPP_2008 of a normal year and a year with one unit of increase in climate variable ####
       
       ANPP_diff <- ANPP_2008_plus - ANPP_2008
-      
+      ANPP_diff_percent <- ANPP_diff * 100 / ANPP_2008  #  % change in ANPP for the species
       
       # save ANPP response to 1 unit increase in climate variable into table
       
@@ -204,7 +210,8 @@ for(type.start in type.of.start.date) {
                                         Climate_data = c, 
                                         variable = v, 
                                         month = m, 
-                                        ANPP_response = ANPP_diff))
+                                        ANPP_response = ANPP_diff,
+                                        ANPP_response_percent = ANPP_diff_percent))
     } #  for(i in 1:nrow(Results_correlation_climate))
     
     close(pb)
@@ -213,7 +220,7 @@ for(type.start in type.of.start.date) {
   head(ANPP_response)
   
   # 7- Sum ANPP response per climate variable and per month ####
-  ANPP_response[is.na(ANPP_response$ANPP_response), ]
+  ANPP_response[is.na(ANPP_response$ANPP_response), ] # should be empty
   
   X <- data.frame(ANPP_response = tapply(ANPP_response$ANPP_response, list(paste(ANPP_response$Climate_data, ANPP_response$variable, ANPP_response$month)), sum))
   
@@ -285,8 +292,9 @@ Table_S2 <- as.data.frame(t(sapply(DBH_to_r_inc_lms, function(x) return(c(summar
 Table_S2 <- cbind(Species = toupper(rownames(Table_S2)), Table_S2)
 colnames(Table_S2)[2:3] <- c("a", "b")
 Table_S2[, 2:4] <- round(Table_S2[, 2:4], 4)
-Table_S2 <- Table_S2[c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "juni", 
-                       "cato", "caco", "fagr", "caovl", "pist", "frni"), ]
+Table_S2 <- Table_S2[toupper(c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "juni", 
+                       "cato", "caco", "fagr", "caov", "pist", "frni")), ]
+Table_S2$Species <- gsub("CAOV", "CAOVL", Table_S2$Species)
 
 doc <- read_docx()
 
