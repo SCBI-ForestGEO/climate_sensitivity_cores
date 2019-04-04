@@ -879,9 +879,9 @@ for(type.start in type.of.start.date) {
     x <- x$coef
   }
   
-  blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
-  reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
-  
+  blues <- colorRamp(c("#FFFFFF", "cyan3", "darkcyan"))
+  reds <- colorRamp(c("#FFFFFF", "violetred1", "violetred4"))
+
   m <- dim(x)[1]
   n <- dim(x)[2]
   
