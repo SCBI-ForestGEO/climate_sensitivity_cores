@@ -509,7 +509,7 @@ if(save.plots)  {
   tiff("results/figures_for_manuscript/Figure_1_longer.tif", res = 150, width = 140, height = 190, units = "mm", pointsize = 10)
 }
 
-nf <- layout(mat = matrix(c(1,2,10,3,4,10,5,6,10,7,8,9), ncol = 3, byrow = T), widths = c(1, 1, 0.4))
+nf <- layout(mat = matrix(c(1,2,10,3,4,10,5,6,10,7,8,9), ncol = 3, byrow = T), widths = c(1, 1, 0.5))
 # layout.show(nf)
 
 plot.nb = 0
@@ -594,7 +594,7 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
     m <- dim(x)[1]
     n <- dim(x)[2]
     
-    pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 5) #max(x)
+    pos.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 5) #max(x)
     neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 5) #abs(min(x))
     
     # op <- par(no.readonly = TRUE)
@@ -681,7 +681,7 @@ n <- dim(x)[2]
 pos.max <- 1.35
 neg.max <- 0
 
-par(mar = c(0, 4, 0.5, 3)) 
+par(mar = c(0, 4.3, 0.5, 3.8)) 
 plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
      yaxt = "n", ylab = "", xlab = "", bty = "n")
 
@@ -713,7 +713,7 @@ color[xs > 0] <- rgb(blues(xs[xs > 0]/ pos.max), maxColorValue = 255)
 rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
 
 # add letter 
-text(x = 0, y = 15, "i)", font = 2)
+text(x = 0.9, y = 15, "i) ANPP(Mg ha-1 yr-1)", font = 2)
 
 
 # legend ####
@@ -723,8 +723,8 @@ plot.new( )
 plot.window( xlim=c(0,10), ylim=c(0,100) )
 
 for(corr_or_ANPP in c("correlation", "ANPP_response_percent")) {
-  pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
-  neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
+  pos.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 5) #max(x)
+  neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 5) #abs(min(x))
   
   if(corr_or_ANPP %in% "correlation") {
     
@@ -738,9 +738,6 @@ for(corr_or_ANPP in c("correlation", "ANPP_response_percent")) {
     values <- seq(-1, 1, length = 11)
     
   } else {
-    
-    pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
-    neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
     
     blues <- colorRamp(c("#FFFFFF", "cyan3", "darkcyan"))
     reds <- colorRamp(c("#FFFFFF", "violetred1", "violetred4"))
