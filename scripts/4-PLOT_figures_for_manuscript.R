@@ -906,7 +906,7 @@ for(type.start in type.of.start.date) {
     axis(side = 2, at = 1:m, labels = F, las = 1)
   } 
   # title ####
-  if(plot.nb %in% c(1,2)) title(main, line = 5, outer = F)
+  # if(plot.nb %in% c(1,2)) title(main, line = 5, outer = F)
   
   
   # plot quilt ####
@@ -957,7 +957,7 @@ for(type.start in type.of.start.date) {
   
   
   # add letter ####
-  text(x = -1, y = 13, paste0(letters[plot.nb], ")"), font = 2)
+  # text(x = -1, y = 13, paste0(letters[plot.nb], ")"), font = 2)
   
   
 } # for(type.start in type.of.start.date)
