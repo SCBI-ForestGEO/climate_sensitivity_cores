@@ -509,7 +509,7 @@ if(save.plots)  {
   tiff("results/figures_for_manuscript/Figure_1_longer.tif", res = 150, width = 140, height = 190, units = "mm", pointsize = 10)
 }
 
-nf <- layout(mat = matrix(c(1,9,2,10,3,9,4,10,5,9,6,10,7,9,8,10), ncol = 4, byrow = T), widths = c(1,0.4, 1,0.4))
+nf <- layout(mat = matrix(c(1,2,10,3,4,10,5,6,10,7,8,9), ncol = 3, byrow = T), widths = c(1, 1, 0.4))
 # layout.show(nf)
 
 plot.nb = 0
@@ -517,7 +517,8 @@ plot.nb = 0
 for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
   
   print(v)
-  for(corr_or_ANPP in c("correlation", "ANPP_response")) {
+  
+  for(corr_or_ANPP in c("correlation", "ANPP_response_percent")) {
     
     plot.nb <- plot.nb + 1
     
@@ -550,15 +551,15 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
       
     }
     
-    if(corr_or_ANPP %in% "ANPP_response") {
+    if(corr_or_ANPP %in% "ANPP_response_percent") {
     ANPP_response <- read.csv(paste0("results/", type.start, "/tables/monthly_responses_ANPP_to_climate_variables/ANPP_response_by_species_climate_variable_and_month.csv"), stringsAsFactors = F)
     
     X <- ANPP_response[ANPP_response$variable %in% v, ]
 
-    x <- data.frame(reshape(X[, c("month", "Species", "ANPP_response")], idvar = "month", timevar = "Species", direction = "wide"))
+    x <- data.frame(reshape(X[, c("month", "Species", "ANPP_response_percent")], idvar = "month", timevar = "Species", direction = "wide"))
     rownames(x) <- ifelse(grepl("curr",  x$month), toupper( x$month), tolower(  x$month))
     rownames(x) <- gsub(".*curr.|.*prev.", "",   rownames(x), ignore.case = T)
-    colnames(x) <- gsub("ANPP_response.", "", toupper(colnames(x)), ignore.case = T)
+    colnames(x) <- gsub("ANPP_response_percent.", "", toupper(colnames(x)), ignore.case = T)
     
     x <- x[, -1]
     x <- x[, rev(SPECIES_IN_ORDER)]
@@ -570,8 +571,10 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
     
     # plot (adapted my.dccplot function)
     x = as.data.frame(t(x))
+    sig = as.data.frame(t(x.sig))
+    sig2 = as.data.frame(t(x.sig2))
 
-    main = "1901-2009"
+    main = ifelse(corr_or_ANPP %in% "correlation", "Correlation", "% Response")
     ylab = toupper(v) ; ylab <- gsub("PETMINUSPRE", "PET-PRE", ylab)
     rescale = T
     
@@ -579,14 +582,20 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
       x <- x$coef
     }
     
-    blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
-    reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
+    if(corr_or_ANPP %in% "correlation") {
+      blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
+      reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
+    } else {
+      blues <- colorRamp(c("#FFFFFF", "cyan3", "darkcyan"))
+      reds <- colorRamp(c("#FFFFFF", "violetred1", "violetred4"))
+    }
+    
     
     m <- dim(x)[1]
     n <- dim(x)[2]
     
-    pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
-    neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
+    pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 5) #max(x)
+    neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 5) #abs(min(x))
     
     # op <- par(no.readonly = TRUE)
     
@@ -609,8 +618,8 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
       axis(side = 2, at = 1:m, labels = FALSE, las = 1)
     } 
     # title ####
-    # if(plot.nb %in% c(1,2)) title(main, line = 4, outer = T, adj = ifelse(plot.nb %in% 1, 0.18, 0.67))
-    if(plot.nb %in% c(1)) title(main, line = 4, outer = T, adj = 0.45)
+    if(plot.nb %in% c(1,2)) title(main, line = 4, outer = T, adj = ifelse(plot.nb %in% 1, 0.18, 0.67))
+    # if(plot.nb %in% c(1)) title(main, line = 4, outer = T, adj = 0.45)
     
     
     # plot quilt ####
@@ -628,6 +637,8 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
     y.top <- unlist(c(Y.top))
     
     xs <- unlist(c(x))
+    xs.sig <- unlist(c(sig))
+    xs.sig2 <- unlist(c(sig2))
 
     color <- xs
     color[xs <= 0] <- rgb(reds(abs(xs[xs <= 0])/ neg.max), maxColorValue = 255)
@@ -635,7 +646,8 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
     
     rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
 
-    
+    points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig,  "white", "transparent"), col = ifelse(xs.sig, "black", "transparent"), pch = 21) 
+    points((x.left + x.right) /2 , (y.bottom + y.top) /2, bg = ifelse(xs.sig2,  "white", "transparent"), col = ifelse(xs.sig2, "black", "transparent"), pch = 24)
     
     
     
@@ -655,107 +667,135 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
   } #  for(type.start in type.of.start.date[c(1,3)])
 } # for(v in c("pet", "cld", "PETminusPRE"))
 
+# Add ANPP contribution ####
+x <- x[1]
+x[] <- ANPP_contribution$ANPP_Mg.C.ha1.y1_10cm[match(rownames(x),  gsub("CAOVL", "CAOV", toupper(ANPP_contribution$species)))]
+colnames(x) <- "ANPP contribution"
 
-# legend corelation####
-corr_or_ANPP = "correlation"
-pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
-neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
+blues <- colorRamp(c("#FFFFFF", "grey", "black"))
+reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
 
-par(mar = c(0,0,0,0))
-plot.new( )
-plot.window( xlim=c(0,10), ylim=c(0,100) )
+m <- dim(x)[1]
+n <- dim(x)[2]
 
-leg.unit <- 2
-start.unit <- 30
-right.pos <- 1
-leg.width <- 2
-values <- seq(-1, 1, length = 11)
+pos.max <- 1.35
+neg.max <- 0
 
-neg.rescaled.values <- round(seq(-neg.max, 0, length = 6), 
-                             2)
-pos.rescaled.values <- rev(round(seq(pos.max, 0, length = 6), 
-                                 2)[-6])
-rescaled.values <- c(neg.rescaled.values, pos.rescaled.values)
+par(mar = c(0, 4, 0.5, 3)) 
+plot(c(0.5, n + 0.5), c(0.5, m + 0.5), type = "n", xaxt = "n", 
+     yaxt = "n", ylab = "", xlab = "", bty = "n")
 
-for (i in 1:11) {
-  if (values[i] <= 0) {
-    polygon(c(right.pos, right.pos + leg.width, right.pos + 
-                leg.width, right.pos), c(start.unit + ((i - 1) * 
-                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
-                                         start.unit + (i * leg.unit), start.unit + (i * 
-                                                                                      leg.unit)), col = rgb(reds(abs(values[i])), 
-                                                                                                            maxColorValue = 255), lty = 0)
-    text(right.pos + leg.width , start.unit + (i * 
-                                                 leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
-                                                                                values[i]), pos = 4)
-  }
-  else {
-    polygon(c(right.pos, right.pos + leg.width, right.pos + 
-                leg.width, right.pos), c(start.unit + ((i - 1) * 
-                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
-                                         start.unit + (i * leg.unit), start.unit + (i * 
-                                                                                      leg.unit)), col = rgb(blues(values[i]), maxColorValue = 255), 
-            lty = 0)
-    text(right.pos + leg.width, start.unit + (i * 
-                                                leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
-                                                                               values[i]), pos = 4)
-  }
-} #  for (i in 1:11) 
+# axis(side = 3, at = 1:n, labels = colnames(x), las = 2)
+axis(side = 2, at = 1:m, labels = rownames(x), las = 1)
+axis(side = 4, at = 1:m, labels = round(x[,1],2), las = 1, lwd = 0, lwd.ticks = 1)
 
-text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "Correlation", font = 2)
+# plot quilt 
+X.left <- X.right <- Y.bottom <- Y.top <- x
 
-legend(x = 1, y = 25 , pch =  c(21, 24), bg = "white", col = "black", legend = c( "0.05", "0.0002"), bty = "n")
-text(x = 5, y = 26, labels = "Significance", font = 2)
+X.left[] <- rep((1:n - 0.5), each = m)
+X.right[] <- rep((1:n + 0.5), each = m)
+Y.bottom[] <- rep(1:m - 0.5, n)
+Y.top[] <- rep(1:m + 0.5, n)
 
-# legend ANPP####
 
-corr_or_ANPP = "ANPP_response"
-pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
-neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
+x.left <- unlist(c(X.left))
+x.right <- unlist(c(X.right))
+y.bottom <- unlist(c(Y.bottom))
+y.top <- unlist(c(Y.top))
 
+xs <- unlist(c(x))
+
+
+color <- xs
+color[xs <= 0] <- rgb(reds(abs(xs[xs <= 0])/ neg.max), maxColorValue = 255)
+color[xs > 0] <- rgb(blues(xs[xs > 0]/ pos.max), maxColorValue = 255)
+
+rect(x.left, y.bottom , x.right, y.top, col = color, border = "white")
+
+# add letter 
+text(x = 0, y = 15, "i)", font = 2)
+
+
+# legend ####
 
 par(mar = c(0,0,0,0))
 plot.new( )
 plot.window( xlim=c(0,10), ylim=c(0,100) )
 
-leg.unit <- 2
-start.unit <- 30
-right.pos <- 1
-leg.width <- 2
-values <- seq(-1, 1, length = 11)
-
-neg.rescaled.values <- round(seq(-neg.max, 0, length = 6), 
-                             2)
-pos.rescaled.values <- rev(round(seq(pos.max, 0, length = 6), 
-                                 2)[-6])
-rescaled.values <- c(neg.rescaled.values, pos.rescaled.values)
-
-for (i in 1:11) {
-  if (values[i] <= 0) {
-    polygon(c(right.pos, right.pos + leg.width, right.pos + 
-                leg.width, right.pos), c(start.unit + ((i - 1) * 
-                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
-                                         start.unit + (i * leg.unit), start.unit + (i * 
-                                                                                      leg.unit)), col = rgb(reds(abs(values[i])), 
-                                                                                                            maxColorValue = 255), lty = 0)
-    text(right.pos + leg.width , start.unit + (i * 
-                                                 leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
-                                                                                values[i]), pos = 4)
+for(corr_or_ANPP in c("correlation", "ANPP_response_percent")) {
+  pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
+  neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
+  
+  if(corr_or_ANPP %in% "correlation") {
+    
+    blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
+    reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
+    
+    leg.unit <- 3
+    start.unit <- 65
+    right.pos <- 2
+    leg.width <- 2
+    values <- seq(-1, 1, length = 11)
+    
+  } else {
+    
+    pos.max <- ifelse(corr_or_ANPP %in% "correlation", 1.2, 0.04) #max(x)
+    neg.max <- ifelse(corr_or_ANPP %in% "correlation", 0.65, 0.04) #abs(min(x))
+    
+    blues <- colorRamp(c("#FFFFFF", "cyan3", "darkcyan"))
+    reds <- colorRamp(c("#FFFFFF", "violetred1", "violetred4"))
+    
+    leg.unit <- 3
+    start.unit <- 5
+    right.pos <- 2
+    leg.width <- 2
+    values <- seq(-1, 1, length = 11)
   }
-  else {
-    polygon(c(right.pos, right.pos + leg.width, right.pos + 
-                leg.width, right.pos), c(start.unit + ((i - 1) * 
-                                                         leg.unit), start.unit + ((i - 1) * leg.unit), 
-                                         start.unit + (i * leg.unit), start.unit + (i * 
-                                                                                      leg.unit)), col = rgb(blues(values[i]), maxColorValue = 255), 
-            lty = 0)
-    text(right.pos + leg.width, start.unit + (i * 
-                                                leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
-                                                                               values[i]), pos = 4)
-  }
-} #  for (i in 1:11) 
+  
+  
+  neg.rescaled.values <- round(seq(-neg.max, 0, length = 6), 
+                               2)
+  pos.rescaled.values <- rev(round(seq(pos.max, 0, length = 6), 
+                                   2)[-6])
+  rescaled.values <- c(neg.rescaled.values, pos.rescaled.values)
+  
+  for (i in 1:11) {
+    if (values[i] <= 0) {
+      polygon(c(right.pos, right.pos + leg.width, right.pos + 
+                  leg.width, right.pos), c(start.unit + ((i - 1) * 
+                                                           leg.unit), start.unit + ((i - 1) * leg.unit), 
+                                           start.unit + (i * leg.unit), start.unit + (i * 
+                                                                                        leg.unit)), col = rgb(reds(abs(values[i])), 
+                                                                                                              maxColorValue = 255), lty = 0)
+      text(right.pos + leg.width , start.unit + (i * 
+                                                   leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+                                                                                  values[i]), pos = 4)
+    }
+    else {
+      polygon(c(right.pos, right.pos + leg.width, right.pos + 
+                  leg.width, right.pos), c(start.unit + ((i - 1) * 
+                                                           leg.unit), start.unit + ((i - 1) * leg.unit), 
+                                           start.unit + (i * leg.unit), start.unit + (i * 
+                                                                                        leg.unit)), col = rgb(blues(values[i]), maxColorValue = 255), 
+              lty = 0)
+      text(right.pos + leg.width, start.unit + (i * 
+                                                  leg.unit) - leg.unit/2, ifelse(rescale, rescaled.values[i], 
+                                                                                 values[i]), pos = 4)
+    }
+  } #  for (i in 1:11) 
+  
+  if(corr_or_ANPP %in% "correlation") {
+    text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "Correlation", font = 2)
+    
+    legend(x = 1, y = 59 , pch =  c(21, 24), bg = "white", col = "black", legend = c( "0.05", "0.0002"), bty = "n")
+    text(x = 5, y = 60, labels = "Significance", font = 2)
+  } else {
+  # text(x = 5, y = start.unit + (i * leg.unit) + c(5, 3), labels = c(expression(bold(Delta*"ANPP")), expression(bold("response"))), font = 2)
+    text(x = 5, y = start.unit + (i * leg.unit) + 3, labels = "% Response", font = 2)
 
-text(x = 5, y = start.unit + (i * leg.unit) + c(5, 3), labels = c(expression(bold(Delta*"ANPP")), expression(bold("response"))), font = 2)
+}
+
+}
 
 # dev.off ####
 if(save.plots) dev.off()

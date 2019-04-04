@@ -30,8 +30,8 @@ if(re_create_climate_data) source("scripts/0-Prepare_Climate_Data.R")
 ##** WARNING** ###
 ##** If script #1 does not run. open and update URL like explained in line 28. **##
 
-source("scripts/1- Calculate_and_plot_correlations_and_responses_between_tree-ring_chronologies_and_climate_variables.R")
+source("scripts/1-Calculate_and_plot_correlations_and_responses_between_tree-ring_chronologies_and_climate_variables.R")
 source("scripts/2-Summarize_correlations_between_tree-ring_chronologies_and_climate_variables.R")
 source("scripts/3-Scale_cores_to_ANPP.R")
-source("scripts/4- PLOT_figures_for_manuscript.R")
+source("scripts/4-PLOT_figures_for_manuscript.R")
 source("scripts/5-Pull_out_and_map_census_data_for_cored_trees.R")
