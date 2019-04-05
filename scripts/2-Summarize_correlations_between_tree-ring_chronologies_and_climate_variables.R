@@ -239,7 +239,7 @@ for(v in levels(n_positive_corr_1901_2009$variable)) {
   
   ft <- merge_h(ft, part = "header")
   ft <- theme_booktabs(ft)
-  ft <- colformat_num(ft, col_keys = ft$col_keys, digits = 2)
+  ft <- colformat_num(ft, col_keys = ft$col_keys[-1], digits = 2)
   ft <- fontsize(ft, size = 7.5, part = "all")
   ft <- autofit(ft, add_w = 0, add_h = 0)
   ft <- flextable::width(ft, width = c(0.43,
