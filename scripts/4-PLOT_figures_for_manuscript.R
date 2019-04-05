@@ -586,7 +586,7 @@ for(v in c("pet", "wet", "PETminusPRE", "tmx")) {
       blues <- colorRamp(c("#FFFFFF", "#4B9EF2", "blue4"))
       reds <- colorRamp(c("#FFFFFF", "#F25757", "red4"))
     } else {
-      blues <- colorRamp(c("#FFFFFF", "cyan3", "darkcyan"))
+      blues <- colorRamp(c("#FFFFFF", "deepskyblue2", "deepskyblue4"))
       reds <- colorRamp(c("#FFFFFF", "violetred1", "violetred4"))
     }
     
@@ -739,7 +739,7 @@ for(corr_or_ANPP in c("correlation", "ANPP_response_percent")) {
     
   } else {
     
-    blues <- colorRamp(c("#FFFFFF", "cyan3", "darkcyan"))
+    blues <- colorRamp(c("#FFFFFF", "deepskyblue2", "deepskyblue4"))
     reds <- colorRamp(c("#FFFFFF", "violetred1", "violetred4"))
     
     leg.unit <- 3
@@ -879,7 +879,7 @@ for(type.start in type.of.start.date) {
     x <- x$coef
   }
   
-  blues <- colorRamp(c("#FFFFFF", "cyan3", "darkcyan"))
+  blues <- colorRamp(c("#FFFFFF", "deepskyblue2", "deepskyblue4"))
   reds <- colorRamp(c("#FFFFFF", "violetred1", "violetred4"))
 
   m <- dim(x)[1]
