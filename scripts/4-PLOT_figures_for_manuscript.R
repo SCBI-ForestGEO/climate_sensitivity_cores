@@ -23,7 +23,7 @@ save.result.table <- T
 # ANPP_response_total for each type of starting year (not realy for manuscript as is) ####
 
 ## Define how to run it regarding the starting year ####
-type.of.start.date <- c("1901_2009", "1977_2009") 
+type.of.start.date <- c("1901_2009", "1980_2009") 
 
 
 ## plot ####
@@ -1018,7 +1018,7 @@ if(save.plots) dev.off()
 
 method.to.run = "correlation"
 
-type.of.start.date <-c("1901_2009", "1911_1943", "1944_1976", "1977_2009")
+type.of.start.date <- c("1901_2009", "1920_1949", "1950_1979", "1980_2009")
 
 ANPP_contribution <- read.csv(text=getURL("https://raw.githubusercontent.com/SCBI-ForestGEO/SCBI-ForestGEO-Data/master/summary_data/ANPP_total_and_by_species.csv"), header=T) # this URL might change because it is a private repository. If it does, update if by copying the URL direcltly from github: go to https://github.com/EcoClimLab/SCBI-ForestGEO-Data_private/master/SCBI_numbers_and_facts/ANPP_total_and_by_species.csv, click on Raw, copy the URL and paste it in place of the current URL here, inbetween the quotes of this line of code.
 SPECIES_IN_ORDER <- toupper(ANPP_contribution$species[ ANPP_contribution$species %in% c("litu", "qual", "quru", "quve", "qupr", "fram", "cagl", "caco", "cato", "juni", "fagr", "caovl", "pist", "frni")])
@@ -1301,7 +1301,7 @@ for(v in c("pre", "wet",
                    rgb(1,0,0),
                    rgb(0,0,1),
                    rgb(1,0.8,0)),
-           legend = c("1901-2009", "1911-1943", "1944-1976", "1977-2009"), bty = "n",
+           legend = c("1901_2009", "1920_1949", "1950_1979", "1980_2009"), bty = "n",
            ncol = 2) # "[1901-1938]-2009"
     legend("topright", fill = rgb(0,0,0,0.1), border = "transparent", c("+/- SD"), bty = "n", x.intersp = 0.5)
   }
