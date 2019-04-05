@@ -240,17 +240,11 @@ for(v in levels(n_positive_corr_1901_2009$variable)) {
   ft <- merge_h(ft, part = "header")
   ft <- theme_booktabs(ft)
   ft <- colformat_num(ft, col_keys = ft$col_keys[-1], digits = 2)
+  ft <- colformat_num(ft, col_keys = ft$col_keys[c(5,6, 10, 11, 15, 16, 20, 21)], digits = 0)
+  # ft <- border(ft, j = c(1, 6, 11, 16, 21), border.right = fp_border(color = "black"), part = "all")
   ft <- fontsize(ft, size = 7.5, part = "all")
   ft <- autofit(ft, add_w = 0, add_h = 0)
-  ft <- flextable::width(ft, width = c(0.43,
-                                       rep(0.32, 4),
-                                       0.43,
-                                       rep(0.32, 4),
-                                       0.43,
-                                       rep(0.32, 4),
-                                       0.43,
-                                       rep(0.32, 4),
-                                       0.43)) # dput(prop.table(dim_pretty(ft)$widths)*11)
+  ft <- flextable::width(ft, width = c(0.47, rep(c(0.50, rep(0.30, 2), rep(0.25, 2)),4))) # dput(prop.table(dim_pretty(ft)$widths)*11)
   
   doc <- body_add_par(doc, paste0("table ", which(levels(n_positive_corr$variable) %in% v), ": Summary of Pearson correlations across species for ", v), style = "table title", pos = "after")
   doc <- body_add_flextable(doc, ft, align = "center")
