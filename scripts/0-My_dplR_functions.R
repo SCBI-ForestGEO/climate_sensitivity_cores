@@ -19,6 +19,7 @@ my.dcc <- function (chrono, clim, method = "response", start = -6, end = 9,
   } else {
     overlap <- na.omit(chrono.years[match(clim.years, chrono.years)])
   }
+  
   if (is.null(timespan)) {
     start.year <- overlap[1]
     end.year <- tail(overlap, 1)
@@ -62,35 +63,40 @@ my.dcc <- function (chrono, clim, method = "response", start = -6, end = 9,
   if (start * end > 0) {
     no.params <- (dim(clim)[2] - 2) * length(start:end)
   } else {
-    no.params <- (dim(clim)[2] - 2) * length(start:end) - 
-      1
+    no.params <- (dim(clim)[2] - 2) * length(start:end) - 1
   }
+  
   overlap.size <- length(start.year:end.year)
+  
   if (no.params > overlap.size) {
-    win.size.msg <- paste("Overlapping time span of chrono and climate records is smaller than number of parameters! Consider adapting the number of parameters to a maximum of ", 
+    win.size.msg <- paste("Overlapping time span of chrono and climate records is smaller than number of parameters! Consider adapting the number of parameters to a maximum of ",
                           overlap.size, ".", sep = "")
     stop(win.size.msg)
   }
+  
   a <- as.numeric(rownames(chrono)) %in% interval.chrono
   b <- clim[, 1] %in% interval.clim
   chrono.trunc <- chrono[a, 1]
   clim.trunc <- clim[b, ]
-  p <- pmat(clim.trunc, start, end, vnames)
+  
+  p_analysis_time_frame <- pmat(clim.trunc, start, end, vnames)
+  p_full_time_frame <- pmat(clim, start, end, vnames)
+  
   METHOD <- match.arg(method, c("response", "correlation"))
   
   if (METHOD == "response") {
     if (boot) {
-      dc <- my.brf(chrono.trunc, p, sb = sb, vnames = vnames, ci2 = ci2)
+      dc <- my.brf(chrono.trunc, p_analysis_time_frame, sb = sb, vnames = vnames, ci2 = ci2)
     } else {
-      dc <- nbrf(chrono.trunc, p, vnames = vnames)
+      dc <- nbrf(chrono.trunc, p_analysis_time_frame, vnames = vnames)
     }
   }
   if (METHOD == "correlation") {
     if (boot) {
-      dc <- my.bcf(chrono.trunc, p, sb = sb, vnames = vnames, 
+      dc <- my.bcf(chrono.trunc, p_analysis_time_frame, sb = sb, vnames = vnames, 
                 ci = ci, ci2 = ci2)
     } else {
-      dc <- nbcf(chrono.trunc, p, vnames = vnames)
+      dc <- nbcf(chrono.trunc, p_analysis_time_frame, vnames = vnames)
     }
   }
   cat("time span considered:", start.year, "-", end.year, 
@@ -99,10 +105,11 @@ my.dcc <- function (chrono, clim, method = "response", start = -6, end = 9,
   # convert correlation to Linear Slope ####
   ## see https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fele.12650&file=ele12650-sup-0003-Methods.pdf
   
-  sd.clim <- apply(p, 2, sd)
+  sd.clim_analysis_time_frame <- apply(p_analysis_time_frame, 2, sd)
+  sd.clim_full_time_frame <-  apply(p_full_time_frame, 2, sd)
   sd.chrono <- sd(chrono.trunc)
   
-  dc$chg_rad_inc_1SD_clim <- dc$coef * (sd.chrono / sd.clim) * sd.clim # multiplying again by sd.clim to get the change in radius increment under 1SD increase in climate varibale
+  dc$chg_rad_inc_1SD_clim <- dc$coef * (sd.chrono / sd.clim_analysis_time_frame) * sd.clim_full_time_frame # multiplying again by sd.clim to get the change in radius increment under 1SD increase in climate varibale
   
   
   # return

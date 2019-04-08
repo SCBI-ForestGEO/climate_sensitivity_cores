@@ -127,7 +127,7 @@ for(f in filenames) {
   start.years.sss <- c(start.years.sss, sss[sss$sss >= sss.threshold, ]$Year[1])
 }
 
-end.year = 2009  # common to all species (but will change fo 30 year time periods)
+full.time.frame.end.year = 2009  # for now and later for sd.clim_fill_time_frame (in 0-My_dplR_functions.R)
 
 # Plot SSS for the the decided threshold ####
 
@@ -149,11 +149,11 @@ plot.nb <- 1
 for(sp in levels(all_sss$Species)){
   
   x <- all_sss[all_sss$Species %in% sp,]
-  x <- x[x$Year <= end.year,] 
+  x <- x[x$Year <= full.time.frame.end.year,] 
   # n.core <- x$Num_of_trees[x$sss > sss.threshold][1]
   
   if(plot.nb %in% 1) {
-    plot(Num_of_trees ~ Year, data = x, type = "l", col = cols[sp,], xlim = c(min(all_sss$Year), end.year), ylim = range(all_sss$Num_of_trees), lwd = 2, log = "y", las = 1, ylab = "", xaxt = "n")
+    plot(Num_of_trees ~ Year, data = x, type = "l", col = cols[sp,], xlim = c(min(all_sss$Year), full.time.frame.end.year), ylim = range(all_sss$Num_of_trees), lwd = 2, log = "y", las = 1, ylab = "", xaxt = "n")
     mtext(side= 2 , "log(No. cores)", line = 3)
     axis(1, labels = F, tcl = 0.5)
     axis(1, labels = F, tcl = -0.5)
@@ -173,12 +173,12 @@ plot.nb <- 1
 
 for(sp in levels(all_sss$Species)){
   x <- all_sss[all_sss$Species %in% sp,]
-  x <- x[x$Year <= end.year,] 
+  x <- x[x$Year <= full.time.frame.end.year,] 
   
   year <- x$Year[x$sss > sss.threshold][1]
   
   if(plot.nb %in% 1) {
-    plot(sss ~ Year, data = x, type = "l", col = cols[sp,], xlim = c(min(all_sss$Year), end.year), lwd = 2, las = 1, xaxt = "n")
+    plot(sss ~ Year, data = x, type = "l", col = cols[sp,], xlim = c(min(all_sss$Year), full.time.frame.end.year), lwd = 2, las = 1, xaxt = "n")
     abline(v = year, lty = 2, col = cols[sp,])
     abline(h = 0.75, lty = 3)
     axis(1, labels = T, tcl = 0.5)
@@ -234,6 +234,9 @@ for(c in climate.data.types) {
     clim  <- clim[, !(colnames(clim) %in% c("pet_sum"))]
   }
   
+  ### crop last year to full.time.frame.end.year
+  clim <- clim[clim$year <= full.time.frame.end.year, ]
+  
   ### get a moving average and sd of climate varibales, by month (for moving correlation)
   
   clim.moving.avg <- NULL
@@ -264,7 +267,10 @@ for(c in climate.data.types) {
     dir.create(paste0("results/", type.start, "/tables"), showWarnings = F)
     
     
-    if(type.start %in% "1901_2009") start.years <- start.years.sss
+    if(type.start %in% "1901_2009") {
+      start.years <- start.years.sss
+      end.year <- full.time.frame.end.year
+    }
 
     if(type.start %in% "1920_1949") {
       start.years <- ifelse(start.years.sss > 1920, start.years.sss, 1920)
