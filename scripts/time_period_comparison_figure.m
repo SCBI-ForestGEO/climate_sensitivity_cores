@@ -9,7 +9,7 @@ clim_var={'cld'; 'dtr'; 'pet';'PET-PRE'; 'pre' ;'tmn'; 'tmp'; 'tmx'; 'vap'; 'wet
 months={'prev.apr'	'prev.may'	'prev.jun'	'prev.jul'	'prev.aug'	'prev.sep'	'prev.oct'	'prev.nov'	'prev.dec'	'curr.jan'	'curr.feb'	'curr.mar'	'curr.apr'	'curr.may'	'curr.jun'	'curr.jul'	'curr.aug'};
 
 % create index variables that designate rows belonging to different variable groups
-Energy_variables = [ NaN 1 1 1 NaN 1 1 1 NaN NaN NaN ]; % negative response expected during current gs
+Energy_variables = [ NaN NaN 1 1 NaN 1 1 1 NaN NaN NaN ]; % negative response expected during current gs
 Water_variables = [ 1 NaN NaN NaN 1 NaN NaN NaN NaN 1 1 ];  % positive response expected during current gs
 Temperature_variables = [ NaN NaN NaN NaN NaN 1 1 1 NaN NaN NaN ];  % positive response expected during current gs
 
@@ -17,6 +17,7 @@ Temperature_variables = [ NaN NaN NaN NaN NaN 1 1 1 NaN NaN NaN ];  % positive r
 current_gs= [ NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN 1 1 1 1 ];
 past_gs_early= [ NaN 1 1 1 NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN ];
 past_gs_late= [ NaN NaN NaN NaN 1 1 NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN ];
+non_gs= [ NaN NaN NaN NaN NaN NaN 1 1 1 1 1 1 NaN NaN NaN NaN NaN ];
 
 % create matrices to store results
 percent_neg_E_current_gs = NaN*ones(1,4);
@@ -71,6 +72,22 @@ for TP=1:4
     percent_expected_past_egs (TP) = percent_pos_E_past_egs(TP)*(sum(sum(1-isnan(per_pos_corr_past_egs_E)))/30) +...
                                        percent_neg_W_past_egs(TP)*(sum(sum(1-isnan(per_neg_corr_past_egs_W)))/30);
                                    
+    % percent responding positively to cool, moist conditions during Aug-Sept of previous growing season
+    n_pos_corr_past_lgs_E=(n_positive_corr.*past_gs_late).*Energy_variables'; 
+    per_pos_corr_past_lgs_E=(n_pos_corr_past_lgs_E)/n_sp*100;
+    percent_neg_E_past_lgs (TP) = 100-sum(nansum(per_pos_corr_past_lgs_E))/sum(sum(1-isnan(per_pos_corr_past_lgs_E)));
+    n_neg_corr_past_lgs_W=(n_positive_corr.*past_gs_late).*Water_variables'; 
+    per_neg_corr_past_lgs_W=(n_sp-n_neg_corr_past_lgs_W)/n_sp*100;
+    percent_pos_W_past_lgs (TP) = 100-sum(nansum(per_neg_corr_past_lgs_W))/sum(sum(1-isnan(per_neg_corr_past_lgs_W)));
+    percent_expected_past_lgs (TP) = percent_neg_E_past_lgs(TP)*(sum(sum(1-isnan(per_pos_corr_past_lgs_E)))/20) +...
+                                       percent_pos_W_past_lgs(TP)*(sum(sum(1-isnan(per_neg_corr_past_lgs_W)))/20);
+                                   
+    % percent responding negatively to T outside growing season
+    n_neg_corr_ngs_T=(n_positive_corr.*non_gs).*Temperature_variables'; 
+    per_neg_corr_ngs_T=(n_neg_corr_ngs_T)/n_sp*100;
+    percent_neg_T_ngs (TP) = 100-sum(nansum(per_neg_corr_ngs_T))/sum(sum(1-isnan(per_neg_corr_ngs_T)));
+
+                                   
     %average strength of May-Aug correlations
     mean_corr_mjja=(mean_corr.*current_gs);
     mean_corr_PET_mjja(TP)=nanmean(mean_corr_mjja(3,:));
@@ -87,11 +104,14 @@ cd '/Users/teixeirak/Dropbox (Smithsonian)/GitHub/SCBI-ForestGEO/climate_sensiti
 figure (1)
 
 subplot(1,2,1)
-x = categorical({'current MJJA' 'previous MJJ'});
-y = [percent_expected_current_gs-50; 50-percent_expected_past_egs];
+var=({ 'previous MJJ' 'previous AS-moisture' 'previous AS-energy' 'non-gs: T' 'current MJJA'});
+%x = categorical(var,var) 
+x = categorical({'5current MJJA' '1previous MJJ' '2previous AS-moisture' '3previous AS-energy' '4non-gs: T' });
+%x = reordercats(x,{ 'previous MJJ' 'previous AS-moisture' 'previous AS-energy' 'non-gs: T' 'current MJJA'});
+y = [percent_expected_current_gs-50; 50-percent_expected_past_egs; percent_pos_W_past_lgs-50; percent_neg_E_past_lgs-50; percent_neg_T_ngs-50];
 bar (x,y)
-ylabel('% positive response to cool, moist conditions -50') 
-legend({'1901-2009' '1920-1949' '1950-1979' '1980-2009'})
+ylabel('% positive response to cool/ moist conditions - 50') 
+legend({'1901-2009' '1920-1949' '1950-1979' '1980-2009'},'Location','Best')
 
 subplot(1,2,2)
 x = categorical({'PET' 'WET' 'PET-PRE' 'T_{max}'});
@@ -100,8 +120,8 @@ bar (x,y)
 ylabel('|mean growth correlation to MJJA climate|')
 print('BarPlot','-dpng')
 
-figure (4)
-TP=categorical({'1901-2009' '1920-1949' '1950-1979' '1980-2009'});
-bar (TP,mean_corr_PRE_mjja)
-ylabel('mean correlation with PRE')
-xlabel('Time period')
+%figure (4)
+%TP=categorical({'1901-2009' '1920-1949' '1950-1979' '1980-2009'});
+%bar (TP,mean_corr_PRE_mjja)
+%ylabel('mean correlation with PRE')
+%xlabel('Time period')
