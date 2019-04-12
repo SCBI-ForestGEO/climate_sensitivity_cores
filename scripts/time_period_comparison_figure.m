@@ -111,7 +111,7 @@ ylabel('% positive response to moist / cool conditions - 50')
 legend({'1901-2009' '1920-1949' '1950-1979' '1980-2009'},'Location','Best')
 
 subplot(1,2,2)
-x = categorical({'PET' 'WET' 'PET-PRE' 'T_{max}'});
+x = categorical({'1 PET' '2 WET' '3 PET-PRE' '4 T_{max}'});
 y =[abs(mean_corr_PET_mjja); mean_corr_WET_mjja; abs(mean_corr_PETmPRE_mjja); abs(mean_corr_TMAX_mjja)];
 bar (x,y)
 ylabel('|mean growth correlation to MJJA climate|')
