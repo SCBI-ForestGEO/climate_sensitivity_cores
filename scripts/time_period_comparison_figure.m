@@ -83,9 +83,9 @@ for TP=1:4
                                        percent_pos_W_past_lgs(TP)*(sum(sum(1-isnan(per_neg_corr_past_lgs_W)))/20);
                                    
     % percent responding negatively to T outside growing season
-    n_neg_corr_ngs_T=(n_positive_corr.*non_gs).*Temperature_variables'; 
-    per_neg_corr_ngs_T=(n_neg_corr_ngs_T)/n_sp*100;
-    percent_neg_T_ngs (TP) = 100-sum(nansum(per_neg_corr_ngs_T))/sum(sum(1-isnan(per_neg_corr_ngs_T)));
+    n_neg_corr_ngs_E=(n_positive_corr.*non_gs).*Energy_variables'; 
+    per_neg_corr_ngs_E=(n_neg_corr_ngs_E)/n_sp*100;
+    percent_neg_E_ngs (TP) = 100-sum(nansum(per_neg_corr_ngs_E))/sum(sum(1-isnan(per_neg_corr_ngs_E)));
 
                                    
     %average strength of May-Aug correlations
@@ -104,13 +104,10 @@ cd '/Users/teixeirak/Dropbox (Smithsonian)/GitHub/SCBI-ForestGEO/climate_sensiti
 figure (1)
 
 subplot(1,2,1)
-var=({ 'previous MJJ' 'previous AS-moisture' 'previous AS-energy' 'non-gs: T' 'current MJJA'});
-%x = categorical(var,var) 
-x = categorical({'5current MJJA' '1previous MJJ' '2previous AS-moisture' '3previous AS-energy' '4non-gs: T' });
-%x = reordercats(x,{ 'previous MJJ' 'previous AS-moisture' 'previous AS-energy' 'non-gs: T' 'current MJJA'});
-y = [percent_expected_current_gs-50; 50-percent_expected_past_egs; percent_pos_W_past_lgs-50; percent_neg_E_past_lgs-50; percent_neg_T_ngs-50];
+x = categorical({'5 MJJA' '1 mjj' '2 as (moisture)' '3 as (energy)'  });
+y = [percent_expected_current_gs-50; 50-percent_expected_past_egs; percent_pos_W_past_lgs-50; percent_neg_E_past_lgs-50];
 bar (x,y)
-ylabel('% positive response to cool/ moist conditions - 50') 
+ylabel('% positive response to moist / cool conditions - 50') 
 legend({'1901-2009' '1920-1949' '1950-1979' '1980-2009'},'Location','Best')
 
 subplot(1,2,2)
