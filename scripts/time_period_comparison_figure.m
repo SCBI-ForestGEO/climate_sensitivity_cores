@@ -109,6 +109,7 @@ y = [percent_expected_current_gs-50; 50-percent_expected_past_egs; percent_pos_W
 bar (x,y)
 ylabel('% positive response to moist / cool conditions - 50') 
 xlabel('months','Position',[2.5 -42])
+text(0.7,45,'a)'),
 legend({'1901-2009' '1920-1949' '1950-1979' '1980-2009'},'Location','Best')
 
 subplot('Position', [.57,.15,.42, .8])
@@ -117,6 +118,7 @@ y =[abs(mean_corr_PET_mjja); mean_corr_WET_mjja; abs(mean_corr_PETmPRE_mjja); ab
 bar (x,y)
 ylabel('|mean growth correlation to MJJA climate|')
 xlabel('climate variable','Position',[2.5 -.037])
+text(0.7,.234,'b)'),
 
 set(gcf, 'Position',  [700, 700, 800, 400]); shg; %size & display figure
 print('BarPlot','-dpng') %print figure
