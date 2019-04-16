@@ -9,8 +9,8 @@ clim_var={'cld'; 'dtr'; 'pet';'PET-PRE'; 'pre' ;'tmn'; 'tmp'; 'tmx'; 'vap'; 'wet
 months={'prev.apr'	'prev.may'	'prev.jun'	'prev.jul'	'prev.aug'	'prev.sep'	'prev.oct'	'prev.nov'	'prev.dec'	'curr.jan'	'curr.feb'	'curr.mar'	'curr.apr'	'curr.may'	'curr.jun'	'curr.jul'	'curr.aug'};
 
 % create index variables that designate rows belonging to different variable groups
-Energy_variables = [ NaN NaN 1 1 NaN 1 1 1 NaN NaN NaN ]; % negative response expected during current gs
-Water_variables = [ 1 NaN NaN NaN 1 NaN NaN NaN NaN 1 1 ];  % positive response expected during current gs
+Energy_variables = [ NaN 1 1 1 NaN 1 1 1 NaN NaN NaN ]; % negative response expected during current gs
+Water_variables = [ 1 NaN NaN NaN 1 NaN NaN NaN NaN 1 1 ];  % positive response expected during current gs (or neg, when coef is neg)
 Temperature_variables = [ NaN NaN NaN NaN NaN 1 1 1 NaN NaN NaN ];  % positive response expected during current gs
 
 % create index variables that designate columns belonging to different month groups
@@ -103,19 +103,23 @@ cd '/Users/teixeirak/Dropbox (Smithsonian)/GitHub/SCBI-ForestGEO/climate_sensiti
 
 figure (1)
 
-subplot(1,2,1)
+subplot('Position', [.07,.15,.42, .8])
 x = categorical({'5 MJJA' '1 mjj' '2 as (moisture)' '3 as (energy)'  });
 y = [percent_expected_current_gs-50; 50-percent_expected_past_egs; percent_pos_W_past_lgs-50; percent_neg_E_past_lgs-50];
 bar (x,y)
 ylabel('% positive response to moist / cool conditions - 50') 
+xlabel('months','Position',[2.5 -42])
 legend({'1901-2009' '1920-1949' '1950-1979' '1980-2009'},'Location','Best')
 
-subplot(1,2,2)
+subplot('Position', [.57,.15,.42, .8])
 x = categorical({'1 PET' '2 WET' '3 PET-PRE' '4 T_{max}'});
 y =[abs(mean_corr_PET_mjja); mean_corr_WET_mjja; abs(mean_corr_PETmPRE_mjja); abs(mean_corr_TMAX_mjja)];
 bar (x,y)
 ylabel('|mean growth correlation to MJJA climate|')
-print('BarPlot','-dpng')
+xlabel('climate variable','Position',[2.5 -.037])
+
+set(gcf, 'Position',  [700, 700, 800, 400]); shg; %size & display figure
+print('BarPlot','-dpng') %print figure
 
 %figure (4)
 %TP=categorical({'1901-2009' '1920-1949' '1950-1979' '1980-2009'});
