@@ -1132,7 +1132,7 @@ all_sss <- read.csv("results/SSS_as_a_function_of_the_number_of_trees_in_sample.
 sss.threshold = 0.75
 
 
-colors.species <- colorRampPalette(c("purple", "cadetblue", "yellow", "darkorange", "red", "brown"))(14)
+colors.species <- colorRampPalette(c("purple", "cadetblue", "darkorange", "red", "violetred4"))(14)
 clim <- read.csv("data/climate/Formated_CRU_SCBI_1901_2016.csv")
 
 clim <- clim[clim$month %in% c(5:7), c("year", "pre", "pet_sum")]
@@ -1145,7 +1145,7 @@ drought_years <- clim$year[which(c(clim$pet_sum - clim$pre) >= (sort(clim$pet_su
 cbind(drought_years, c(clim$pet_sum - clim$pre)[which(c(clim$pet_sum - clim$pre) >= (sort(clim$pet_sum - clim$pre, decreasing = T)[10]))])
 
 if(save.plots)  {
-  tiff(paste0("results/Time_series_for_each_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
+  tiff(paste0("results/figures_for_manuscript/Time_series_for_each_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
 }
 
 par(mfrow = c(14 + 2, 1), mar = c(0,0,0,0), oma = c(4, 6, 0, 0))
