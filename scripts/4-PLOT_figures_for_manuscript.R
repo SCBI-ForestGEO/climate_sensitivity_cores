@@ -114,7 +114,7 @@ type.start <- c("1901_2009")
 
 # plot ####
 if(save.plots)  {
-  tiff("results/figures_for_manuscript/Figure_2.tif", res = 150, width = 140, height = 190, units = "mm", pointsize = 10)
+  tiff("results/figures_for_manuscript/Figure_2.tif", res = 300, width = 140, height = 190, units = "mm", pointsize = 10)
 }
 
 nf <- layout(mat = matrix(c(1,2,10,3,4,10,5,6,10,7,8,9), ncol = 3, byrow = T), widths = c(1, 1, 0.5))
@@ -1145,7 +1145,7 @@ drought_years <- clim$year[which(c(clim$pet_sum - clim$pre) >= (sort(clim$pet_su
 cbind(drought_years, c(clim$pet_sum - clim$pre)[which(c(clim$pet_sum - clim$pre) >= (sort(clim$pet_sum - clim$pre, decreasing = T)[10]))])
 
 if(save.plots)  {
-  tiff(paste0("results/figures_for_manuscript/Time_series_for_each_species.tif"), res = 150, width = 150, height = 150, units = "mm", pointsize = 10)
+  tiff(paste0("results/figures_for_manuscript/Time_series_for_each_species.tif"), res = 300, width = 150, height = 150, units = "mm", pointsize = 10)
 }
 
 par(mfrow = c(14 + 2, 1), mar = c(0,0,0,0), oma = c(4, 6, 0, 0))
