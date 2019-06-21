@@ -1151,7 +1151,7 @@ if(save.plots)  {
 par(mfrow = c(14 + 2, 1), mar = c(0,0,0,0), oma = c(4, 6, 0, 0))
 
 
-# pet_sum ####
+## pet_sum ####
 plot(NULL,
      axes = F,
      ann = F, 
@@ -1166,7 +1166,7 @@ text(x = 2010, y = 130, "PET", pos = 4, col = "red")
 axis(2, at = c(110, 130, 150), las = 1)
 # mtext(side = 2, text = expression("(mm mo"^-1*")"), las = 1, cex = 0.7, line = 3)
 
-# pre ####
+## pre ####
 plot(NULL,
      axes = F,
      ann = F, 
@@ -1184,7 +1184,7 @@ axis(2, at = c(60, 110, 160), las = 1)
 mtext(side = 2, text = expression("(mm mo"^-1*")"), line = 3, adj = 0)
 axis(1, at = c(1700, 2020), labels = F, tck = 0, col = "grey60")
 
-# chronologies ####
+## chronologies ####
 for(f in SPECIES_IN_ORDER) {
   
   
