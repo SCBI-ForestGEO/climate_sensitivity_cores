@@ -1,6 +1,6 @@
 # scripts folder
 
-This folder contains scripts for the analysis reported in this paper (add link to paper when published).
+This folder contains scripts for the analysis reported in [Helcoski et al (2019)](https://nph.onlinelibrary.wiley.com/doi/10.1111/nph.15906).
 
 # to reproduce analysis
 
