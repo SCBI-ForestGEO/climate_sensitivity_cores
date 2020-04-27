@@ -75,7 +75,7 @@ for(f in filenames) {
     
     if(tag %in% trees_censused_live$Tag) live.trees.2010.2011 <- c(live.trees.2010.2011, tag)
     if(tag %in% trees_censused_dead$Tag) dead.trees.2016.2017 <- c(dead.trees.2016.2017, tag)
-    if(tag %in% trees_censused_live & tag %in% trees_censused_dead) stop("tree in both coring periods")
+    # if(tag %in% trees_censused_live$Tag & tag %in% trees_censused_dead$Tag) stop("tree in both coring periods") # this waas oriinally pooly coded and never worked. so we end up with cores cored in both 2010 2016 that are called 'alive' instead of 'dead' (29 cores total). there is some chance that they are correctly called 'alive' if the 2010 core was kept over the 2016 one. This will be fixed in the data repo but not in this one as the paper is already published.
     
   } #  for (t in names(core))
   
