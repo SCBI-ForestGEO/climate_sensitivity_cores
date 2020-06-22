@@ -7,7 +7,7 @@
 # Clean environment ####
 rm(list = ls())
 
-# Set working directory as Shenandoah main folder ####
+# Set working directy ####
 setwd(".")
 
 # Load libraries ####
