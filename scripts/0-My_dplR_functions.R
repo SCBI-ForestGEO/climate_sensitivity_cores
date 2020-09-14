@@ -110,6 +110,9 @@ my.dcc <- function (chrono, clim, method = "response", start = -6, end = 9,
   sd.chrono <- sd(chrono.trunc)
   
   dc$chg_rad_inc_clim <- dc$coef * (sd.chrono / sd.clim_analysis_time_frame) 
+  dc$chg_rad_inc_clim_ci.lower <- dc$ci.lower * (sd.chrono / sd.clim_analysis_time_frame) # naive calculation
+  dc$chg_rad_inc_clim_ci.upper <- dc$upper * (sd.chrono / sd.clim_analysis_time_frame)  # naive calculation
+  
   
   dc$chg_rad_inc_1SD_clim <- dc$coef * (sd.chrono / sd.clim_analysis_time_frame) * sd.clim_full_time_frame # multiplying again by sd.clim to get the change in radius increment under 1SD increase in climate varibale
   
